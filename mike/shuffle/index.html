@@ -82,7 +82,7 @@ line {
 
 line.conflict {
   stroke: red !important;
-  stroke-width: 4px;
+  stroke-width: 4px !important;
 }
 
 .play path {
@@ -172,6 +172,8 @@ function chart(update) {
       }
     }, 50);
   }
+
+  return svg;
 }
 </script>
 
@@ -179,36 +181,7 @@ function chart(update) {
 
 <script>(function() {
 
-var margin = {top: 0, right: 24, bottom: 0, left: 24},
-    width = 960,
-    height = 32 - margin.top - margin.bottom;
-
-var n = 200,
-    m = 0;
-
-var x = d3.scale.ordinal()
-    .domain(d3.range(n))
-    .rangePoints([0, width]);
-
-var y = d3.scale.linear()
-    .domain([0, n - 1])
-    .range([-Math.PI / 4, Math.PI / 4]);
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .style("margin-left", -margin.left + "px")
-    .style("margin-right", -margin.right + "px")
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + (margin.top + height) + ")");
-
-var line = svg.selectAll("line")
-    .data(d3.range(n))
-  .enter().append("line")
-    .attr("x2", function(d) { return height * Math.sin(y(d)); })
-    .attr("y2", function(d) { return -height * Math.cos(y(d)); })
-    .attr("transform", function(d, i) { return "translate(" + x(i) + ")"; })
-    .style("stroke", "#666");
+chart().select(".play").remove();
 
 })()</script>
 
@@ -223,9 +196,11 @@ chart(function(line, m) {
 
   d3.select(e)
       .style("stroke", "#000")
+      .style("stroke-width", "4px")
     .transition()
       .duration(750)
-      .attr("transform", "translate(" + x(n - m) + "," + size + ")");
+      .attr("transform", "translate(" + x(n - m) + "," + size + ")")
+      .style("stroke-width", "1.5px");
 
   return --m;
 });
@@ -245,7 +220,7 @@ chart(function(line, m) {
 
   if (isNaN(e.__data__)) {
     d3.select(e)
-        .classed("conflict", true)
+        .attr("class", "conflict")
       .transition()
         .delay(750)
         .duration(0)
@@ -253,9 +228,11 @@ chart(function(line, m) {
   } else {
     d3.select(e)
         .style("stroke", "#000")
+        .style("stroke-width", "4px")
       .transition()
         .duration(750)
-        .attr("transform", "translate(" + x(n - m--) + "," + size + ")");
+        .attr("transform", "translate(" + x(n - m--) + "," + size + ")")
+        .style("stroke-width", "1.5px");
     delete e.__data__;
   }
 
@@ -295,9 +272,11 @@ chart(function(line, m) {
 
   d3.select(e)
       .style("stroke", "#000")
+      .style("stroke-width", "4px")
     .transition()
       .duration(750)
-      .attr("transform", "translate(" + x(n - m) + "," + size +")");
+      .attr("transform", "translate(" + x(n - m) + "," + size +")")
+      .style("stroke-width", "1.5px");
 
   line
       .attr("transform", function(d, i) { return "translate(" + x(i) + "," + height + ")"; });
@@ -325,46 +304,47 @@ chart(function(line, m) {
 
 <p>This works pretty well, but it still has relatively poor <i>quadratic</i> performance. The problem is that when you remove each element from the original array (<code>array.splice</code>), you have to shift all the subsequent elements down to compact the array. On average, that’s <i>n</i> / 2 elements to shift per element to shuffle, giving O(<i>n</i><sup>2</sup>).
 
-<p>But here’s an interesting, if obvious, insight: the number of shuffled elements (<i>n</i> - <i>m</i>) plus the number of remaining elements (<i>m</i>) is always equal to <i>n</i>. This means we can do the entire shuffle in-place, without any extra space! We use the front of the array to store the shuffled elements, and the back of the array to store the remaining elements. We don’t care about the order of the remaining elements as long as we sample uniformly when picking!
+<p>But here’s an interesting, if obvious, insight: the number of shuffled elements (<i>n</i> - <i>m</i>) plus the number of remaining elements (<i>m</i>) is always equal to <i>n</i>. This means we can do the entire shuffle in-place, without any extra space! We use the back of the array to store the shuffled elements, and the front of the array to store the remaining elements. We don’t care about the order of the remaining elements as long as we sample uniformly when picking!
 
-<p>To implement the in-place shuffle, then, pick a random remaining element (from the back) and place in its new location (in the front). The element previously in the front is swapped to the back, where it is available for subsequent shuffling:
+<p>To implement the in-place O(<i>n</i>) shuffle, then, pick a random remaining element (from the front) and place in its new location (in the back). The unshuffled element in the back is swapped to the front, where it waits for subsequent shuffling:
 
 <script>
 
 chart(function(line, m) {
-  var i = n - ~~(Math.random() * m) - 1,
-      j = n - m - 1,
+  var i = ~~(Math.random() * m--),
       a = line[0][i],
-      b = line[0][j];
+      b = line[0][m];
 
   d3.select(line[0][i] = b).transition()
       .duration(750)
       .attr("transform", "translate(" + x(i) + "," + height + ")");
 
-  d3.select(line[0][j] = a)
+  d3.select(line[0][m] = a)
       .style("stroke", "#000")
+      .style("stroke-width", "4px")
     .transition()
       .duration(750)
-      .attr("transform", "translate(" + x(j) + "," + height + ")");
+      .attr("transform", "translate(" + x(m) + "," + height + ")")
+      .style("stroke-width", "1.5px");
 
-  return --m;
+  return m;
 });
 
 </script>
 
 <pre><code>function shuffle(array) {
-  var i = array.length, t, j;
+  var m = array.length, t, i;
 
   // While there remain elements to shuffle…
-  while (i) {
+  while (m) {
 
     // Pick a remaining element…
-    j = Math.floor(Math.random() * i);
+    i = Math.floor(Math.random() * m);
 
     // And swap it with the current element.
-    t = array[--i];
-    array[i] = array[j];
-    array[j] = t;
+    t = array[--m];
+    array[m] = array[i];
+    array[i] = t;
   }
 
   return array;

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Path Transitions</title>
+<style>
+
+@import url(style.css);
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+</style>
+<script src="d3.min.js"></script>
+
+<h1>Path Transitions</h1>
+
+<p>When implementing realtime displays of time-series data, we often use the <i>x</i>-axis to encode time as position: as time progresses, new data comes in from the right, and old data slides out to the left. If you use D3’s built-in <a href="https://github.com/mbostock/d3/wiki/Transitions" target="_blank">path interpolators</a>, however, you may see some surprising behavior:
+
+<script>
+
+var n = 40,
+    random = d3.random.normal(0, .2);
+
+var margin = {top: 10, right: 10, bottom: 20, left: 40},
+    width = 960 - margin.right,
+    height = 120 - margin.top - margin.bottom;
+
+function chart(domain, interpolation, tick) {
+
+  var data = d3.range(n).map(random);
+
+  var x = d3.scale.linear()
+      .domain(domain)
+      .range([0, width]);
+
+  var y = d3.scale.linear()
+      .domain([-1, 1])
+      .range([height, 0]);
+
+  var line = d3.svg.line()
+      .interpolate(interpolation)
+      .x(function(d, i) { return x(i); })
+      .y(function(d, i) { return y(d); });
+
+  var svg = d3.select("body").append("p").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .style("margin-left", -margin.left + "px")
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append("defs").append("clipPath")
+      .attr("id", "clip")
+    .append("rect")
+      .attr("width", width)
+      .attr("height", height);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.svg.axis().scale(y).ticks(5).orient("left"));
+
+  var path = svg.append("g")
+      .attr("clip-path", "url(#clip)")
+    .append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", line);
+
+  tick(path, line, data, x);
+}
+
+chart([0, n - 1], "linear", function tick(path, line, data) {
+
+  // push a new data point onto the back
+  data.push(random());
+
+  // pop the old data point off the front
+  data.shift();
+
+  // transition the line
+  path.transition()
+      .duration(750)
+      .ease("linear")
+      .attr("d", line)
+      .each("end", function() { tick(path, line, data); });
+});
+
+</script>
+
+<p>Why the distracting wiggle? There are multiple valid interpretations when interpolating two paths. Here’s the relevant code from the above chart:
+
+<pre><code>// push a new data point onto the back
+data.push(random());
+
+// pop the old data point off the front
+data.shift();
+
+// transition the line
+path.transition().attr("d", line);
+</code></pre>
+
+<p>One interpretation (the one shown above) is that the <i>y</i>-values are changing in-place; for example, you might use this when filtering the data or <a href="http://mbostock.github.com/d3/ex/stream.html">transitioning between metrics</a>. Another interpretation (the one we want) is that the change represents a sliding window in <i>x</i>. But how do you tell D3 to interpolate in <i>x</i> rather than in <i>y</i>?
+
+<p>To start, you need to understand a bit about how  <a href="http://www.w3.org/TR/SVG/paths.html#PathData">paths</a> are represented in SVG. Consider this path element, which draws a polyline (a <a href="http://en.wikipedia.org/wiki/Polygonal_chain">piecewise linear curve</a>) of three points:
+
+<pre><code class="html">&lt;path d="M0,0L1,6L2,4"&gt;&lt;/path&gt;</code></pre>
+
+<p>The path data, stored in the <code>d</code> attribute, is a string which contains various commands such as <i>moveto</i> (M) and <i>lineto</i> (L). This path starts at the origin ⟨0,0⟩, draws a line segment to ⟨1,6⟩, and finally another line segment to ⟨2,4⟩; these positions are called the <i>control points</i>. Now say you wanted to shift the old points left and add a new point, resulting in a new path:
+
+<pre><code class="html">&lt;path d="M0,6L1,4L2,5"&gt;&lt;/path&gt;</code></pre>
+
+<p>The old path had three control points, and the new path has three control points, so the naïve approach is to interpolate each control point from the old to the new:
+
+<ul>
+  <li>⟨0,0⟩ ↦ ⟨0,6⟩
+  <li>⟨1,6⟩ ↦ ⟨1,4⟩
+  <li>⟨2,4⟩ ↦ ⟨2,5⟩
+</ul>
+
+<p>Since only the <i>y</i>-values change, this interpretation results in a vertical wiggle. When you tell D3 to transition between two paths, it takes exactly this simple approach: it finds numbers embedded in the associated path data strings, pairs them in order, and interpolates. Thus, the transition interpolates six numbers (for the three control points) and produces the same wiggle.
+
+<p>To eliminate the wiggle, <b>interpolate the transform</b> rather than the path. This makes sense if you think of the chart as visualizing a function—its value isn’t changing, we’re just showing a different part of the domain. By sliding the visible window at the same rate that new data arrives, we can seamlessly display realtime data:
+
+<script>
+
+chart([0, n - 1], "linear", function tick(path, line, data, x) {
+
+  // push a new data point onto the back
+  data.push(random());
+
+  // redraw the line, and then slide it to the left
+  path
+      .attr("d", line)
+      .attr("transform", null)
+    .transition()
+      .duration(750)
+      .ease("linear")
+      .attr("transform", "translate(" + x(-1) + ")")
+      .each("end", function() { tick(path, line, data, x); });
+
+  // pop the old data point off the front
+  data.shift();
+
+});
+
+</script>
+
+<p>The relevant code is only slightly changed from the original excerpt:
+
+<pre><code>// push a new data point onto the back
+data.push(random());
+
+// redraw the line, and then slide it to the left
+path
+    .attr("d", line)
+    .attr("transform", null)
+  .transition()
+    .ease("linear")
+    .attr("transform", "translate(" + x(-1) + ")");
+
+// pop the old data point off the front
+data.shift();
+</code></pre>
+
+<aside>Here <code>x</code> is a <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">quantitative scale</a> that encodes the <i>x</i>-position. The value of <code>x(-1)</code> is about -24, which is the distance between control points in <i>x</i>.</aside>
+
+<p>When a new data point arrives, we redraw the line instantaneously and remove the previous transform (if any). The new data point is thus initially invisible off the right edge of the chart. Then, we animate the <i>x</i>-offset of the path element from 0 to some negative value, causing it to slide left.
+
+<p>While conceptually simple, there are some nuances of this approach:
+
+<p>First, you should use <b>linear easing</b> so that the speed of the continuously-changing transform remains constant. If you use the default cubic-in-out easing, then the transition velocity will oscillate and again be distracting.
+
+<p>Second, since the entering data point is drawn off the right edge, you’ll need a <b><a href="http://www.w3.org/TR/SVG/masking.html#ClippingPaths">clip path</a></b>. In the above example, we use:
+
+<pre><code class="html">&lt;defs&gt;
+  &lt;clipPath id="clip"&gt;
+    &lt;rect width="950" height="90"&gt;&lt;/rect&gt;
+  &lt;/clipPath&gt;
+&lt;/defs&gt;</code></pre>
+
+<p>Lastly, if you’re using <b>spline interpolation</b> for the path data, then note that adding a control data point changes the tangents of the previous control point, and thus the shape of the associated segments. To avoid another wiggle when the control points are changed, further restrict the visible region (the <i>x</i>-domain) so that the extra control point is hidden:
+
+<script>
+
+chart([1, n - 2], "basis", function tick(path, line, data, x) {
+
+  // push a new data point onto the back
+  data.push(random());
+
+  // redraw the line, and then slide it to the left
+  path
+      .attr("d", line)
+      .attr("transform", null)
+    .transition()
+      .duration(750)
+      .ease("linear")
+      .attr("transform", "translate(" + x(0) + ")")
+      .each("end", function() { tick(path, line, data, x); });
+
+  // pop the old data point off the front
+  data.shift();
+
+});
+
+</script>
+
+<p>Questions or comments? These examples are available as <a href="https://gist.github.com/1642874">GitHub gists</a>. Find me on <a href="http://twitter.com/mbostock">Twitter</a> or stop by the <a href="https://groups.google.com/group/d3-js">d3-js group</a>.
+
+<footer>
+  <aside>January 19, 2012</aside>
+  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+</footer>
+
+<script src="highlight.min.js"></script>

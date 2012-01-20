@@ -5,6 +5,10 @@
 
 @import url(style.css);
 
+.x.axis line {
+  shape-rendering: auto;
+}
+
 .line {
   fill: none;
   stroke: #000;
@@ -13,23 +17,17 @@
 
 </style>
 <script src="d3.min.js"></script>
-
-<h1>Path Transitions</h1>
-
-<p>When implementing realtime displays of time-series data, we often use the <i>x</i>-axis to encode time as position: as time progresses, new data comes in from the right, and old data slides out to the left. If you use D3’s built-in <a href="https://github.com/mbostock/d3/wiki/Transitions" target="_blank">path interpolators</a>, however, you may see some surprising behavior:
-
 <script>
 
 var n = 40,
     random = d3.random.normal(0, .2);
 
-var margin = {top: 10, right: 10, bottom: 20, left: 40},
-    width = 960 - margin.right,
-    height = 120 - margin.top - margin.bottom;
-
 function chart(domain, interpolation, tick) {
-
   var data = d3.range(n).map(random);
+
+  var margin = {top: 6, right: 0, bottom: 6, left: 40},
+      width = 960 - margin.right,
+      height = 120 - margin.top - margin.bottom;
 
   var x = d3.scale.linear()
       .domain(domain)
@@ -70,6 +68,14 @@ function chart(domain, interpolation, tick) {
 
   tick(path, line, data, x);
 }
+
+</script>
+
+<h1>Path Transitions</h1>
+
+<p>When implementing realtime displays of time-series data, we often use the <i>x</i>-axis to encode time as position: as time progresses, new data comes in from the right, and old data slides out to the left. If you use D3’s built-in <a href="https://github.com/mbostock/d3/wiki/Transitions" target="_blank">path interpolators</a>, however, you may see some surprising behavior:
+
+<script>
 
 chart([0, n - 1], "linear", function tick(path, line, data) {
 
@@ -205,6 +211,99 @@ chart([1, n - 2], "basis", function tick(path, line, data, x) {
 });
 
 </script>
+
+<p>If you like, you can also combine this technique with D3’s built-in <a href="https://github.com/mbostock/d3/wiki/SVG-Axes">axes</a> and <a href="https://github.com/mbostock/d3/wiki/Time-Scales">time scales</a>. This chart, for example, shows your scrolling activity while reading this document over the last three minutes:
+
+<script>(function() {
+
+var n = 243,
+    duration = 750,
+    now = new Date(Date.now() - duration),
+    count = 0,
+    data = d3.range(n).map(function() { return 0; });
+
+var margin = {top: 6, right: 0, bottom: 20, left: 40},
+    width = 960 - margin.right,
+    height = 120 - margin.top - margin.bottom;
+
+var x = d3.time.scale()
+    .domain([now - (n - 2) * duration, now - duration])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var line = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d, i) { return x(now - (n - 1 - i) * duration); })
+    .y(function(d, i) { return y(d); });
+
+var svg = d3.select("body").append("p").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .style("margin-left", -margin.left + "px")
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var axis = svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(x.axis = d3.svg.axis().scale(x).orient("bottom"));
+
+var path = svg.append("g")
+    .attr("clip-path", "url(#clip)")
+  .append("path")
+    .data([data])
+    .attr("class", "line");
+
+tick();
+
+d3.select(window)
+    .on("scroll", function() { ++count; });
+
+function tick() {
+
+  // update the domains
+  now = new Date();
+  x.domain([now - (n - 2) * duration, now - duration]);
+  y.domain([0, d3.max(data)]);
+
+  // push the accumulated count onto the back, and reset the count
+  data.push(Math.min(30, count));
+  count = 0;
+
+  // redraw the line
+  svg.select(".line")
+      .attr("d", line)
+      .attr("transform", null);
+
+  // slide the x-axis left
+  axis.transition()
+      .duration(duration)
+      .ease("linear")
+      .call(x.axis);
+
+  // slide the line left
+  path.transition()
+      .duration(duration)
+      .ease("linear")
+      .attr("transform", "translate(" + x(now - (n - 1) * duration) + ")")
+      .each("end", tick);
+
+  // pop the old data point off the front
+  data.shift();
+
+}
+
+})()</script>
+
+<p>Notice that the exiting tick marks smoothly fade-out, while the entering tick marks smoothly fade-in; this is handled automatically by the axis component. The process for transitioning the axis is the same as for the transform: update the scale’s domain, then apply linear easing.
 
 <p>Questions or comments? These examples are available as <a href="https://gist.github.com/1642874">GitHub gists</a>. Find me on <a href="http://twitter.com/mbostock">Twitter</a> or stop by the <a href="https://groups.google.com/group/d3-js">d3-js group</a>.
 

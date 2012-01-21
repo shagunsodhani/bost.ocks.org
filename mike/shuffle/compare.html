@@ -11,6 +11,7 @@
 line {
   stroke: #fff;
   stroke-opacity: .5;
+  shape-rendering: crispEdges;
 }
 
 textarea {
@@ -90,8 +91,9 @@ var x = d3.scale.ordinal()
     .domain(d3.range(n))
     .rangeBands([0, width]);
 
-var z = d3.scale.linear()
-    .domain([m / n / 3, m / n * 3]);
+var z = d3.scale.log()
+    .domain([m / n / 3, m / n * 3])
+    .clamp(true);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -224,5 +226,3 @@ function reshuffle(shuffle) {
   <aside>January 21, 2012</aside>
   <a href="http://bost.ocks.org/mike">Mike Bostock</a>
 </footer>
-
-<script src="highlight.min.js"></script>

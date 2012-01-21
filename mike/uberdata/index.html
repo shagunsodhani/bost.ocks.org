@@ -3,43 +3,7 @@
 <title>Uber Rides by Neighborhood</title>
 <style>
 
-body {
-  position: relative;
-  font-family: "Helvetica Neue";
-  width: 960px;
-  margin: auto;
-  margin-top: 40px;
-  margin-bottom: 4em;
-}
-
-footer {
-  font-size: small;
-  margin-top: 8em;
-}
-
-aside {
-  font-size: small;
-  left: 780px;
-  position: absolute;
-  width: 180px;
-}
-
-body > p {
-  line-height: 1.5em;
-  width: 720px;
-}
-
-a {
-  color: steelblue;
-}
-
-a:not(:hover) {
-  text-decoration: none;
-}
-
-text {
-  font: 10px sans-serif;
-}
+@import url(../style.css);
 
 #circle circle {
   fill: none;
@@ -63,16 +27,17 @@ path.chord {
 
 <h1>Uber Rides by Neighborhood</h1>
 
-<aside>Mouseover to focus on rides to or from a single neighbor-hood.
+<aside>Mouseover to focus on rides to or from a single neighbor&shy;hood.
 
-<p>The thickness of links between neighborhoods encodes the relative frequency of rides between two neighborhoods: thicker links represent more frequent rides.
+<p>The thickness of links be&shy;tween neighborhoods encodes the relative frequency of rides between two neighborhoods: thicker links represent more frequent rides.
 
-<p>Links are directed: for example, while 2.2% of rides go from South of Market to Downtown, only 1.2% go in the opposite direction. Links are colored by the more frequent origin.
+<p>Links are directed: for exam&shy;ple, while 2.2% of rides go from South of Market to Downtown, only 1.2% go in the opposite direction. Links are colored by the more fre&shy;quent origin.
 
 <p>Scroll down for more!
-<br>Built with <a href="http://mbostock.github.com/d3/">d3.js</a>.</aside>
 
-<script src="d3.custom.min.js"></script>
+<p>Built with <a href="http://mbostock.github.com/d3/">d3.js</a>.</aside>
+
+<script src="../d3.v2.min.js"></script>
 <script>
 
 var width = 720,

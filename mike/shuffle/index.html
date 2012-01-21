@@ -3,77 +3,7 @@
 <title>Fisher–Yates Shuffle</title>
 <style>
 
-body {
-  position: relative;
-  font-family: "Helvetica Neue";
-  width: 960px;
-  margin: auto;
-  margin-top: 40px;
-  margin-bottom: 4em;
-}
-
-footer {
-  font-size: small;
-  margin-top: 8em;
-}
-
-aside {
-  font-size: small;
-  left: 780px;
-  position: absolute;
-  width: 180px;
-}
-
-body > p {
-  line-height: 1.5em;
-  width: 720px;
-}
-
-body > pre {
-  border-left: solid 2px #ccc;
-  padding-left: 18px;
-  margin: 2em 0 2em -20px;
-}
-
-a {
-  color: steelblue;
-}
-
-a:not(:hover) {
-  text-decoration: none;
-}
-
-pre, code {
-  font-family: "Menlo", monospace;
-}
-
-.html .value,
-.javascript .string,
-.javascript .regexp {
-  color: #756bb1;
-}
-
-.html .tag,
-.css .tag,
-.javascript .keyword {
-  color: #3182bd;
-}
-
-.comment {
-  color: #636363;
-}
-
-.html .doctype,
-.javascript .number {
-  color: #31a354;
-}
-
-.html .attribute,
-.css .attribute,
-.javascript .class,
-.javascript .special {
-  color: #e6550d;
-}
+@import url(../style.css);
 
 line {
   stroke: #000;
@@ -100,15 +30,11 @@ line.conflict {
   cursor: pointer;
 }
 
-sup, sub {
-  line-height: 0;
-}
-
 </style>
 
 <h1>Fisher–Yates Shuffle</h1>
 
-<script src="d3.min.js"></script>
+<script src="../d3.v2.min.js?2.7.2"></script>
 <script>
 
 var margin = {top: 0, right: 24, bottom: 0, left: 24},
@@ -186,6 +112,8 @@ chart().select(".play").remove();
 </script>
 
 <p>If you want to play a game of Texas Hold ‘em with friends, you should shuffle the deck first to randomize the order and insure a fair game. <b>But how?</b>
+
+<aside>A quick way of seeing an algorithm’s bias is a <a href="compare.html">matrix diagram</a>.</aside>
 
 <p>A simple but effective way of doing this is to pull a random card from the deck repeatedly and set it aside, incrementally building a new stack. As long as you pick each remaining card from the deck with equal probability, you’ll have a perfectly-unbiased random stack when you’re done:
 
@@ -339,10 +267,10 @@ chart(function(line, m) {
   while (m) {
 
     // Pick a remaining element…
-    i = Math.floor(Math.random() * m);
+    i = Math.floor(Math.random() * m--);
 
     // And swap it with the current element.
-    t = array[--m];
+    t = array[m];
     array[m] = array[i];
     array[i] = t;
   }
@@ -361,4 +289,4 @@ chart(function(line, m) {
   <a href="http://bost.ocks.org/mike">Mike Bostock</a>
 </footer>
 
-<script src="highlight.min.js"></script>
+<script src="../highlight.min.js"></script>

@@ -3,39 +3,7 @@
 <title>Les Misérables Co-occurrence</title>
 <style>
 
-body {
-  position: relative;
-  font-family: "Helvetica Neue";
-  width: 960px;
-  margin: auto;
-  margin-top: 40px;
-  margin-bottom: 4em;
-}
-
-footer {
-  font-size: small;
-  margin-top: 8em;
-}
-
-aside {
-  font-size: small;
-  left: 780px;
-  position: absolute;
-  width: 180px;
-}
-
-body > p {
-  line-height: 1.5em;
-  width: 720px;
-}
-
-a {
-  color: steelblue;
-}
-
-a:not(:hover) {
-  text-decoration: none;
-}
+@import url(../style.css);
 
 .background {
   fill: #eee;
@@ -45,16 +13,12 @@ line {
   stroke: #fff;
 }
 
-text {
-  font: 10px sans-serif;
-}
-
 text.active {
   fill: red;
 }
 
 </style>
-<script src="d3.min.js"></script>
+<script src="../d3.v2.min.js"></script>
 
 <h1><i>Les Misérables</i> Co-occurrence</h1>
 
@@ -74,7 +38,6 @@ text.active {
 <p>Built with <a href="http://mbostock.github.com/d3/">d3.js</a>.
 </aside>
 
-<script src="d3.min.js"></script>
 <script>
 
 var margin = {top: 80, right: 0, bottom: 10, left: 80},
@@ -224,6 +187,8 @@ d3.json("miserables.json", function(miserables) {
 <p>This example lets you try different orderings via the drop-down menu. If I had more time, I might implement manual reordering of rows and columns, and expanding or collapsing of clusters, to allow deeper exploration; this is the sort of thing <a href="http://en.wikipedia.org/wiki/Jacques_Bertin">Bertin</a> would do by hand with paper strips.
 
 <p>While path-following is harder in a matrix view than in a <a href="http://mbostock.github.com/d3/ex/force.html">node-link diagram</a>, matrices have other advantages. As networks get large and highly connected, node-link diagrams often devolve into giant hairballs of line crossings. Line crossings are impossible with matrix views. Matrix cells can also be encoded to show additional data; here color depicts clusters computed by a community-detection algorithm.
+
+<p>Want more? See this analysis of <a href="../shuffle/compare.html">shuffling algorithms</a> using matrix diagrams.
 
 <footer>
   <aside>January 12, 2012</aside>

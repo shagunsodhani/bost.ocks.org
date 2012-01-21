@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+@import url(../style.css);
+
+.background {
+  fill: #eee;
+}
+
+line {
+  stroke: #fff;
+  stroke-opacity: .5;
+}
+
+textarea {
+  padding: 2px;
+  width: 714px;
+  height: 360px;
+}
+
+</style>
+<h1>Will It Shuffle?</h1>
+
+<aside style="margin-top:34px;">This <a href="../miserables/">matrix diagram</a> visualizes the probability of each element&nbsp;<i>i</i> being placed in position&nbsp;<i>j</i> at the end of a random shuffle.
+
+<p>A good shuffling algorithm is unbiased; you should see a uniform grey matrix with only a bit of white noise. A bad algorithm will show streaks in the matrix, indicating an un&shy;even distribution.
+
+<p>For more details, read my previous post on the <a href="./">Fisher–Yates shuffle</a>.
+
+<p>Built with <a href="/d3/">d3.js</a>.</aside>
+
+<script src="../d3.v2.min.js?2.7.2"></script>
+<script>
+
+var shuffles = {
+  "Fisher–Yates":
+function shuffle(array) {
+  var m = array.length, t, i;
+  while (m) {
+    i = Math.floor(Math.random() * m--);
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+},
+  "naïve swap (i ↦ random)":
+function shuffle(array) {
+  var n = array.length, i = -1, j;
+  while (++i < n) {
+    j = Math.floor(Math.random() * n);
+    t = array[j];
+    array[j] = array[i];
+    array[i] = t;
+  }
+},
+  "naïve swap (random ↦ random)":
+function shuffle(array) {
+  var n = array.length, i = -1, j, k;
+  while (++i < n) {
+    j = Math.floor(Math.random() * n);
+    k = Math.floor(Math.random() * n);
+    t = array[j];
+    array[j] = array[k];
+    array[k] = t;
+  }
+},
+  "sort-by-random":
+function shuffle(array) {
+  array.sort(function() {
+    return Math.random() - .5;
+  });
+},
+  "custom": function shuffle(array) {
+}
+};
+
+var margin = {top: 20.5, right: -.5, bottom: 9.5, left: 20.5},
+    width = 720,
+    height = 720;
+
+var n = 60,
+    m = 10000,
+    zero = d3.range(n).map(function() { return 0; }),
+    matrix = zero.map(function() { return zero.slice(); });
+
+var x = d3.scale.ordinal()
+    .domain(d3.range(n))
+    .rangeBands([0, width]);
+
+var z = d3.scale.linear()
+    .domain([m / n / 3, m / n * 3]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .style("margin-left", -margin.left + "px")
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height);
+
+var row = svg.selectAll(".row")
+    .data(matrix)
+  .enter().append("g")
+    .attr("class", "row")
+    .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+    .each(row);
+
+row.append("line")
+    .attr("x2", width);
+
+row.append("text")
+    .attr("x", -6)
+    .attr("y", x.rangeBand() / 2)
+    .attr("dy", ".32em")
+    .attr("text-anchor", "end")
+    .text(function(d, i) { return i; });
+
+var column = svg.selectAll(".column")
+    .data(matrix)
+  .enter().append("g")
+    .attr("class", "column")
+    .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+
+column.append("line")
+    .attr("x1", -width);
+
+column.append("text")
+    .attr("x", 6)
+    .attr("y", x.rangeBand() / 2)
+    .attr("dy", ".32em")
+    .attr("text-anchor", "start")
+    .text(function(d, i) { return i; });
+
+function row(row) {
+  d3.select(this).selectAll(".cell")
+      .data(row)
+    .enter().append("rect")
+      .attr("class", "cell")
+      .attr("x", function(d, i) { return x(i); })
+      .attr("width", x.rangeBand())
+      .attr("height", x.rangeBand())
+      .style("fill-opacity", z);
+}
+
+</script>
+
+<p>Choose an algorithm: <select></select>
+<span style="margin-left:3em;">Or write your own:</span>
+
+<p><textarea></textarea>
+
+<script>
+
+var previous,
+    timeout;
+
+var textarea = d3.select("textarea")
+    .on("keydown", textareaChange);
+
+var select = d3.select("select")
+    .on("change", selectChange);
+
+select.selectAll("option")
+    .data(d3.entries(shuffles))
+  .enter().append("option")
+    .text(function(d) { return d.key; })
+    .attr("value", function(d) { return d.key; });
+
+select
+    .property("selectedIndex", 3)
+    .each(selectChange);
+
+function textareaChange() {
+  if (previous != this.value) {
+    previous = this.value;
+    select.property("selectedIndex", 4);
+    clearTimeout(timeout);
+    timeout = setTimeout(textareaRetry, 250);
+  }
+}
+
+function textareaRetry() {
+  try { reshuffle(eval("_=" + textarea.property("value"))); } catch (e) {}
+  return true;
+}
+
+function selectChange() {
+  var shuffle = shuffles[this.value];
+  previous = shuffle.toString();
+  textarea.property("value", shuffle.toString());
+  reshuffle(shuffle);
+}
+
+function reshuffle(shuffle) {
+  d3.range(n).forEach(function(i) {
+    d3.range(n).forEach(function(j) {
+      matrix[i][j] = 0;
+    });
+  });
+
+  d3.range(m).forEach(function() {
+    var array = d3.range(n);
+    shuffle(array);
+    array.forEach(function(i, j) {
+      matrix[i][j]++;
+    });
+  });
+
+  row.selectAll(".cell")
+      .data(function(d, i) { return matrix[i]; })
+      .style("fill-opacity", z);
+}
+
+</script>
+
+<footer>
+  <aside>January 21, 2012</aside>
+  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+</footer>
+
+<script src="highlight.min.js"></script>

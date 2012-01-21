@@ -32,8 +32,12 @@ a:not(:hover) {
   text-decoration: none;
 }
 
-pre, code {
+pre, code, textarea {
   font-family: "Menlo", monospace;
+}
+
+textarea {
+  font-size: 100%;
 }
 
 body > pre {
@@ -78,4 +82,8 @@ svg {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+sup, sub {
+  line-height: 0;
 }

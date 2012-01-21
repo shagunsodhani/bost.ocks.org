@@ -25,7 +25,7 @@ textarea {
 
 <p>Or, why random comparators are bad (in addition to being slow).
 
-<aside style="margin-top:34px;">This <a href="../miserables/">matrix diagram</a> visualizes the probability of each element&nbsp;<i>i</i> being placed in position&nbsp;<i>j</i> at the end of a random shuffle. Dark cells represent low probabilities; light cells represent high probabilities.
+<aside style="margin-top:34px;">This <a href="../miserables/">matrix diagram</a> visualizes the probability of each element&nbsp;<i>i</i> being placed in position&nbsp;<i>j</i> at the end of a random shuffle. Red cells represent <b style="color:brown;line-height:1em;">negative bias</b>; green cells represent <b style="color:darkgreen;line-height:1em;">positive bias</b>.
 
 <p><b>A good shuffling algorithm is unbiased</b>; you should see a uniform grey matrix with only a bit of white noise. A bad algorithm will show streaks in the matrix, indicating an un&shy;even distribution.
 
@@ -98,8 +98,9 @@ var x = d3.scale.ordinal()
     .domain(d3.range(n))
     .rangeBands([0, width]);
 
-var z = d3.scale.log()
-    .domain([m / n / 3, m / n * 3])
+var z = d3.scale.linear()
+    .domain([m / n / 3, m / n, m / n * 3])
+    .range(["brown", "#ddd", "darkgreen"])
     .clamp(true);
 
 var svg = d3.select("body").append("svg")
@@ -154,8 +155,7 @@ function row(row) {
       .attr("class", "cell")
       .attr("x", function(d, i) { return x(i); })
       .attr("width", x.rangeBand())
-      .attr("height", x.rangeBand())
-      .style("fill-opacity", z);
+      .attr("height", x.rangeBand());
 }
 
 </script>
@@ -233,7 +233,7 @@ function reshuffle(shuffle) {
 
   row.selectAll(".cell")
       .data(function(d, i) { return matrix[i]; })
-      .style("fill-opacity", z);
+      .style("fill", z);
 }
 
 </script>

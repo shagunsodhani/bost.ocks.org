@@ -37,7 +37,8 @@ textarea {
 <script>
 
 var shuffles = {
-  "Fisher–Yates":
+
+"Fisher–Yates":
 function shuffle(array) {
   var m = array.length, t, i;
   while (m) {
@@ -47,7 +48,8 @@ function shuffle(array) {
     array[i] = t;
   }
 },
-  "naïve swap (i ↦ random)":
+
+"naïve swap (i ↦ random)":
 function shuffle(array) {
   var n = array.length, i = -1, j;
   while (++i < n) {
@@ -57,7 +59,8 @@ function shuffle(array) {
     array[i] = t;
   }
 },
-  "naïve swap (random ↦ random)":
+
+"naïve swap (random ↦ random)":
 function shuffle(array) {
   var n = array.length, i = -1, j, k;
   while (++i < n) {
@@ -68,21 +71,25 @@ function shuffle(array) {
     array[k] = t;
   }
 },
-  "sort (random comparator)":
+
+"sort (random comparator)":
 function shuffle(array) {
   array.sort(function() {
     return Math.random() - .5;
   });
 },
-  "sort (random order)":
+
+"sort (random order)":
 function shuffle(array) {
   var random = array.map(Math.random);
   array.sort(function(a, b) {
     return random[a] - random[b];
   });
 },
-  "custom": function shuffle(array) {
+
+"custom": function shuffle(array) {
 }
+
 };
 
 var margin = {top: 20.5, right: -.5, bottom: 9.5, left: 20.5},
@@ -119,8 +126,15 @@ var row = svg.selectAll(".row")
     .data(matrix)
   .enter().append("g")
     .attr("class", "row")
-    .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
-    .each(row);
+    .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; });
+
+row.selectAll(".cell")
+    .data(function(d) { return d; })
+  .enter().append("rect")
+    .attr("class", "cell")
+    .attr("x", function(d, i) { return x(i); })
+    .attr("width", x.rangeBand())
+    .attr("height", x.rangeBand());
 
 row.append("line")
     .attr("x2", width);
@@ -147,16 +161,6 @@ column.append("text")
     .attr("dy", ".32em")
     .attr("text-anchor", "start")
     .text(function(d, i) { return i; });
-
-function row(row) {
-  d3.select(this).selectAll(".cell")
-      .data(row)
-    .enter().append("rect")
-      .attr("class", "cell")
-      .attr("x", function(d, i) { return x(i); })
-      .attr("width", x.rangeBand())
-      .attr("height", x.rangeBand());
-}
 
 </script>
 

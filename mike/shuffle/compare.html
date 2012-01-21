@@ -153,21 +153,30 @@ function row(row) {
 
 </script>
 
-<p>Choose an algorithm: <select></select>
-<span style="margin-left:3em;">Or write your own:</span>
+<p>Choose an algorithm: <select id="select"></select>
 
-<p><textarea></textarea>
+<p>Or write your own:</span>
+
+<p><textarea id="textarea"></textarea>
+<br><button id="button">refresh</button>
+<label><input type="checkbox" id="checkbox"> auto-refresh</label>
 
 <script>
 
 var previous,
     timeout;
 
-var textarea = d3.select("textarea")
+var textarea = d3.select("#textarea")
     .on("keydown", textareaChange);
 
-var select = d3.select("select")
+var select = d3.select("#select")
     .on("change", selectChange);
+
+var checkbox = d3.select("#checkbox")
+    .on("change", function() { if (this.checked) textareaRetry(); });
+
+var button = d3.select("#button")
+    .on("click", textareaRetry);
 
 select.selectAll("option")
     .data(d3.entries(shuffles))
@@ -180,7 +189,7 @@ select
     .each(selectChange);
 
 function textareaChange() {
-  if (previous != this.value) {
+  if (checkbox.property("checked") && (previous != this.value)) {
     previous = this.value;
     select.property("selectedIndex", 4);
     clearTimeout(timeout);

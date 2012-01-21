@@ -196,7 +196,7 @@ select
     .each(selectChange);
 
 function textareaChange() {
-  select.property("selectedIndex", 4);
+  select.property("selectedIndex", 5);
   if (checkbox.property("checked") && (previous != this.value)) {
     previous = this.value;
     clearTimeout(timeout);

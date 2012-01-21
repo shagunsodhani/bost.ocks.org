@@ -23,7 +23,7 @@ textarea {
 </style>
 <h1>Will It Shuffle?</h1>
 
-<p>Or, why sort-by-random is bad (in addition to being slow).
+<p>Or, why random comparators are bad (in addition to being slow).
 
 <aside style="margin-top:34px;">This <a href="../miserables/">matrix diagram</a> visualizes the probability of each element&nbsp;<i>i</i> being placed in position&nbsp;<i>j</i> at the end of a random shuffle. Dark cells represent low probabilities; light cells represent high probabilities.
 
@@ -68,10 +68,17 @@ function shuffle(array) {
     array[k] = t;
   }
 },
-  "sort-by-random":
+  "sort (random comparator)":
 function shuffle(array) {
   array.sort(function() {
     return Math.random() - .5;
+  });
+},
+  "sort (random order)":
+function shuffle(array) {
+  var random = array.map(Math.random);
+  array.sort(function(a, b) {
+    return random[a] - random[b];
   });
 },
   "custom": function shuffle(array) {

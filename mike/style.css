@@ -19,9 +19,16 @@ aside {
   width: 180px;
 }
 
-body > p {
+body > p, li > p {
   line-height: 1.5em;
+}
+
+body > p {
   width: 720px;
+}
+
+li {
+  width: 680px;
 }
 
 a {

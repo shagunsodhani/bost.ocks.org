@@ -110,7 +110,7 @@ circle.exit().remove();</code></pre>
 
 <p>Thinking with joins also means your code is more <i>declarative</i>: you handle these three states with no branching (<code>if</code>) and no iteration (<code>for</code>), simply by describing how elements should correspond to data. If a given <i>enter</i>, <i>update</i> or <i>exit</i> selection happens to be empty, the corresponding chunk of code is a no-op with minimal overhead.
 
-<p>Joins also let you target operations to specific states, if needed. For example, you can set constant attributes (such as the circle’s radius, defined by the <code>"r"</code> attribute) on enter rather than update. In conjunction with reselecting elements, rather than recreating from scratch, you can vastly improve rendering performance! Similarly, you can target animated transitions to specific states. For example, for entering circles to expand-in:
+<p>Joins also let you target operations to specific states, if needed. For example, you can set constant attributes (such as the circle’s radius, defined by the <code>"r"</code> attribute) on enter rather than update. By reselecting elements and minimizing DOM changes, you vastly improve rendering performance! Similarly, you can target animated transitions to specific states. For example, for entering circles to expand-in:
 
 <pre><code>circle.enter().append("circle")
     .attr("r", 0)

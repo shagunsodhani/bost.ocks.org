@@ -41,7 +41,7 @@ circle {
 
 <p>This code does exactly what you need—it creates a circle element for each data point, using the <code>x</code> and <code>y</code> data properties for positioning. But what’s with the <code>selectAll("circle")</code>? Why do you have to select elements that don’t exist in order to create new ones? WAT.
 
-<p>Here’s the deal: instead of telling D3 <i>how to do something</i>, <b>tell D3 <i>what you want</i></b>. In this case, you <i>want</i> the circle elements to correspond to data: you want one circle per datum. Instead of instructing D3 to create circles, then, you’re telling D3 that the selection <code>"circle"</code> should correspond to data—and you’re describing how to get there. This concept is called the <i>data-join</i>:
+<p>Here’s the deal: instead of telling D3 <i>how to do something</i>, <b>tell D3 <i>what you want</i></b>. In this case, you <i>want</i> the circle elements to correspond to data: you want one circle per datum. Instead of instructing D3 to create circles, then, tell D3 that the selection <code>"circle"</code> should correspond to data—and describe how to get there. This concept is called the <i>data-join</i>:
 
 <aside style="margin-top:6em;">This Venn diagram illustrates the data-join. Data bound to existing elements produce the <i>update</i> (inner) selection. Unbound data produce the <i>enter</i> selection (left), and unbound elements produce the <i>exit</i> selection (right).</aside>
 

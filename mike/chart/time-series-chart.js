@@ -19,6 +19,16 @@ function timeSeriesChart() {
         return [xValue.call(data, d, i), yValue.call(data, d, i)];
       });
 
+      // Update the x-scale.
+      xScale
+          .domain(d3.extent(data, function(d) { return d[0]; }))
+          .range([0, width - margin.left - margin.right]);
+
+      // Update the y-scale.
+      yScale
+          .domain([0, d3.max(data, function(d) { return d[1]; })])
+          .range([height - margin.top - margin.bottom, 0]);
+
       // Select the svg element, if it exists.
       var svg = d3.select(this).selectAll("svg").data([data]);
 
@@ -35,16 +45,6 @@ function timeSeriesChart() {
       // Update the inner dimensions.
       var g = svg.select("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      // Update the x-scale.
-      xScale
-          .domain(d3.extent(data, function(d) { return d[0]; }))
-          .range([0, width - margin.left - margin.right]);
-
-      // Update the y-scale.
-      yScale
-          .domain([0, d3.max(data, function(d) { return d[1]; })])
-          .range([height - margin.top - margin.bottom, 0]);
 
       // Update the area path.
       g.select(".area")

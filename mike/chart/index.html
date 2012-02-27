@@ -88,6 +88,8 @@ myChart.height = 80;</code></pre>
   };
 }</code></pre>
 
+<h3>Convention</h3>
+
 <p>With a little bit of syntactic sugar, we can replace raw properties with getter-setter methods that allow <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>. This gives the caller a more elegant way of constructing charts, and also allows the chart to manage side-effects when a configuration parameter changes. The chart may also provide default configuration values. Here we create a new chart and set two properties:
 
 <pre><code>var myChart = chart().width(720).height(80);</code></pre>

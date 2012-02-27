@@ -5,12 +5,18 @@
 
 @import url(../style.css);
 
-body > div {
-  margin-left: -10px;
+#example {
+  margin-left: -20px;
+}
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
 }
 
 .area {
-  fill: steelblue;
+  fill: #969696;
 }
 
 .attention {
@@ -20,8 +26,6 @@ body > div {
 }
 
 </style>
-<script src="d3.v2.js"></script>
-<script src="chart.js"></script>
 
 <h1>Towards Reusable Charts</h1>
 
@@ -38,9 +42,7 @@ charts require some configuration.</aside>
 
 <h2>Configuration</h2>
 
-<p>I jest; not any function will do. In truth we need <span class="attention">a <i>configurable</i> function</span>, since most charts require customization of their appearance or behavior. For example, you may need to specify the width and height, or the color palette.
-
-<p>A simple method of configuration is passing arguments:
+<p>I jest; not any function will do. In truth we need a <i>configurable</i> function, since most charts require customization of their appearance or behavior. For example, you may need to specify the width and height, or the color palette. A simple method of configuration is passing arguments:
 
 <pre><code>function chart(width, height) {
   // generate chart here, using `width` and `height`
@@ -48,11 +50,11 @@ charts require some configuration.</aside>
 
 <p>Yet this is cumbersome for the caller: they must store the chart’s various arguments, and pass them whenever an update is needed. A simple function is insufficient for highly-configurable charts. You could try a configuration object instead, as is done by many charting libraries:
 
-<pre><code>function chart(config) { // e.g., {width: 720, height: 80}
-  // generate chart here
+<pre><code>function chart(config) {
+  // generate chart here, using `config.width` and `config.height`
 }</code></pre>
 
-<p>However, the caller must still manage both the chart function (assuming you have multiple types of charts to pick from) and the configuration object. To bind the chart configuration to the chart function, we need a <a href="http://jibbering.com/faq/notes/closures/">closure</a>:
+<p>However, the caller must then manage both the chart function (assuming you have multiple types of charts to pick from) and the configuration object. To bind the chart configuration to the chart function, we need a <a href="http://jibbering.com/faq/notes/closures/">closure</a>:
 
 <aside>A conventional object-oriented approach as <code>Chart.&#8203;proto&shy;type.&#8203;render</code> would also work, but then you must manage the <code>this</code> context when calling the function.</aside>
 
@@ -67,6 +69,8 @@ charts require some configuration.</aside>
 <pre><code>var myChart = chart({width: 720, height: 80});</pre></code>
 
 <p>And subsequently, <code>myChart()</code> to update. Simple!
+
+<h3>Reconfiguration</h3>
 
 <p>But what if you want to change the configuration after construction? Or if you want to inspect the configuration of an existing chart? The configuration object is trapped by the closure and inaccessible to the outside world. Fortunately, JavaScript <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function">functions are objects</a>, so we can store configuration properties on the function itself!
 
@@ -133,7 +137,7 @@ myChart.height = 80;</code></pre>
 
 <pre><code>myChart(selection);</code></pre>
 
-<aside>From the API reference: “[call] invokes the specified function once, passing in the current selection… The call operator is identical to invoking a function by hand; but it makes it easier to use method chaining.”</aside>
+<aside>From the API reference: <q>[call] invokes the specified function once, passing in the current selection… The call operator is identical to invoking a function by hand; but it makes it easier to use method chaining.</q></aside>
 
 <p>Or equivalently, using <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-call">selection.call</a>:
 
@@ -153,88 +157,70 @@ myChart.height = 80;</code></pre>
 
 <h2>Examples</h2>
 
-<p>Our first chart:
+<p>To make this proposal concrete, consider a simple yet ubiquitous use case: time-series visualization. A <i>time series</i> is a variable that changes over time. We can visualize this as an area chart, where the <i>x</i>- and <i>y</i>-axes respectively encode time and value as position:
 
+<p id="example">
+
+<script src="d3.v2.js"></script>
+<script src="time-series-chart.js"></script>
 <script>
 
-d3.select("body").append("div").call(emptyChart()
-    .width(720)
-    .height(80));
+d3.csv("sp500.csv", function(data) {
+  var formatDate = d3.time.format("%b %Y");
+
+  d3.select("#example")
+      .datum(data)
+    .call(timeSeriesChart()
+      .x(function(d) { return formatDate.parse(d.date); })
+      .y(function(d) { return +d.price; }));
+});
 
 </script>
 
-<pre><code>d3.select("body").append("div").call(emptyChart()
-    .width(720)
-    .height(80));</code></pre>
+<p>To hold the chart, this page has an initially-empty <code>p</code> (paragraph) element:
 
-<p>OK, that’s not very exciting, because our chart is empty. Here’s a slightly more interesting chart:
+<pre><code class="html">&lt;p id="example"&gt;</code></pre>
 
-<script>
+<p>For data, there’s an external <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> file (<a href="sp500.csv">sp500.csv</a>), the first few lines of which looks like this:
 
-d3.select("body").append("div").call(marginChart()
-    .margin({top: 10, right: 10, bottom: 10, left: 10})
-    .width(720)
-    .height(80));
+<pre><code class="csv">date,price
+Jan 2000,1394.46
+Feb 2000,1366.42
+Mar 2000,1498.58
+Apr 2000,1452.43
+May 2000,1420.6
+Jun 2000,1454.6
+Jul 2000,1430.83
+Aug 2000,1517.68</code></pre>
 
-</script>
+<p>To create the chart, we first call <code>timeSeriesChart</code> to make a new chart instance, defining accessors for the <i>x</i> (date, a <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date">Date</a> object) and <i>y</i> (price, a number) dimensions for our data:
 
-<pre><code>d3.select("body").append("div").call(marginChart()
-    .margin({top: 10, right: 10, bottom: 10, left: 10})
-    .width(720)
-    .height(80));</code></pre>
+<pre><code>var chart = timeSeriesChart()
+    .x(function(d) { return formatDate.parse(d.date); })
+    .y(function(d) { return +d.price; });
 
-<p>Still not very exciting, because the chart is solid black. OK, how about an <i>x</i>-axis that might be used to encode quantitative values?
+var formatDate = d3.time.format("%b %Y");</code></pre>
 
-<script>
+<p>The price is coerced to a number using the unary <code>+</code> operator; JavaScript is weakly-typed, so it’s a good idea to convert the loaded data from string to number. The date requires a <a href="https://github.com/mbostock/d3/wiki/Time-Formatting">d3.time.format</a> for parsing; <q>%b</q> refers to the abbreviated month name, and <q>%Y</q> refers to the four-digit year. We might want to configure other options as well, but in this simple example the default width, height and margin are suitable, and no other configuration is needed.
 
-d3.select("body").append("div").call(axisChart()
-    .margin({top: 10, right: 10, bottom: 20, left: 10})
-    .width(720)
-    .height(80));
+<p>Lastly, we load the data via <a href="https://github.com/mbostock/d3/wiki/CSV">d3.csv</a>. When available, we bind the data to the empty paragraph element, and use selection.call to render the chart!
 
-</script>
+<aside>The chart implementation source is in <a href="time-series-chart.js">time-series-chart.js</a>, if you want to see how the chart works internally.</aside>
 
-<pre><code>d3.select("body").append("div").call(axisChart()
-    .margin({top: 10, right: 10, bottom: 10, left: 10})
-    .width(720)
-    .height(80));</code></pre>
+<pre><code>d3.csv("sp500.csv", function(data) {
+  d3.select("#example")
+      .datum(data)
+      .call(chart);
+});</code></pre>
 
-<p>Woot, now we’re getting somewhere!
+<aside>See the <a href="http://bl.ocks.org/1166403">axis component</a> and  <a href="http://bl.ocks.org/1667367">brush component</a> for examples of chart components supporting interaction and animation automatically.</aside>
 
-<script>
+<h2>Further Considerations</h2>
 
-d3.select("body").append("div")
-    .datum([
-      [0.0, 0.0], [0.1, 0.7], [0.2, 0.5], [0.3, 0.4], [0.4, 0.5],
-      [0.5, 0.3], [0.6, 0.4], [0.7, 0.5], [0.8, 0.7], [0.9, 0.5],
-      [1.0, 0.5]
-    ])
-  .call(areaChart()
-    .margin({top: 10, right: 10, bottom: 20, left: 10})
-    .width(720)
-    .height(80));
-
-</script>
-
-<pre><code>d3.select("body").append("div")
-    .datum([
-      [0.0, 0.0], [0.1, 0.7], [0.2, 0.5], [0.3, 0.4], [0.4, 0.5],
-      [0.5, 0.3], [0.6, 0.4], [0.7, 0.5], [0.8, 0.7], [0.9, 0.5],
-      [1.0, 0.5]
-    ])
-  .call(areaChart()
-    .margin({top: 10, right: 10, bottom: 20, left: 10})
-    .width(720)
-    .height(80));</code></pre>
-
-<h2>Oh, and One More Thing</h2>
-
-<p>Charts can be implemented to support transitions automatically. This allows the caller to create a transition with the desired delay, duration and easing, and the chart will smoothly animate to the new state:
-
-<pre><code>transition.call(myChart);</code></pre>
+<p>We now have a <b>strawman convention</b> for reusable visualization components. Yet there is far more to cover as to what should be considered <q>configuration</q> or even a <q>chart</q>. Is a traditional chart typology the best choice? Consider drawing inspiration from the <a href="http://www.amazon.com/Grammar-Graphics-Leland-Wilkinson/dp/0387987746">Grammar of Graphics</a> (see <a href="http://polychart.com/">Polychart</a> and <a href="http://had.co.nz/ggplot2/">ggplot2</a>); there are more modular units for composition. Even with traditional chart types, should you expose the underlying scales and axes, or encapsulate them with chart-specific representations? Should your chart support interaction and animation automatically? Should the user be able to reach into your chart and tweak some aspect of its behavior? All of these are possible using the proposed convention, so have at it!
 
 <footer>
-  <aside>February 26, 2012</aside>
+  <aside>February 27, 2012</aside>
   <a href="http://bost.ocks.org/mike">Mike Bostock</a>
 </footer>
 

@@ -99,13 +99,21 @@ sup, sub {
   line-height: 0;
 }
 
+q:before,
 blockquote:before {
   content: "“";
+}
+
+q:after,
+blockquote:after {
+  content: "”";
+}
+
+blockquote:before {
   position: absolute;
   left: 2em;
 }
 
 blockquote:after {
-  content: "”";
   position: absolute;
 }

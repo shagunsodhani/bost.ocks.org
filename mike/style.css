@@ -27,6 +27,10 @@ body > p {
   width: 720px;
 }
 
+body > blockquote {
+  width: 640px;
+}
+
 li {
   width: 680px;
 }
@@ -93,4 +97,15 @@ svg {
 
 sup, sub {
   line-height: 0;
+}
+
+blockquote:before {
+  content: "“";
+  position: absolute;
+  left: 2em;
+}
+
+blockquote:after {
+  content: "”";
+  position: absolute;
 }

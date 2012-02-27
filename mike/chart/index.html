@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Towards Reusable Charts</title>
+<style>
+
+@import url(../style.css);
+
+body > div {
+  margin-left: -10px;
+}
+
+.area {
+  fill: steelblue;
+}
+
+.attention {
+  background: yellow;
+  margin: -4px;
+  padding: 4px;
+}
+
+</style>
+<script src="d3.v2.js"></script>
+<script src="chart.js"></script>
+
+<h1>Towards Reusable Charts</h1>
+
+<p>I’d like to propose a convention for encapsulating reusable charts in <a href="http://mbostock.github.com/d3/">D3</a>. Wait for it…
+
+<pre><code>function chart() {
+  // generate chart here
+}</code></pre>
+
+<aside>You could infer the dimensions from the containing element, but most
+charts require some configuration.</aside>
+
+<p>A function; the standard unit of code reuse!
+
+<h2>Configuration</h2>
+
+<p>But I jest; not any function will do. In truth we need <span class="attention">a <i>configurable</i> function</span>, since most charts require customization of their appearance or behavior. For example, you may need to specify the width and height, or the color palette. A simple method of configuration is passing arguments:
+
+<pre><code>function chart(width, height) {
+  // generate chart here
+}</code></pre>
+
+<p>Yet this is cumbersome for the caller: they must store the chart’s various arguments, and pass them whenever an update is needed. With highly-configurable charts (and without language support for named and optional arguments), a simple function is insufficient. So, you could try a configuration object instead, as is done by many charting libraries:
+
+<pre><code>var myConfiguration = {width: 720, height: 80};</code></pre>
+
+<p>This makes chart state easier to manage for the caller, and simplifies the chart interface to boot:
+
+<pre><code>function chart(configuration) {
+  // generate chart here
+}</code></pre>
+
+<p>However, the caller must still manage both the chart function (assuming you have multiple types of charts to pick from) and the configuration object. We can do one better with a <a href="http://jibbering.com/faq/notes/closures/">closure</a> which captures the chart configuration internally:
+
+<pre><code>function chart(configuration) {
+  return function() {
+    // generate chart here
+  };
+}</code></pre>
+
+<p>Now, the caller needs merely say:
+
+<pre><code>var myChart = chart({width: 720, height: 80});</pre></code>
+
+<p>And subsequently, <code>myChart()</code> to update. Simple!
+
+<p>But what if you want to change the configuration after construction? Or if you want to inspect the configuration of an existing chart? The configuration object is trapped inside the closure and inaccessible to the outside world. Fortunately, JavaScript <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function">functions are objects</a>, so we can store the properties directly on the function itself, uniting the chart and its configuration:
+
+<pre><code>var myChart = chart();
+myChart.width = 720;
+myChart.height = 80;</code></pre>
+
+<p>The chart implementation changes slightly so that it can reference its configuration:
+
+<aside>The inner function (<code>my</code>) can be named whatever you like; the name is only visible internally. You can even use the name <code>chart</code>, which would mask the outer function!</aside>
+
+<pre><code>function chart() {
+  return function my() {
+    // generate chart here
+    my.width; // e.g., 720
+    my.height; // e.g., 80
+  };
+}</code></pre>
+
+<p>With a little bit of syntactic sugar, we can replace raw properties with getter-setter methods that allow <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>. This gives the caller a more elegant way of constructing charts, and also allows the chart to manage side-effects when a configuration parameter changes. The chart may also provide default configuration values. Here we create a new chart and set two properties:
+
+<pre><code>var myChart = chart().width(720).height(80);</code></pre>
+
+<p>Modifying an existing chart is similarly easy:
+
+<pre><code>myChart.height(500);</code></pre>
+
+<p>As is inspecting it:
+
+<pre><code>myChart.height(); // e.g., 500</code></pre>
+
+<p>Internally, the chart implementation becomes slightly more complex to support getter-setter methods, but convenience for the user merits additional developer effort! (And besides, this pattern becomes natural after you’ve used it for a while.)
+
+<pre><code>function chart() {
+  var width = 720, // default width
+      height = 80; // default height
+
+  function my() {
+    // generate chart here
+  }
+
+  my.width = function(value) {
+    if (!arguments.length) return width;
+    width = value;
+    return my;
+  };
+
+  my.height = function(value) {
+    if (!arguments.length) return height;
+    height = value;
+    return my;
+  };
+
+  return my;
+}</code></pre>
+
+<p><span class="attention">To sum up: implement charts as <b>closures with getter-setter methods</b>.</span> Conveniently, this is the same pattern used by D3’s other reusable objects, including <a href="https://github.com/mbostock/d3/wiki/Scales">scales</a>, <a href="https://github.com/mbostock/d3/wiki/Layouts">layouts</a>, <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes">shapes</a>, <a href="https://github.com/mbostock/d3/wiki/SVG-Axes">axes</a>, <i>etc.</i>
+
+<h2>Implementation</h2>
+
+<p>The chart is now configured, but two essential ingredients are still missing: the DOM element into which to render the chart (such as a particular div or <code>document.body</code>), and the data to display. These could be considered configuration, but D3 provides a more natural representation for data and elements: the <b>selection</b>. In particular, the <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-call">selection.call</a> method provides a convenient mechanism for invoking our chart function. From the API reference:
+
+<blockquote>Invokes the specified function once, passing in the current selection… The call operator is identical to invoking a function by hand; but it makes it easier to use method chaining.</blockquote>
+
+<!--
+<ul>
+  <li> - call a function passing in the current selection.
+  <li><a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a> - call a function for each selected element.
+</ul>
+
+<p>Either could work, but call gives the chart implementation a bit more flexibility. Plus, there’s precedent for call in D3’s axis and brush components. -->
+
+<p>If we extract the outer constructor function and focus on the closure, a call-based chart implementation would look something like this:
+
+<aside>You could also design your chart function to work directly with <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>, but selection.call is more general and has precedent with the brush and axis components.</aside>
+
+<pre><code>function my(selection) {
+  selection.each(function(d, i) {
+    // generate chart here
+    // `d` is the data
+    // `this` is the element
+  });
+}</code></pre>
+
+<p>And it would be invoked like so:
+
+<pre><code>selection.call(myChart);</code></pre>
+
+<p>Or equivalently, without method chaining:
+
+<pre><code>myChart(selection);</code></pre>
+
+<p>One interesting benefit of this interface is that you can render any chart into multiple elements simultaneously. Furthermore, the chart is not tied to any specific data or elements—in effect, it is a rubber stamp that you can use to render data visually.
+
+<p>This also means that the chart won’t update automatically if the data or configuration changes. Instead, you must call the chart again to redraw. This direct control also means that you can use a transition to update the chart, rather than an instantaneous change:
+
+<pre><code>transition.call(myChart);</code></pre>
+
+<p>Next we’ll look at some examples of how to implement charts with this design.
+
+<h2>Examples</h2>
+
+<p>Our first chart:
+
+<script>
+
+d3.select("body").append("div").call(emptyChart()
+    .width(720)
+    .height(80));
+
+</script>
+
+<pre><code>d3.select("body").append("div").call(emptyChart()
+    .width(720)
+    .height(80));</code></pre>
+
+<p>OK, that’s not very exciting, because our chart is empty. Here’s a slightly more interesting chart:
+
+<script>
+
+d3.select("body").append("div").call(marginChart()
+    .margin({top: 10, right: 10, bottom: 10, left: 10})
+    .width(720)
+    .height(80));
+
+</script>
+
+<pre><code>d3.select("body").append("div").call(marginChart()
+    .margin({top: 10, right: 10, bottom: 10, left: 10})
+    .width(720)
+    .height(80));</code></pre>
+
+<p>Still not very exciting, because the chart is solid black. OK, how about an <i>x</i>-axis that might be used to encode quantitative values?
+
+<script>
+
+d3.select("body").append("div").call(axisChart()
+    .margin({top: 10, right: 10, bottom: 20, left: 10})
+    .width(720)
+    .height(80));
+
+</script>
+
+<pre><code>d3.select("body").append("div").call(axisChart()
+    .margin({top: 10, right: 10, bottom: 10, left: 10})
+    .width(720)
+    .height(80));</code></pre>
+
+<p>Woot, now we’re getting somewhere!
+
+<script>
+
+d3.select("body").append("div")
+    .datum([
+      [0.0, 0.0], [0.1, 0.7], [0.2, 0.5], [0.3, 0.4], [0.4, 0.5],
+      [0.5, 0.3], [0.6, 0.4], [0.7, 0.5], [0.8, 0.7], [0.9, 0.5],
+      [1.0, 0.5]
+    ])
+  .call(areaChart()
+    .margin({top: 10, right: 10, bottom: 20, left: 10})
+    .width(720)
+    .height(80));
+
+</script>
+
+<pre><code>d3.select("body").append("div")
+    .datum([
+      [0.0, 0.0], [0.1, 0.7], [0.2, 0.5], [0.3, 0.4], [0.4, 0.5],
+      [0.5, 0.3], [0.6, 0.4], [0.7, 0.5], [0.8, 0.7], [0.9, 0.5],
+      [1.0, 0.5]
+    ])
+  .call(areaChart()
+    .margin({top: 10, right: 10, bottom: 20, left: 10})
+    .width(720)
+    .height(80));</code></pre>
+
+<footer>
+  <aside>February 26, 2012</aside>
+  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

@@ -16,15 +16,14 @@ a {
 .stack {
   background: #2D2D2D;
   border: solid 1px #000;
-  box-sizing: border-box;
   box-shadow: 0px 4px 8px rgba(0,0,0,.5);
   color: #fff;
   display: none;
-  height: 720px;
+  height: 560px;
   overflow: hidden;
   padding: 80px;
   position: relative;
-  width: 1280px;
+  width: 1120px;
   -webkit-transform: translate3d(0,0,0);
 }
 
@@ -32,7 +31,6 @@ section aside {
   background: #FFF8B8;
   background-image: -webkit-linear-gradient(top, #FFF8B8, #FEED77);
   box-shadow: 0 8px 16px rgba(0,0,0,.5);
-  box-sizing: border-box;
   color: #000;
   display: block;
   font-size: 16px;
@@ -40,7 +38,7 @@ section aside {
   position: absolute;
   right: 40px;
   bottom: 120px;
-  width: 360px;
+  width: 328px;
   -o-transform: rotate(-1deg);
   -ms-transform: rotate(-1deg);
   -moz-transform: rotate(-1deg);

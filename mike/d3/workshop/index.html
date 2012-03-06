@@ -45,7 +45,7 @@
 <section>
 <h1><span class="purple">Data</span> ↦ <span class="green">Elements</span></h1>
 <h2>Visualization requires visual encoding: mapping data to elements.</h2>
-<aside>Since D3 does not provide new represent&shy;ation, the task of visualization is constructing a DOM from data. We must also update the DOM whenever the data changes, either due to dynamic (<i>e.g.</i>, realtime) data or interaction.<p>In a visualization, each entity (or data point) has a corresponding element (or graphical mark). D3 helps you maintain this mapping from data to elements.</aside>
+<aside>Since D3 does not provide new representa&shy;tion, the task of visualization is constructing a DOM from data. We must also update the DOM whenever the data changes, either due to dynamic (<i>e.g.</i>, realtime) data or interaction.<p>In a visualization, each entity (or data point) has a corresponding element (or graphical mark). D3 helps you maintain this mapping from data to elements.</aside>
 </section>
 
 <section>
@@ -62,7 +62,7 @@
 <section>
 <h1><span class="green">HTML</span> Resources</h1>
 <h2><a href="http://www.w3.org/TR/html5/">HTML5 Spec</a>, <a href="http://developers.whatwg.org/">HTML5 for Developers</a>, <a href="https://developer.mozilla.org/en/HTML">MDN</a>, <a href="http://diveintohtml5.info/">Dive Into HTML5</a></h2>
-<aside>Specs are good for reference, but a bit overwhelming if you’re not sure where to start. Specs can be more helpful for understanding how interesting techniques found in the wild.</aside>
+<aside>Specs are good for reference, but a bit overwhelming if you’re not sure where to start. Specs can be more helpful for understanding interesting techniques found in the wild.</aside>
 </section>
 
 <section>
@@ -95,7 +95,7 @@ Hello, world!</code></pre>
 <section>
 <h1><span class="green">CSS</span> Resources</h1>
 <h2><a href="http://www.w3.org/TR/CSS2/">CSS Spec</a>, <a href="http://www.w3.org/TR/selectors/">Selectors Spec</a></h2>
-<aside>Unlike HTML and SVG, CSS doesn’t introduce new represntation; it’s just a way of adding aesthetics and presentation (such as colors and fonts). CSS greatly simplifies your code, so I highly recommend it!<p>For example, rather than assigning colors explicitly via JavaScript, assign a class. Then you can easily change the definition or apply multiple styles simultaneously.</aside>
+<aside>Unlike HTML and SVG, CSS doesn’t introduce new representation; it’s just a way of adding aesthetics and presentation (such as colors and fonts). CSS greatly simplifies your code, so I highly recommend it!<p>For example, rather than assigning colors explicitly via JavaScript, assign a class. Then you can easily change the definition or apply multiple styles simultaneously.</aside>
 </section>
 
 <section>
@@ -206,7 +206,7 @@ foo#bar     // &lt;foo id="bar"&gt;</code></pre>
 <section>
 <pre><code class="css">document.querySelectorAll("pre, code")</code></pre>
 <h2>The W3C standardized selector support for JavaScript.</h2>
-<aside>The W3C Selectors API provides select<i>ors</i>, but not select<i>ions</i>. So, you can select elements easily, yet you must iterate over them and assign attributes and styles for each. Hence the need for JavaScript libraries to make web deveopment easier.</aside>
+<aside>The W3C Selectors API provides select<i>ors</i>, but not select<i>ions</i>. So, you can select elements easily, yet you must iterate over them and assign attributes and styles for each. Hence the need for JavaScript libraries to make web development easier.</aside>
 </section>
 
 <section>
@@ -230,7 +230,7 @@ circle.attr("cy", 12);
 circle.attr("r", 24);
 circle.style("fill", "red");</code></pre>
 <h2>The attr and style methods set attributes and styles, respectively.</h2>
-<aside>One thing to note: numbers and other values are automatically coerced to strings when setting attribtues and styles. So, you don’t have to do that yourself which is nice, and you can also use helper classes such as d3.rgb and d3.hsl.</aside>
+<aside>One thing to note: numbers and other values are automatically coerced to strings when setting attributes and styles. So, you don’t have to do that yourself (which is nice), and you can also use helper classes such as d3.rgb and d3.hsl.</aside>
 </section>
 
 <!-- <section>
@@ -309,7 +309,7 @@ h1.text("Hello!");</code></pre>
   .append("h1")
     .text("Hello!");</code></pre>
 <h2><span class="pink">Use caution</span> with method chaining: append returns a new selection!</h2>
-<aside>With method chaining, I normally use four spaces to ident. However, I use two spaces for operations that change the selection, such as append. This causes operations that change the context to stick out.<p>In this snippet, the entire expression evaluates to the appended &lt;h1&gt; elements, even though we started by selecting &lt;section&gt; elements.</aside>
+<aside>With method chaining, I normally use four spaces to indent. However, I use two spaces for operations that change the selection, such as append. This causes operations that change the context to stick out.<p>In this snippet, the entire expression evaluates to the appended &lt;h1&gt; elements, even though we started by selecting &lt;section&gt; elements.</aside>
 </section>
 
 <section>
@@ -644,7 +644,7 @@ d3.json("stocks.json", function(stocks) {
 <section>
 <h1>Data is Asynchronous</h1>
 <h2>Code that depends on data must be invoked via callback.</h2>
-<aside>D3 doesn’t provide any synchronous methods of loading data; loading data asynchronously should give a better experience for your users, since the browser won’t stall while data is loading.</aside>
+<aside>D3 doesn’t provide any synchronous methods for loading data; loading data asynchronously should give a better experience for your users, since the browser won’t stall while data is loading.</aside>
 </section>
 
 <section>

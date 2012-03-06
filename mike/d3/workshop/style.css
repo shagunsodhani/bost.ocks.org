@@ -24,7 +24,6 @@ a {
   padding: 80px;
   position: relative;
   width: 1120px;
-  -webkit-transform: translate3d(0,0,0);
 }
 
 section aside {

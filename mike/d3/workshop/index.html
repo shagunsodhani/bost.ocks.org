@@ -1157,7 +1157,7 @@ svg.append("rect")
 function mousemove() {
   var m = d3.mouse(this),
       x = m[0],
-      y = m[1] % height;
+      y = m[1];
 
   svg.append("rect")
       .attr("x", -10)
@@ -1202,7 +1202,7 @@ svg.append("rect")
 function mousemove() {
   var m = d3.mouse(this),
       x = m[0],
-      y = m[1] % height;
+      y = m[1];
 
   svg.append("circle")
       .attr("r", 20)
@@ -1247,7 +1247,7 @@ svg.append("rect")
 function mousemove() {
   var m = d3.mouse(this),
       x1 = m[0],
-      y1 = m[1] % height;
+      y1 = m[1];
 
   if (x0 != null) {
     svg.append("line")
@@ -1299,7 +1299,7 @@ svg.append("rect")
 function mousemove() {
   var m = d3.mouse(this),
       x = m[0],
-      y = m[1] % height;
+      y = m[1];
 
   svg.append("text")
       .attr("text-anchor", "middle")

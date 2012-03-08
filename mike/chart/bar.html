@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+text {
+  font: 10px sans-serif;
+}
+
+.bar rect {
+  fill: steelblue;
+}
+
+.bar text {
+  fill: white;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<script src="http://mbostock.github.com/d3/d3.v2.min.js?2.8.1"></script>
+<script src="bar-chart.js"></script>
+<script>
+
+var chart = barChart()
+    .height(240)
+    .valueFormat(d3.format(".02f"));
+
+var data = d3.range(10).map(function(i) {
+  return {
+    key: String.fromCharCode(i + 65),
+    value: Math.random()
+  };
+});
+
+var svg = d3.select("body").datum(data).call(chart);
+
+data.pop();
+data[0] = {key: "_", value: 2};
+data.push({key: "$", value: 1.2});
+data[4].value = -.5;
+
+setTimeout(function() {
+  svg.transition().duration(750).call(chart);
+}, 750);
+
+</script>

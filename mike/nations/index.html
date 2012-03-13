@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+text {
+  font: 10px sans-serif;
+}
+
+circle {
+  fill: steelblue;
+  stroke: #000;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<script src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+<script src="dot-chart.js"></script>
+<script>
+
+var bisect = d3.bisector(function(d) { return d[0]; });
+
+var chart = dotChart()
+    .x(function(d) { return d.income; })
+    .y(function(d) { return d.lifeExpectancy; })
+    .radius(function(d) { return d.population; })
+    .color(function(d) { return d.region; })
+    .key(function(d) { return d.name; })
+    .xScale(d3.scale.log())
+    .xTicks(12, d3.format(",d"))
+    .xDomain([300, 100000])
+    .yDomain([10, 85]);
+
+d3.json("nations.json", function(nations) {
+
+  var body = d3.select("body")
+      .datum(interpolateData)
+      .call(chart);
+
+  body.transition()
+      .duration(10000)
+      .ease("linear")
+      .tween("chart", tweenChart);
+
+  function tweenChart() {
+    var year = d3.interpolateNumber(1800, 2009);
+    return function(t) {
+      body.datum(interpolateData(year(t))).call(chart);
+    };
+  }
+
+  function interpolateData(year) {
+    return nations.map(function(d) {
+      return {
+        name: d.name,
+        region: d.region,
+        income: interpolateValues(d.income, year),
+        population: interpolateValues(d.population, year),
+        lifeExpectancy: interpolateValues(d.lifeExpectancy, year)
+      };
+    });
+  }
+
+  function interpolateValues(values, year) {
+    var i = bisect.left(values, year),
+        a = values[i];
+    if (i > 0) {
+      var b = values[i - 1];
+      return d3.interpolateNumber(a[1], b[1])((year - a[0]) / (b[0] - a[0]));
+    }
+    return a[1];
+  }
+});
+
+</script>

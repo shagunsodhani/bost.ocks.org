@@ -89,7 +89,7 @@ function dotChart() {
           .data(data, function(d) { return d.key; });
 
       // Enter any new dots.
-      var dotEnter = dot.enter().insert("circle", ".axis")
+      var dotEnter = dot.enter().append("circle")
           .attr("class", "dot")
           .style("stroke-opacity", 1e-6)
           .style("fill-opacity", 1e-6)
@@ -150,9 +150,33 @@ function dotChart() {
     return chart;
   };
 
+  chart.xDomain = function(_) {
+    if (!arguments.length) return xDomain;
+    xDomain = _;
+    return chart;
+  };
+
+  chart.xAxis = function(_) {
+    if (!arguments.length) return xAxis;
+    xAxis = _;
+    return chart;
+  };
+
   chart.y = function(_) {
     if (!arguments.length) return yValue;
     yValue = _;
+    return chart;
+  };
+
+  chart.yDomain = function(_) {
+    if (!arguments.length) return yDomain;
+    yDomain = _;
+    return chart;
+  };
+
+  chart.yAxis = function(_) {
+    if (!arguments.length) return yAxis;
+    yAxis = _;
     return chart;
   };
 
@@ -173,33 +197,6 @@ function dotChart() {
     z = _;
     return chart;
   };
-
-  chart.xDomain = function(_) {
-    if (!arguments.length) return xDomain;
-    xDomain = _;
-    return chart;
-  };
-
-  chart.yDomain = function(_) {
-    if (!arguments.length) return yDomain;
-    yDomain = _;
-    return chart;
-  };
-
-  chart.xScale = bind(xAxis.scale);
-  chart.yScale = bind(yAxis.scale);
-  chart.xTicks = bind(xAxis.ticks);
-  chart.yTicks = bind(yAxis.ticks);
-  chart.xTickFormat = bind(xAxis.tickFormat);
-  chart.yTickFormat = bind(yAxis.tickFormat);
-
-  function bind(method) {
-    return function() {
-      if (!arguments.length) return method();
-      method.apply(chart, arguments);
-      return chart;
-    };
-  }
 
   return chart;
 }

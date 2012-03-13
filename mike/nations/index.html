@@ -6,8 +6,7 @@ text {
   font: 10px sans-serif;
 }
 
-circle {
-  fill: steelblue;
+.dot {
   stroke: #000;
 }
 
@@ -30,15 +29,16 @@ var chart = dotChart()
     .y(function(d) { return d.lifeExpectancy; })
     .radius(function(d) { return d.population; })
     .color(function(d) { return d.region; })
-    .xScale(d3.scale.log())
-    .xTicks(12, d3.format(",d"))
     .xDomain([300, 100000])
     .yDomain([10, 85]);
+
+chart.xAxis()
+    .scale(d3.scale.log())
+    .ticks(12, d3.format(",d"));
 
 var body = d3.select("body");
 
 d3.json("nations.json", function(nations) {
-
   body.transition()
       .duration(12000)
       .ease("linear")

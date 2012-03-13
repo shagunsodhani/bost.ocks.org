@@ -137,8 +137,8 @@ function dotChart() {
   };
 
   chart.key = function(_) {
-    if (!arguments.length) return key;
-    key = _;
+    if (!arguments.length) return keyValue;
+    keyValue = _;
     return chart;
   };
 

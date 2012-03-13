@@ -34,70 +34,53 @@ function radius(d) { return d.population; }
 function color(d) { return d.region; }
 function key(d) { return d.name; }
 
-//
+// Chart dimensions.
 var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-//
-var xScale = d3.scale.log()
-    .domain([300, 1e5])
-    .range([0, width]);
+// Various scales. These domains make assumptions of data, naturally.
+var xScale = d3.scale.log().domain([300, 1e5]).range([0, width]),
+    yScale = d3.scale.linear().domain([10, 85]).range([height, 0]),
+    radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
+    colorScale = d3.scale.category10();
 
-//
-var yScale = d3.scale.linear()
-    .domain([10, 85])
-    .range([height, 0]);
+// The x & y axes.
+var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-//
-var radiusScale = d3.scale.sqrt()
-    .domain([0, 5e8])
-    .range([0, 40]);
-
-//
-var colorScale = d3.scale.category10();
-
-//
-var xAxis = d3.svg.axis()
-    .orient("bottom")
-    .scale(xScale)
-    .ticks(12, d3.format(",d"));
-
-//
-var yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient("left");
-
-//
+// Create the SVG container and set the origin.
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//
+// Add the x-axis.
 svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
-//
+// Add the y-axis.
 svg.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
-//
+// Add the year label; the value is set on transition.
 var label = svg.append("text")
     .attr("class", "label")
     .attr("text-anchor", "end")
     .attr("y", height - 12)
     .attr("x", width);
 
+// Load the data.
 d3.json("nations.json", function(nations) {
 
-  //
+  // A bisector since many nation's data is sparsely-defined.
   var bisect = d3.bisector(function(d) { return d[0]; });
 
+  // Add a dot per nation. Initialize the data at 1800, and set the colors.
   var dot = svg.append("g")
       .attr("class", "dots")
     .selectAll(".dot")
@@ -108,30 +91,36 @@ d3.json("nations.json", function(nations) {
       .call(position)
       .sort(order);
 
+  // Start a 24-second transition that interpolates the data based on year.
   svg.transition()
       .duration(24000)
       .ease("linear")
       .tween("year", tweenYear);
 
+  // Positions the dots based on data.
   function position(dot) {
     dot .attr("cx", function(d) { return xScale(x(d)); })
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(radius(d)); });
   }
 
+  // Defines a sort order so that the smallest dots are drawn on top.
   function order(a, b) {
     return radius(b) - radius(a);
   }
 
+  // Tweens the entire chart by first tweening the year, and then the data.
+  // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
     var year = d3.interpolateNumber(1800, 2009);
     return function(t) {
       var y = year(t);
-      dot.data(interpolateData(y), key).call(position);
+      dot.data(interpolateData(y), key).call(position).sort(order);
       label.text(Math.round(y));
     };
   }
 
+  // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year) {
     return nations.map(function(d) {
       return {
@@ -144,6 +133,7 @@ d3.json("nations.json", function(nations) {
     });
   }
 
+  // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
     var i = bisect.left(values, year, 0, values.length - 1),
         a = values[i];

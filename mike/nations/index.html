@@ -30,17 +30,14 @@ var chart = dotChart()
     .y(function(d) { return d.lifeExpectancy; })
     .radius(function(d) { return d.population; })
     .color(function(d) { return d.region; })
-    .key(function(d) { return d.name; })
     .xScale(d3.scale.log())
     .xTicks(12, d3.format(",d"))
     .xDomain([300, 100000])
     .yDomain([10, 85]);
 
-d3.json("nations.json", function(nations) {
+var body = d3.select("body");
 
-  var body = d3.select("body")
-      .datum(interpolateData)
-      .call(chart);
+d3.json("nations.json", function(nations) {
 
   body.transition()
       .duration(12000)

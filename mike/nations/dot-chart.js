@@ -1,8 +1,7 @@
 function dotChart() {
   var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
       width = 960,
-      height = 500,
-      spacing = .1;
+      height = 500;
 
   var xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
@@ -36,24 +35,27 @@ function dotChart() {
       // This must be done greedily for nondeterministic accessors.
       data = data.map(function(d, i) {
         return {
+          data: d,
+          index: i,
           x: +xValue.call(chart, d, i),
           y: +yValue.call(chart, d, i),
-          r: +rValue.call(chart, d, i),
-          z: zValue.call(chart, d, i),
-          key: keyValue.call(chart, d, i)
+          radius: +rValue.call(chart, d, i),
+          color: "" + zValue.call(chart, d, i),
+          key: "" + keyValue.call(chart, d, i)
         };
       });
 
       // Update the scales' domains.
+      // TODO Allow the color scale to be quantitative (use extent, not map).
       x   .domain(xDomain || d3.extent(data, function(d) { return d.x; }));
       y   .domain(yDomain || d3.extent(data, function(d) { return d.y; }));
-      r   .domain([0, d3.max(data, function(d) { return d.r; })]);
-      z   .domain(data.map(function(d) { return d.z; }));
+      r   .domain([0, d3.max(data, function(d) { return d.radius; })]);
+      z   .domain(data.map(function(d) { return d.color; }));
 
       // Stash a snapshot of the new scales, and retrieve the old snapshot.
       var snapshot = this.__chart__, x0 = x, y0 = y, r0 = r;
-      if (snapshot) x0 = snapshot.x, y0 = snapshot.y, r0 = snapshot.r;
-      this.__chart__ = {x: x.copy(), y: y.copy(), r: r.copy()};
+      if (snapshot) x0 = snapshot.x, y0 = snapshot.y, r0 = snapshot.radius;
+      this.__chart__ = {x: x.copy(), y: y.copy(), radius: r.copy()};
 
       // Select the svg element, if it exists.
       var svg = d3.select(this).selectAll("svg").data([data]);
@@ -94,7 +96,7 @@ function dotChart() {
           .call(encode, x0, y0, r0);
 
       // Sort the dots by descending radius.
-      dot.sort(function(a, b) { return b.r - a.r; });
+      dot.sort(function(a, b) { return b.radius - a.radius; });
 
       // Enter and update transition.
       var dotUpdate = d3.transition(dot)
@@ -114,8 +116,8 @@ function dotChart() {
   function encode(dot, x, y, r) {
     dot .attr("cx", function(d) { return x(d.x); })
         .attr("cy", function(d) { return y(d.y); })
-        .attr("r", function(d) { return r(d.r); })
-        .style("fill", function(d) { return z(d.z); });
+        .attr("r", function(d) { return r(d.radius); })
+        .style("fill", function(d) { return z(d.color); });
   }
 
   chart.width = function(_) {
@@ -166,6 +168,12 @@ function dotChart() {
     return chart;
   };
 
+  chart.colorScale = function(_) {
+    if (!arguments.length) return z;
+    z = _;
+    return chart;
+  };
+
   chart.xDomain = function(_) {
     if (!arguments.length) return xDomain;
     xDomain = _;
@@ -175,12 +183,6 @@ function dotChart() {
   chart.yDomain = function(_) {
     if (!arguments.length) return yDomain;
     yDomain = _;
-    return chart;
-  };
-
-  chart.colorScale = function(_) {
-    if (!arguments.length) return z;
-    z = _;
     return chart;
   };
 

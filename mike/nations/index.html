@@ -43,7 +43,7 @@ d3.json("nations.json", function(nations) {
       .call(chart);
 
   body.transition()
-      .duration(10000)
+      .duration(12000)
       .ease("linear")
       .tween("chart", tweenChart);
 
@@ -67,11 +67,12 @@ d3.json("nations.json", function(nations) {
   }
 
   function interpolateValues(values, year) {
-    var i = bisect.left(values, year),
+    var i = bisect.left(values, year, 0, values.length - 1),
         a = values[i];
     if (i > 0) {
-      var b = values[i - 1];
-      return d3.interpolateNumber(a[1], b[1])((year - a[0]) / (b[0] - a[0]));
+      var b = values[i - 1],
+          t = (year - a[0]) / (b[0] - a[0]);
+      return a[1] * (1 - t) + b[1] * t;
     }
     return a[1];
   }

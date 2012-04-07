@@ -5,6 +5,8 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
+    <pubDate>07 Apr 2012 00:00 GMT</pubDate>
+    <lastBuildDate>07 Apr 2012 00:00 GMT</lastBuildDate>
     <item>
       <title>Hive Plots</title>
       <link>http://bost.ocks.org/mike/hive/</link>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mike Bostock</title>
+    <link>http://bost.ocks.org/mike/</link>
+    <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
+    <description>Mike Bostock</description>
+    <item>
+      <title>Hive Plots</title>
+      <link>http://bost.ocks.org/mike/hive/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/hive.png">]]></description>
+      <pubDate>18 Mar 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The Wealth &amp; Health of Nations</title>
+      <link>http://bost.ocks.org/mike/nations/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/nations.png">]]></description>
+      <pubDate>13 Mar 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Towards Reusable Charts</title>
+      <link>http://bost.ocks.org/mike/chart/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/chart.png">]]></description>
+      <pubDate>27 Feb 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Thinking with Joins</title>
+      <link>http://bost.ocks.org/mike/join/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/join.png">]]></description>
+      <pubDate>05 Feb 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Path Transitions</title>
+      <link>http://bost.ocks.org/mike/path/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/path.png">]]></description>
+      <pubDate>19 Jan 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Fisher–Yates Shuffle</title>
+      <link>http://bost.ocks.org/mike/shuffle/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/shuffle.png">]]></description>
+      <pubDate>14 Jan 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Les Misérables Co-occurrence</title>
+      <link>http://bost.ocks.org/mike/miserables/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/miserables.png">]]></description>
+      <pubDate>12 Jan 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Uber Rides by Neighborhood</title>
+      <link>http://bost.ocks.org/mike/uberdata/</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/uberdata.png">]]></description>
+      <pubDate>09 Jan 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Three Little Circles</title>
+      <link>http://mbostock.github.com/d3/tutorial/circle.html</link>
+      <description><![CDATA[<img src="http://bost.ocks.org/mike/circle.png">]]></description>
+      <pubDate>04 Jul 2011 00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

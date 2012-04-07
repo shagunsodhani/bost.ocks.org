@@ -1,118 +1,120 @@
----
-layout: default
----
-<h1><span class="fade"><a href="/">bost.ocks</a>.org/</span><a href="/mike">mike</a></h1>
+<!DOCYTPE html>
+<meta charset="utf-8">
+<style>
 
-<style type="text/css">
+@import url(style.css);
 
-.section {
-  float: left;
-  display: block;
-  width: 210px;
-  margin-right: 10px;
-  height: 140px;
-  padding: 10px;
+h2 {
+  margin-top: 2em;
+}
+
+.preview {
+  background: #eee;
   border: solid 1px #ccc;
-  margin-bottom: 2em;
-  color: #000;
-  -webkit-border-top-right-radius: 20px;
-  -moz-border-radius-topright: 20px;
-  -webkit-transition: background-color 250ms linear;
-  -moz-transition: background-color 250ms linear;
+  color: #ccc;
+  display: inline-block;
+  height: 80px;
+  margin-bottom: .5em;
+  width: 720px;
 }
 
-.section.research b {
-  color: brown;
+a:not(:hover) .preview {
+  opacity: .6;
+  -webkit-filter: grayscale(1);
 }
 
-.section:nth-child(4n) {
-  margin-right: 0;
-}
-
-.section b {
-  color: steelblue;
-}
-
-.section:hover {
-  text-decoration: none;
-  background-color: #eee;
-  border-bottom-color: steeblue;
-}
-
-.section:hover b {
-  text-decoration: underline;
-}
-
-.section div {
+.date {
+  right: 240px;
+  font-size: smaller;
   position: absolute;
-  top: 128px;
-  left: 14px;
-  font-size: 96px;
-  font-weight: 300;
-  color: #fff;
-  -webkit-text-stroke: 1px #000;
-  text-shadow: 2px 2px 2px rgba(128, 128, 128, .4);
 }
 
 </style>
+<aside><a href="http://github.com/mbostock"><img src="/github.png" width="32" height="32"></a><a href="http://twitter.com/mbostock"><img src="/twitter.png" width="32" height="32"></a></aside>
 
-<p>
-Hi there! Here are some of my recent projects and research.
-</p>
-<br>
+<h1>Mike Bostock</h1>
 
-<div class="sections">
-<a href="http://square.github.com/cube" class="section">
-<b>Cube</b>: a system for time series visualization.
-</a>
+<p><span class="date">March 18, 2012</span><a href="hive/">Hive Plots<span class="preview" style="background:url(hive.png)"></span></a><br>
 
-<a href="http://vis.stanford.edu/papers/d3" class="section research">
-<b>D3</b>: Data-Driven Documents. IEEE InfoVis 2011.
-</a>
+<p><span class="date">March 13, 2012</span><a href="nations/">The Wealth & Health of Nations<span class="preview" style="background:url(nations.png)"></span></a>
 
-<a href="http://mbostock.github.com/d3" class="section">
-<b>D3</b>: a JavaScript library for manipulating documents based on data.
-</a>
+<p><span class="date">February 27, 2012</span><a href="chart/">Towards Reusable Charts<span class="preview" style="background:url(chart.png)"></span></a>
 
-<a href="http://polymaps.org" class="section">
-<b>Polymaps</b>: a JavaScript library for image- and vector-tiled maps using SVG.
-</a>
+<p><span class="date">February 5, 2012</span><a href="join/">Thinking with Joins<span class="preview" style="background:url(join.png)"></span></a>
 
-<a href="http://protovis.org" class="section">
-<b>Protovis</b>: a graphical toolkit for data visualization.
-</a>
+<p><span class="date">January 19, 2012</span><a href="path/">Path Transitions<span class="preview" style="background:url(path.png)"></span></a>
 
-<a href="http://bl.ocks.org" class="section">
-<b>bl.ocks.org</b>: a viewer for sharing HTML5 snippets using GitHub Gist.
-</a>
+<p><span class="date">January 14, 2012</span><a href="shuffle/">Fisher–Yates Shuffle<span class="preview" style="background:url(shuffle.png)"></span></a>
 
-<a href="http://vis.stanford.edu/papers/protovis-design"
-   class="section research">
-<b>Declarative Language Design</b> for Interactive Visualization. IEEE InfoVis
-2010.
-</a>
+<p><span class="date">January 12, 2012</span><a href="miserables/"><i>Les Misérables</i> Co-occurrence<span class="preview" style="background:url(miserables.png)"></span></a>
 
-<a href="http://vis.stanford.edu/papers/crowdsourcing-graphical-perception"
-   class="section research">
-<b>Crowdsourcing Graphical Perception</b>: Using Mechanical Turk to Assess
-Visualization Design. ACM CHI 2010, best paper nominee.
-</a>
+<p><span class="date">January 9, 2012</span><a href="uberdata/">Uber Rides by Neighborhood<span class="preview" style="background:url(uberdata.png)"></span></a>
 
-<a href="http://vis.stanford.edu/papers/protovis"
-   class="section research">
-<b>Protovis</b>: A Graphical Toolkit for Visualization. IEEE InfoVis 2010.
-</a>
+<p><span class="date">July 4, 2011</span><a href="http://mbostock.github.com/d3/tutorial/circle.html">Three Little Circles<span class="preview" style="background:url(circle.png)"></span></a>
 
-<a href="http://cs.stanford.edu/people/mbostock/iv/dependency-tree.html" class="section">
-<b>Dependency Tree</b>: visualizing software dependencies using hierarchical edge bundling.
-</a>
+<h2>Talks</h2>
 
-<a href="http://cs.stanford.edu/people/mbostock/polly/" class="section">
-<b>Polly-B-Gone</b>: a 3D physics platform game.
-</a>
-</div>
+<p>Occasionally I stand in front of a room of people and, by flapping my lips or waving my arms, attempt to communicate something of interest. These awkward moments are sometimes captured as moving images and sound for future study.
 
-<br style="clear:both;">
-<a href="http://twitter.com/mbostock"><img src="/twitter.png" width="32" height="32"></a>
-<a href="http://github.com/mbostock"><img src="/github.png" width="32" height="32"></a>
-<a href="http://flickr.com/photos/mbostock"><img src="/flickr.png" width="32" height="32"></a>
+<p><span class="date">March 5, 2012</span><a href="d3/workshop/">VIZBI: D3 Workshop<span class="preview" style="background:url(d3-workshop.png)"></span></a>
+
+<p><span class="date"><a href="http://cdn-smooth.ms-studiosmedia.com/events/W3C/Day2/Web_Standards.mp4">(Video)</a> November 16, 2011</span><a href="http://mbostock.github.com/d3/talk/20111116/">W3C Conf: Visualizing Data with Web Standards<span class="preview" style="background:url(w3c-conf.png)"></span></a>
+
+<p><span class="date">October 18, 2011</span><a href="http://mbostock.github.com/d3/talk/20111018/">SVG Open: D3 Keynote<span class="preview" style="background:url(svg-open.png)"></span></a>
+
+<p><span class="date"><a href="http://vimeo.com/29458354">(Video)</a> September 21, 2011</span><a href="http://mbostock.github.com/d3/talk/20110921/">Trulia Meetup: Use the Force!<span class="preview" style="background:url(trulia-force.png)"></span></a>
+
+<h2>Publications</h2>
+
+<p>As part of my PhD studies at the Stanford Vis Group, I published several papers with my advisor, <a href="http://hci.stanford.edu/jheer/">Jeffrey Heer</a>. Time permitting, I hope to continue academic research.
+
+<p><a href="http://vis.stanford.edu/papers/d3">D3: Data-Driven Documents</a><br>
+IEEE InfoVis 2011
+
+<p><a href="http://vis.stanford.edu/papers/protovis-design">Declarative Language Design for Interactive Visualization</a><br>
+IEEE InfoVis 2010
+
+<p><a href="http://vis.stanford.edu/papers/crowdsourcing-graphical-perception">Crowdsourcing Graphical Perception: Using Mechanical Turk to Assess Visualization Design</a><br>
+ACM CHI 2010, best paper nominee
+
+<p><a href="http://vis.stanford.edu/papers/protovis">Protovis: A Graphical Toolkit for Visualization</a><br>
+IEEE InfoVis 2009
+
+<h2>Projects</h2>
+
+<p>Most of my recent open-source projects are listed on my <a href="https://github.com/mbostock">GitHub profile</a>. The list below also includes some older projects from Stanford and Google. If you want help using any of my libraries, post questions to <a href="http://stackoverflow.com">Stack Overflow</a> with the appropriate tag and I will endeavor to answer it.
+
+<p><a href="http://mbostock.github.com/d3/">D3</a><br>
+a JavaScript visualization library for manipulating documents based on data.
+
+<p><a href="http://square.github.com/crossfilter/">Crossfilter</a><br>
+a JavaScript library for fast multi-dimensional filtering and grouping.
+
+<p><a href="http://mbostock.github.com/stack/">Stack.js</a><br>
+a JavaScript presentation library with intuitive, scroll-based navigation.
+
+<p><a href="https://github.com/mbostock/queue">Queue.js</a><br>
+yet another asynchronous JavaScript library. 554 bytes!
+
+<p><a href="http://square.github.com/cube/">Cube</a><br>
+a system for time series data collection and visualization using MongoDB.
+
+<p><a href="http://polymaps.org/">Polymaps</a><br>
+a JavaScript library for image- and vector-tiled maps.
+
+<p><a href="http://mbostock.github.com/protovis/">Protovis</a><br>
+a JavaScript library for visualization; superseded by D3.
+
+<p><a href="http://bl.ocks.org/">bl.ocks.org</a><br>
+a viewer for sharing interactive examples via GitHub Gist.
+
+<p><a href="http://cs.stanford.edu/people/mbostock/iv/dependency-tree.html">Dependency Tree</a><br>
+a dependency visualization using hierarchical edge bundling.
+
+<p><a href="http://cs.stanford.edu/people/mbostock/polly/">Polly-B-Gone</a><br>
+a 3D physics platform game.
+
+<footer>
+  <aside>April 7, 2012</aside>
+  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+</footer>

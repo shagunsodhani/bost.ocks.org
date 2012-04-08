@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Nested Selections</title>
+<style>
+
+@import url(../style.css?20120408);
+
+path.link, .node rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.node rect {
+  fill: white;
+}
+
+.text rect {
+  fill: #eee;
+  stroke: none;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+</style>
+<script src="http://mbostock.github.com/d3/d3.v2.min.js?2.8.1"></script>
+<script>
+
+function tree(root, outerHeight) {
+  var margin = {top: 0, right: 440, bottom: 0, left: 40},
+      width = 960 - margin.right,
+      height = outerHeight - margin.top - margin.bottom,
+      step = 120;
+
+  var tree = d3.layout.tree()
+      .size([height, 1])
+      .separation(function() { return 1; });
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .style("margin", "1em 0 1em " + -margin.left + "px");
+
+  var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var nodes = tree.nodes(root);
+
+  var link = g.selectAll(".link")
+      .data(tree.links(nodes))
+    .enter().append("path")
+      .attr("class", "link")
+      .attr("d", d3.svg.diagonal()
+      .source(function(d) { return {y: d.source.depth * step, x: d.source.x}; })
+      .target(function(d) { return {y: d.target.depth * step, x: d.target.x}; })
+      .projection(function(d) { return [d.y, d.x]; }));
+
+  var node = g.selectAll(".node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", function(d) { return (d.type || "") + " node"; })
+      .attr("transform", function(d) { return "translate(" + d.depth * step + "," + d.x + ")"; })
+
+  node.append("text")
+      .attr("x", 6)
+      .attr("dy", ".32em")
+      .text(function(d) { return d.name; })
+      .each(function(d) { d.width = this.getComputedTextLength() + 12; });
+
+  node.insert("rect", "text")
+      .attr("ry", 6)
+      .attr("rx", 6)
+      .attr("y", -10)
+      .attr("height", 20)
+      .attr("width", function(d) { return Math.max(32, d.width); });
+
+  return svg;
+}
+
+</script>
+
+<h1>Nested Selections</h1>
+
+<p>D3’s <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a> can be hierarchical, much like the elements and data they join. Consider a table:
+
+<pre><code class="html">&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;td&gt;  A&lt;/td&gt;&lt;td&gt;  B&lt;/td&gt;&lt;td&gt;  C&lt;/td&gt;&lt;td&gt;  D&lt;/td&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;  0&lt;/td&gt;&lt;td&gt;  1&lt;/td&gt;&lt;td&gt;  2&lt;/td&gt;&lt;td&gt;  3&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;  4&lt;/td&gt;&lt;td&gt;  5&lt;/td&gt;&lt;td&gt;  6&lt;/td&gt;&lt;td&gt;  7&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;  8&lt;/td&gt;&lt;td&gt;  9&lt;/td&gt;&lt;td&gt; 10&lt;/td&gt;&lt;td&gt; 11&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt; 12&lt;/td&gt;&lt;td&gt; 13&lt;/td&gt;&lt;td&gt; 14&lt;/td&gt;&lt;td&gt; 15&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+
+<p>How would you select only the body cells? The selector <code>"td"</code> would match the <code>td</code> elements in the head as well as the body. To match only those elements <i>A</i> within some other elements <i>B</i>, use the <a href="http://www.w3.org/TR/selectors/#descendant-combinators">descendant combinator</a>, <code>"A B"</code>. For example:
+
+<aside>There are other combinators. For example, a comma results in a union: <code>"th, td"</code> matches both <code>th</code> <i>and</i> <code>td</code> elements.</aside>
+
+<pre><code>var td = d3.selectAll("tbody td");</code></pre>
+
+<p>Alternatively, select the <code>tbody</code> element first, then select the <code>td</code> elements within:
+
+<pre><code>var td = d3.select("tbody").selectAll("td");</code></pre>
+
+<p>This produces the same result because <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>, for each element in the current selection, selects the matching descendants. This is convenient if you want to derive multiple selections from the same parent, such as splitting the even and odd rows of a table.
+
+<h2><a href="#index" name="index">#</a>Nesting and Index</h2>
+
+<p>If you select the <code>td</code> elements using <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>, you get a flat selection, like so:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "td", children: [{type: "text", name: "0"}]},
+      {name: "td", children: [{type: "text", name: "1"}]},
+      {name: "td", children: [{type: "text", name: "2"}]},
+      {name: "td", children: [{type: "text", name: "3"}]},
+      {name: "td", children: [{type: "text", name: "4"}]},
+      {name: "td", children: [{type: "text", name: "5"}]},
+      {name: "td", children: [{type: "text", name: "6"}]},
+      {name: "td", children: [{type: "text", name: "7"}]},
+      {name: "td", children: [{type: "text", name: "8"}]},
+      {name: "td", children: [{type: "text", name: "9"}]},
+      {name: "td", children: [{type: "text", name: "10"}]},
+      {name: "td", children: [{type: "text", name: "11"}]},
+      {name: "td", children: [{type: "text", name: "12"}]},
+      {name: "td", children: [{type: "text", name: "13"}]},
+      {name: "td", children: [{type: "text", name: "14"}]},
+      {name: "td", children: [{type: "text", name: "15"}]}
+    ]}
+  ]},
+  360
+);
+
+</script>
+
+<pre><code>var td = d3.selectAll("tbody td");</code></pre>
+
+<p>Flat selections lack hierarchical structure: the table cells are merged into a single array, rather than grouped by parent row. This makes them more difficult to manipulate on a row- or column-basis. In contrast, D3’s nested selections retain the hierarchy. To group by row, first select the <code>tr</code> elements, then select the <code>td</code> elements:
+
+<aside>The concept of nested selections is one of main differences between D3 and other DOM libraries, such as jQuery and Prototype.</aside>
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "0"}]},
+      {name: "td", children: [{type: "text", name: "1"}]},
+      {name: "td", children: [{type: "text", name: "2"}]},
+      {name: "td", children: [{type: "text", name: "3"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "4"}]},
+      {name: "td", children: [{type: "text", name: "5"}]},
+      {name: "td", children: [{type: "text", name: "6"}]},
+      {name: "td", children: [{type: "text", name: "7"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "8"}]},
+      {name: "td", children: [{type: "text", name: "9"}]},
+      {name: "td", children: [{type: "text", name: "10"}]},
+      {name: "td", children: [{type: "text", name: "11"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "12"}]},
+      {name: "td", children: [{type: "text", name: "13"}]},
+      {name: "td", children: [{type: "text", name: "14"}]},
+      {name: "td", children: [{type: "text", name: "15"}]}
+    ]}
+  ]},
+  360
+);
+
+</script>
+
+<pre><code>var td = d3.selectAll("tbody tr").selectAll("td");</code></pre>
+
+<p>Now if you want to color the first column <span style="color:red;">red</span>, use the index <code>i</code>:
+
+<aside>This ternary expression returns null if <code>i</code> is a truthy value (non-zero), and "red" if is not. By returning null for the other columns, the color is inherited from the current stylesheet.</aside>
+
+<pre><code>td.style("color", function(d, i) { return i ? null : "red"; });</code></pre>
+
+<p>You can also access the row index (<code>j</code>) by adding a third argument to the function.
+
+<h2><a href="#data" name="data">#</a>Nesting and Data</h2>
+
+<p>Hierarchical elements are often driven by similarly hierarchical data; nested selections are therefore convenient for binding data, too. To continue the example, you might represent the table’s associated data as a matrix (an array of arrays):
+
+<pre><code>var matrix = [
+  [ 0,  1,  2,  3],
+  [ 4,  5,  6,  7],
+  [ 8,  9, 10, 11],
+  [12, 13, 14, 15],
+];</code></pre>
+
+<p>To join the numbers to the corresponding table cells, first join the outer array (<code>matrix</code>) to the rows, and then join the inner arrays (<code>matrix[0]</code>, <code>matrix[1]</code>, …) to the cells:
+
+<pre><code>var td = d3.selectAll("tbody tr")
+    .data(matrix)
+  .selectAll("td")
+    .data(function(d, i) { return d; }); // d is matrix[i]</code></pre>
+
+<p>Notice that the <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">data</a> method can either take an <i>array</i> (such as <code>matrix</code>) or a <i>function</i> that returns an array. Arrays are often used with flat selections, since flat selections only have one group, while nested selections typically require a function. The initial row selection is flat, since it was created with d3.selectAll:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  90
+);
+
+</script>
+
+<pre><code>var tr = d3.selectAll("tbody tr")
+    .data(matrix);</code></pre>
+
+<p>The cell selection, in contrast, is nested:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "0"}]},
+      {name: "td", children: [{type: "text", name: "1"}]},
+      {name: "td", children: [{type: "text", name: "2"}]},
+      {name: "td", children: [{type: "text", name: "3"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "4"}]},
+      {name: "td", children: [{type: "text", name: "5"}]},
+      {name: "td", children: [{type: "text", name: "6"}]},
+      {name: "td", children: [{type: "text", name: "7"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "8"}]},
+      {name: "td", children: [{type: "text", name: "9"}]},
+      {name: "td", children: [{type: "text", name: "10"}]},
+      {name: "td", children: [{type: "text", name: "11"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "12"}]},
+      {name: "td", children: [{type: "text", name: "13"}]},
+      {name: "td", children: [{type: "text", name: "14"}]},
+      {name: "td", children: [{type: "text", name: "15"}]}
+    ]}
+  ]},
+  360
+);
+
+</script>
+
+<pre><code>var td = tr.selectAll("td")
+    .data(function(d) { return d; }); // matrix[i]</code></pre>
+
+<p>The data operator defines the array of data for each group. Here the data function is invoked once per row and successively passed each parent datum. Since the parent data is an array of arrays, the data function simply returns the inner array for each row of cells.
+
+<h2><a href="#parent" name="parent">#</a>Nesting and the Parent Node</h2>
+
+<aside>See <a href="../join/">Thinking with Joins</a> for a quick overview of D3’s data-join concept.</aside>
+
+<p>Nesting selections has another subtle yet critical side-effect: it sets the <i>parent node</i> for each group. The parent node is a hidden property on selections that determines where to append entering elements. For example, if you attempt a data-join on a top-level selection, you get an error:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  90
+);
+
+</script>
+
+<pre><code>d3.selectAll("table tr")
+    .data(matrix)
+  .enter().append("tr"); // error!</code></pre>
+
+<p>The error occurs because the default parent node is the document’s root (<code>html</code>) element, and you can’t add <code>tr</code> elements directly to the root. Instead, select a parent before performing the data join:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: table", children: [
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  90
+);
+
+</script>
+
+<pre><code>d3.select("table").selectAll("tr")
+    .data(matrix)
+  .enter().append("tr"); // success</code></pre>
+
+<p>This approach extends to arbitrary levels of nested selection. Say you wanted to create the table from scratch, given the matrix of numbers. Start by selecting the body:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "body", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  30
+);
+
+</script>
+
+<pre><code>var body = d3.select("body");</code></pre>
+
+<p>Next <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">append</a> a table element to the body:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "table", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  30
+);
+
+</script>
+
+<pre><code>var table = body.append("table");</code></pre>
+
+<p>Now append entering rows to the table via data-join. Since selectAll is called on the selected table element, it establishes a new parent node:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: table", children: [
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]},
+      {name: "tr", children: [{type: "text", name: "…"}]}
+    ]}
+  ]},
+  90
+);
+
+</script>
+
+<pre><code>var tr = table.selectAll("tr")
+    .data(matrix)
+  .enter().append("tr");</code></pre>
+
+<p>Finally, appending entering cells to each row:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "0"}]},
+      {name: "td", children: [{type: "text", name: "1"}]},
+      {name: "td", children: [{type: "text", name: "2"}]},
+      {name: "td", children: [{type: "text", name: "3"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "4"}]},
+      {name: "td", children: [{type: "text", name: "5"}]},
+      {name: "td", children: [{type: "text", name: "6"}]},
+      {name: "td", children: [{type: "text", name: "7"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "8"}]},
+      {name: "td", children: [{type: "text", name: "9"}]},
+      {name: "td", children: [{type: "text", name: "10"}]},
+      {name: "td", children: [{type: "text", name: "11"}]}
+    ]},
+    {name: "parentNode: tr", children: [
+      {name: "td", children: [{type: "text", name: "12"}]},
+      {name: "td", children: [{type: "text", name: "13"}]},
+      {name: "td", children: [{type: "text", name: "14"}]},
+      {name: "td", children: [{type: "text", name: "15"}]}
+    ]}
+  ]},
+  360
+);
+
+</script>
+
+<pre><code>var td = tr.selectAll("td")
+    .data(function(d) { return d; })
+  .enter().append("td");</code></pre>
+
+<h2><a href="#conclusion" name="conclusion">#</a>To Nest, or not to Nest</h2>
+
+<p>There is an important difference between <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">select</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>: select <i>preserves</i> the existing grouping, whereas selectAll <i>creates</i> a new grouping. Calling select thus preserves the data, index and even the parent node of the original selection! For example, the following selection is flat, with the parent node still the document root:
+
+<script>
+
+tree(
+  {name: "selection", children: [
+    {name: "parentNode: html", children: [
+      {name: "td", children: [{type: "text", name: "0"}]},
+      {name: "td", children: [{type: "text", name: "4"}]},
+      {name: "td", children: [{type: "text", name: "8"}]},
+      {name: "td", children: [{type: "text", name: "12"}]}
+    ]}
+  ]},
+  90
+);
+
+</script>
+
+<pre><code>var td = d3.selectAll("tbody tr").select("td");</code></pre>
+
+<p>The only way to obtain a nested selection, then, is to call selectAll on an existing selection; this is why a data-join typically follows a selectAll rather than select.
+
+<p>This tutorial employed tables as an example of hierarchical structure. This is but one contrived example—nested selections are <a href="http://bost.ocks.org/mike/miserables/">surprisingly</a> <a href="http://bl.ocks.org/882152">common</a>! By making only a few code changes, nested selections can quickly turn any singular visualization into <a href="http://bl.ocks.org/1305111">small multiples</a>. Much like <a href="../join/">thinking with joins</a>, nested selections require a different mental model for creating and manipulating elements. But once mastered, they provide a concise way of creating <a href="http://mbostock.github.com/d3/">data-driven documents</a>.
+
+<footer>
+  <aside>April 8, 2012</aside>
+  <a href="../">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

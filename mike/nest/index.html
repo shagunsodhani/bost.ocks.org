@@ -145,7 +145,7 @@ tree(
 
 <p>Flat selections lack hierarchical structure: the table cells are merged into a single array, rather than grouped by parent row. This makes them more difficult to manipulate on a row- or column-basis. In contrast, D3’s nested selections retain the hierarchy. To group by row, first select the <code>tr</code> elements, then select the <code>td</code> elements:
 
-<aside>The concept of nested selections is one of main differences between D3 and other DOM libraries, such as jQuery and Prototype.</aside>
+<aside>The concept of nested selections is one of the main differences between D3 and other DOM libraries, such as jQuery and Prototype.</aside>
 
 <script>
 
@@ -375,7 +375,7 @@ tree(
     .data(matrix)
   .enter().append("tr");</code></pre>
 
-<p>Finally, appending entering cells to each row:
+<p>Finally, append entering cells to each row:
 
 <script>
 

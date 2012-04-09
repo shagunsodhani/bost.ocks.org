@@ -97,7 +97,7 @@ function tree(root, outerHeight) {
   &lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
 
-<p>How would you select only the body cells? The selector <code>"td"</code> would match the <code>td</code> elements in the head as well as the body. To match only those elements <i>A</i> within some other elements <i>B</i>, use the <a href="http://www.w3.org/TR/selectors/#descendant-combinators">descendant combinator</a>, <code>"A B"</code>. For example:
+<p>How would you select only the body cells? The selector <code>"td"</code> would match the <code>td</code> elements in the head as well as the body. To match only those elements <i>A</i> within some other elements <i>B</i>, use the <a href="http://www.w3.org/TR/selectors/#descendant-combinators">descendant combinator</a>, <code>"B A"</code>. For example:
 
 <aside>There are other combinators. For example, a comma results in a union: <code>"th, td"</code> matches both <code>th</code> <i>and</i> <code>td</code> elements.</aside>
 

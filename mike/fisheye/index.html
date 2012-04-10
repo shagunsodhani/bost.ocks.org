@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fisheye Distortion</title>
+<style>
+
+@import url(../style.css?20120410);
+
+svg {
+  border: solid 1px #ccc;
+}
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+.node {
+  fill: #000;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #aaa;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<h1>Fisheye Distortion</h1>
+<aside>Mouseover to distort the nodes.</aside>
+<script src="http://mbostock.github.com/d3/d3.v2.min.js?2.8.1"></script>
+<script src="fisheye.js"></script>
+<script>
+
+var width = 720,
+    height = 500;
+
+var fisheye = d3.fisheye()
+    .radius(120);
+
+var force = d3.layout.force()
+    .charge(-160)
+    .linkDistance(40)
+    .size([width, height]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json("miserables.json", function(data) {
+  force.nodes(data.nodes).links(data.links);
+
+  // Run the layout a fixed number of times.
+  // The ideal number of times scales with graph complexity.
+  // Of course, don't run too long—you'll hang the page!
+  force.start();
+  for (var n = data.nodes.length, i = n * n; i > 0; --i) force.tick();
+  force.stop();
+
+  // Center the nodes in the middle.
+  var ox = 0, oy = 0;
+  data.nodes.forEach(function(d) { ox += d.x, oy += d.y; });
+  ox = ox / n - width / 2, oy = oy / n - height / 2;
+  data.nodes.forEach(function(d) { d.x -= ox, d.y -= oy; });
+
+  var link = svg.selectAll(".link")
+      .data(data.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  var node = svg.selectAll(".node")
+      .data(data.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; })
+      .attr("r", 4.5);
+
+  svg.on("mousemove", function() {
+    fisheye.center(d3.mouse(this));
+
+    link
+        .attr("x1", function(d) { return fisheye.x(d.source); })
+        .attr("y1", function(d) { return fisheye.y(d.source); })
+        .attr("x2", function(d) { return fisheye.x(d.target); })
+        .attr("y2", function(d) { return fisheye.y(d.target); });
+
+    node
+        .attr("cx", fisheye.x)
+        .attr("cy", fisheye.y)
+        .attr("r", function(d) { return fisheye.size(d) * 4.5; })
+  });
+});
+
+</script>
+
+<p>A quick demo of fisheye distortion in conjunction with D3’s <a href="http://mbostock.github.com/d3/ex/force.html">force layout</a>; inspired by <a href="http://flare.prefuse.org">Flare</a> and <a href="http://sigmajs.org">sigma.js</a>. The distortion code is available as a <a href="https://github.com/d3/d3-plugin/tree/master/d3/fisheye">D3 plugin</a>.
+
+<footer>
+  <aside>April 10, 2012</aside>
+  <a href="../">Mike Bostock</a>
+</footer>

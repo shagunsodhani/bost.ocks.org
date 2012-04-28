@@ -45,7 +45,7 @@ charts require some configuration.</aside>
 
 <p>A function; the standard unit of code reuse!
 
-<h2 id="configuration">Configuration</h2>
+<h2><a href="#configuration" name="configuration">#</a>Configuration</h2>
 
 <p>I jest; not any function will do. In truth we need a <i>configurable</i> function, since most charts require customization of their appearance or behavior. For example, you may need to specify the width and height, or the color palette. A simple method of configuration is passing arguments:
 
@@ -75,7 +75,7 @@ charts require some configuration.</aside>
 
 <p>And subsequently, <code>myChart()</code> to update. Simple!
 
-<h3 id="reconfiguration">Reconfiguration</h3>
+<h2><a href="#reconfiguration" name="reconfiguration">#</a>Reconfiguration</h2>
 
 <p>But what if you want to change the configuration after construction? Or if you want to inspect the configuration of an existing chart? The configuration object is trapped by the closure and inaccessible to the outside world. Fortunately, JavaScript <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function">functions are objects</a>, so we can store configuration properties on the function itself!
 
@@ -132,7 +132,7 @@ myChart.height = 80;</code></pre>
 
 <p><span class="attention">To sum up: implement charts as <b>closures with getter-setter methods</b>.</span> Conveniently, this is the same pattern used by D3’s other reusable objects, including <a href="https://github.com/mbostock/d3/wiki/Scales">scales</a>, <a href="https://github.com/mbostock/d3/wiki/Layouts">layouts</a>, <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes">shapes</a>, <a href="https://github.com/mbostock/d3/wiki/SVG-Axes">axes</a>, <i>etc.</i>
 
-<h2 id="implementation">Implementation</h2>
+<h2><a href="#implementation" name="implementation">#</a>Implementation</h2>
 
 <p>The chart can now be configured, but two essential ingredients are still missing: the DOM element into which to render the chart (such as a particular div or <code>document.body</code>), and the data to display. These could be considered configuration, but D3 provides a more natural representation for data and elements: the <b>selection</b>.
 
@@ -158,7 +158,7 @@ myChart.height = 80;</code></pre>
   });
 }</code></pre>
 
-<h2 id="examples">Examples</h2>
+<h2><a href="#examples" name="examples">#</a>Examples</h2>
 
 <p>To make this proposal concrete, consider a simple yet ubiquitous use case: time-series visualization. A <i>time series</i> is a variable that changes over time. We can visualize this as an area chart, where the <i>x</i>- and <i>y</i>-axes respectively encode time and value as position:
 
@@ -218,7 +218,7 @@ var formatDate = d3.time.format("%b %Y");</code></pre>
 
 <aside>See the <a href="http://bl.ocks.org/1166403">axis component</a> and  <a href="http://bl.ocks.org/1667367">brush component</a> for examples of chart components supporting interaction and animation automatically.</aside>
 
-<h2 id="further-considerations">Further Considerations</h2>
+<h2><a href="#further-considerations" name="further-considerations">#</a>Further Considerations</h2>
 
 <p>We now have a <b>strawman convention</b> for reusable visualization components. Yet there is far more to cover as to what should be considered <q>configuration</q> or even a <q>chart</q>. Is a traditional chart typology the best choice? Consider drawing inspiration from the <a href="http://www.amazon.com/Grammar-Graphics-Leland-Wilkinson/dp/0387987746">Grammar of Graphics</a> (see <a href="http://polychart.com/">Polychart</a> and <a href="http://had.co.nz/ggplot2/">ggplot2</a>); there are more modular units for composition. Even with traditional chart types, should you expose the underlying scales and axes, or encapsulate them with chart-specific representations? Should your chart support interaction and animation automatically? Should the user be able to reach into your chart and tweak some aspect of its behavior? All of these are possible using the proposed convention, so have at it!
 

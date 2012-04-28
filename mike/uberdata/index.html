@@ -3,7 +3,7 @@
 <title>Uber Rides by Neighborhood</title>
 <style>
 
-@import url(../style.css?20120407);
+@import url(../style.css?20120427);
 
 #circle circle {
   fill: none;
@@ -24,6 +24,11 @@ path.chord {
 }
 
 </style>
+
+<header>
+  <aside>January 9, 2012</aside>
+  <a href="../">Mike Bostock</a>
+</header>
 
 <h1>Uber Rides by Neighborhood</h1>
 
@@ -135,7 +140,7 @@ d3.csv("cities.csv", function(cities) {
 
 </script>
 
-<p><i>Source: <a href="http://blog.uber.com/2012/01/09/uberdata-san-franciscomics/">Uber Blog</a>.</i>
+<p class="attribution">Source: <a href="http://blog.uber.com/2012/01/09/uberdata-san-franciscomics/">Uber Blog</a>.
 
 <p>I enjoyed <a href="http://blog.uber.com/2012/01/09/uberdata-san-franciscomics/">Bradley Voytek’s post</a> today analyzing the frequency of rides between various neighborhoods in San Francisco. However, I wondered if an alternative network visualization might better reveal patterns or anomalies in the data. Complex networks (a.k.a. “hairballs”) are hard to visualize well!
 
@@ -153,5 +158,5 @@ d3.csv("cities.csv", function(cities) {
 
 <footer>
   <aside>January 9, 2012</aside>
-  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+  <a href="../">Mike Bostock</a>
 </footer>

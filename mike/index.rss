@@ -5,8 +5,8 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>10 Apr 2012 18:00 GMT</pubDate>
-    <lastBuildDate>10 Apr 2012 18:00 GMT</lastBuildDate>
+    <pubDate>28 Apr 2012 05:00 GMT</pubDate>
+    <lastBuildDate>28 Apr 2012 05:00 GMT</lastBuildDate>
     <item>
       <title>Fisheye Distortion</title>
       <link>http://bost.ocks.org/mike/fisheye/</link>
@@ -42,6 +42,12 @@
       <link>http://bost.ocks.org/mike/join/</link>
       <description><![CDATA[<a href="http://bost.ocks.org/mike/join/"><img src="http://bost.ocks.org/mike/join.png"></a>]]></description>
       <pubDate>05 Feb 2012 00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Will It Shuffle?</title>
+      <link>http://bost.ocks.org/mike/shuffle/compare.html</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/shuffle/compare.html"><img src="http://bost.ocks.org/mike/shuffle-matrix.png"></a>]]></description>
+      <pubDate>21 Jan 2012 00:00 GMT</pubDate>
     </item>
     <item>
       <title>Path Transitions</title>

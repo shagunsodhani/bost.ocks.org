@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Bitter:700);
+
 html {
   min-width: 1040px;
 }
@@ -7,8 +9,29 @@ body {
   font-family: "Helvetica Neue";
   width: 960px;
   margin: auto;
-  margin-top: 40px;
+  margin-top: 1em;
   margin-bottom: 4em;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Bitter", serif;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 48px;
+  line-height: 1em;
+}
+
+h2 {
+  margin-top: 2em;
+}
+
+h2 a {
+  color: #ccc;
+  left: -20px;
+  position: absolute;
+  width: 740px;
 }
 
 footer {
@@ -16,11 +39,26 @@ footer {
   margin-top: 8em;
 }
 
+header aside {
+  margin-top: 82px;
+}
+
+header aside,
+footer aside {
+  color: #636363;
+  text-align: right;
+}
+
 aside {
   font-size: small;
   left: 780px;
   position: absolute;
   width: 180px;
+}
+
+.attribution {
+  font-size: small;
+  margin-bottom: 2em;
 }
 
 body > p, li > p {
@@ -124,15 +162,4 @@ blockquote:before {
 
 blockquote:after {
   position: absolute;
-}
-
-h2 {
-  margin-top: 2em;
-}
-
-h2 a {
-  color: #ccc;
-  left: -20px;
-  position: absolute;
-  width: 740px;
 }

@@ -3,7 +3,7 @@
 <title>Les Misérables Co-occurrence</title>
 <style>
 
-@import url(../style.css?20120407);
+@import url(../style.css?20120427);
 
 .background {
   fill: #eee;
@@ -20,6 +20,11 @@ text.active {
 </style>
 <script src="http://mbostock.github.com/d3/d3.v2.min.js?2.8.1"></script>
 
+<header>
+  <aside>April 10, 2012</aside>
+  <a href="../">Mike Bostock</a>
+</header>
+
 <h1><i>Les Misérables</i> Co-occurrence</h1>
 
 <aside style="margin-top:80px;">
@@ -29,7 +34,7 @@ text.active {
   <option value="group">by Cluster</option>
 </select>
 
-<p>This matrix visualizes character co-occurrences in Victor Hugo’s <i><a href="http://en.wikipedia.org/wiki/Les_Misérables">Les Misérables</a></i>.
+<p>This matrix diagram visualizes character co-occurrences in Victor Hugo’s <i><a href="http://en.wikipedia.org/wiki/Les_Misérables">Les Misérables</a></i>.
 
 <p>Each colored cell represents two characters that appeared in the same chapter; darker cells indicate characters that co-occurred more frequently.
 
@@ -178,7 +183,7 @@ d3.json("miserables.json", function(miserables) {
 
 </script>
 
-<p>Source: <a href="http://www-cs-staff.stanford.edu/~uno/sgb.html">The Stanford GraphBase</a>.
+<p class="attribution">Source: <a href="http://www-cs-staff.stanford.edu/~uno/sgb.html">The Stanford GraphBase</a>.
 
 <p>A network can be represented by an <i><a href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a></i>, where each cell <i>ij</i> represents an edge from vertex <i>i</i> to vertex <i>j</i>. Here, vertices represent characters in a book, while edges represent co-occurrence in a chapter.
 
@@ -192,5 +197,5 @@ d3.json("miserables.json", function(miserables) {
 
 <footer>
   <aside>January 12, 2012</aside>
-  <a href="http://bost.ocks.org/mike">Mike Bostock</a>
+  <a href="../">Mike Bostock</a>
 </footer>

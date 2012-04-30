@@ -7,6 +7,7 @@
 
 #chart {
   margin-left: -40px;
+  height: 506px;
 }
 
 text {
@@ -57,7 +58,7 @@ text {
 
 <p class="attribution">Source: <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>.
 
-<p>This is a recreation in <a href="http://mbostock.github.com/d3/">D3</a> of Gapminder’s <a href="http://gapminder.org/world/">Wealth & Health of Nations</a>, made famous by Hans Rosling’s memorable <a href="http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen.html">2006 TED talk</a>. It shows the dynamic fluctuation in per-capita income (<i>x</i>), life expectancy (<i>y</i>) and population (radius) of 180 nations over the last 209 years. Nations are colored by geographic region; mouseover to read their names.
+<p>This is a recreation in <a href="http://d3js.org/">D3</a> of Gapminder’s <a href="http://gapminder.org/world/">Wealth & Health of Nations</a>, made famous by Hans Rosling’s memorable <a href="http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen.html">2006 TED talk</a>. It shows the dynamic fluctuation in per-capita income (<i>x</i>), life expectancy (<i>y</i>) and population (radius) of 180 nations over the last 209 years. Nations are colored by geographic region; mouseover to read their names.
 
 <p>As <a href="http://randometc.github.com/mind-gapper-js/">Tom Carden</a> noted, there’s a surprising amount of work that goes into making something look simple. For one, data collected in recent years is consistent, while data prior to 1950 is sparse; although potentially misleading, these visualizations use <a href="http://en.wikipedia.org/wiki/Lerp_(computing)">linear interpolation</a> for missing data points. The lookup for the two interpolation values at each frame is accelerated using <a href="http://en.wikipedia.org/wiki/Binary_search_algorithm">bisection</a> of sorted arrays per dimension.
 
@@ -68,7 +69,7 @@ text {
   <a href="../">Mike Bostock</a>
 </footer>
 
-<script src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+<script src="http://d3js.org/d3.v2.js?2.8.1"></script>
 <script>
 
 // Various accessors that specify the four dimensions of data to visualize.

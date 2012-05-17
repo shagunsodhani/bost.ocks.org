@@ -226,7 +226,7 @@ var timeout = setTimeout(function() {
 
 <p>The selection <code>bar</code> is the <i>update</i> selection: states that persist across the transition. The selections <code>bar.enter()</code> and <code>bar.exit()</code> are the <i>enter</i> and <i>exit</i> selections: states that are incoming or outgoing, respectively. For more on these three selections, see <a href="../join/">Thinking with Joins</a>.
 
-<p>For example, when changing from the 18-24 bracket to 14-17, Arkansas moves from spot #5 to #1. Since it is in the top ten in both age brackets, it is in the update selection. An update transition interpolates the transform attribute to translate Arkansas smoothly to its new position. Simultaneous subtransitions resize the bar and reposition the associated label:
+<p>For example, when changing from the 18-24 bracket to 14-17, Alaska moves from spot #5 to #1. Since it is in the top ten in both age brackets, it is in the update selection. An update transition interpolates the transform attribute to translate Alaska smoothly to its new position. Simultaneous subtransitions resize the bar and reposition the associated label:
 
 <pre><code>var barUpdate = d3.transition(bar)
     .attr("transform", function(d) { return "translate(0," + y(d.State) + ")"; });

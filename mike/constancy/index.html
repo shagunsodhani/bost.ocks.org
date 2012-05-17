@@ -121,6 +121,8 @@ d3.csv("states-age.csv", function(data) {
 });
 
 function change() {
+  clearTimeout(timeout);
+
   d3.transition()
       .duration(750)
       .each(redraw);
@@ -178,6 +180,11 @@ function redraw() {
   svgUpdate.select(".x.axis").call(xAxis);
   svgUpdate.select(".y.axis").call(yAxis);
 }
+
+var timeout = setTimeout(function() {
+  menu.property("value", "65 Years and Over").node().focus();
+  change();
+}, 5000);
 
 </script>
 

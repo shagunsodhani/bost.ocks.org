@@ -17,7 +17,7 @@ svg {
   fill: brown;
 }
 
-.bar text {
+.value {
   fill: white;
 }
 
@@ -73,13 +73,8 @@ var y = d3.scale.ordinal()
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("top")
-    .tickSize(-height)
+    .tickSize(-height - margin.bottom)
     .tickFormat(format);
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickSize(0);
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -92,7 +87,10 @@ svg.append("g")
     .attr("class", "x axis");
 
 svg.append("g")
-    .attr("class", "y axis");
+    .attr("class", "y axis")
+  .append("line")
+    .attr("class", "domain")
+    .attr("y2", height);
 
 var menu = d3.select("#menu select")
     .on("change", change);
@@ -120,11 +118,17 @@ d3.csv("states-age.csv", function(data) {
   redraw();
 });
 
+var altKey;
+
+d3.select(window)
+    .on("keydown", function() { altKey = d3.event.altKey; })
+    .on("keyup", function() { altKey = false; });
+
 function change() {
   clearTimeout(timeout);
 
   d3.transition()
-      .duration(750)
+      .duration(altKey ? 7500 : 750)
       .each(redraw);
 }
 
@@ -139,12 +143,20 @@ function redraw() {
 
   var barEnter = bar.enter().insert("g", ".axis")
       .attr("class", "bar")
-      .attr("transform", function(d) { return "translate(0," + y(d.State) + ")"; })
+      .attr("transform", function(d) { return "translate(0," + (y(d.State) + height) + ")"; })
       .style("fill-opacity", 0);
 
   barEnter.append("rect")
       .attr("width", age && function(d) { return x(d[age]); })
       .attr("height", y.rangeBand());
+
+  barEnter.append("text")
+      .attr("class", "label")
+      .attr("x", -3)
+      .attr("y", y.rangeBand() / 2)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .text(function(d) { return d.State; });
 
   barEnter.append("text")
       .attr("class", "value")
@@ -156,29 +168,30 @@ function redraw() {
   x.domain([0, top[0][age = age1]]);
 
   var barUpdate = d3.transition(bar)
-      .attr("transform", function(d) { return "translate(0," + y(d.State) + ")"; })
+      .attr("transform", function(d) { return "translate(0," + (d.y0 = y(d.State)) + ")"; })
       .style("fill-opacity", 1);
 
   barUpdate.select("rect")
       .attr("width", function(d) { return x(d[age]); });
 
-  barUpdate.select("text")
+  barUpdate.select(".value")
       .attr("x", function(d) { return x(d[age]) - 3; })
       .text(function(d) { return format(d[age]); });
 
   var barExit = d3.transition(bar.exit())
+      .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
       .style("fill-opacity", 0)
       .remove();
 
   barExit.select("rect")
       .attr("width", function(d) { return x(d[age]); });
 
-  barExit.select("text")
-      .attr("x", function(d) { return x(d[age]) - 3; });
+  barExit.select(".value")
+      .attr("x", function(d) { return x(d[age]) - 3; })
+      .text(function(d) { return format(d[age]); });
 
-  var svgUpdate = d3.transition(svg);
-  svgUpdate.select(".x.axis").call(xAxis);
-  svgUpdate.select(".y.axis").call(yAxis);
+  d3.transition(svg).select(".x.axis")
+      .call(xAxis);
 }
 
 var timeout = setTimeout(function() {

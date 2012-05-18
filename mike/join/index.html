@@ -109,7 +109,7 @@ circle
 
 circle.exit().remove();</code></pre>
 
-<aside>To control how data is assign&shy;ed to elements, you can pro&shy;vide a <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">key function</a>. I’ll cover these in a future tutorial.</aside>
+<aside>To control how data is assign&shy;ed to elements, you can pro&shy;vide a <a href="../constancy/">key function</a>.</aside>
 
 <p>If we run this code repeatedly, it recomputes the data-join each time. If the new dataset is smaller than the old one, the surplus elements end up in the <i>exit</i> selection and get removed. If the new dataset is larger, the surplus data ends up in the <i>enter</i> selection and new nodes are added. If the new dataset is exactly the same size, then all the elements are simply updated with new positions, and no elements are added or removed.
 

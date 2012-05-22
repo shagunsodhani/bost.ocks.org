@@ -251,7 +251,7 @@ barUpdate.select("text")
     .attr("x", function(d) { return x(d[age]) - 3; })
     .text(function(d) { return format(d[age]); });</code></pre>
 
-<p>Transitions are also used to fade entering and exiting elements. For the full code, <a href="https://github.com/mbostock/bost.ocks.org/blob/gh-pages/mike/key/index.html">view source</a>.
+<p>Transitions are also used to fade entering and exiting elements. For the full code, <a href="https://github.com/mbostock/bost.ocks.org/blob/gh-pages/mike/constancy/index.html">view source</a>.
 
 <p>Key functions can be useful for improving performance independent of transitions. For example, if you filter a large table, you can use a key function to reduce the number of DOM modifications: reorder DOM elements in the update selection rather than regenerating them. We used this technique at Square to improve the performance of <a href="http://corner.squareup.com/2012/04/building-analytics.html">merchant analytics</a>, and it’s one of the reasons that D3 is faster than most template frameworks.
 

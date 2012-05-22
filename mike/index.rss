@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>16 May 2012 22:00 GMT</pubDate>
-    <lastBuildDate>16 May 2012 22:00 GMT</lastBuildDate>
+    <pubDate>22 May 2012 20:00 GMT</pubDate>
+    <lastBuildDate>22 May 2012 20:00 GMT</lastBuildDate>
+    <item>
+      <title>Sankey Diagrams</title>
+      <link>http://bost.ocks.org/mike/sankey/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/sankey/"><img src="http://bost.ocks.org/mike/sankey.png"></a>]]></description>
+      <pubDate>22 May 2012 20:00 GMT</pubDate>
+    </item>
     <item>
       <title>Object Constancy</title>
       <link>http://bost.ocks.org/mike/constancy/</link>

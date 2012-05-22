@@ -12,7 +12,6 @@
 .node rect {
   cursor: move;
   fill-opacity: .9;
-  stroke: #000;
   shape-rendering: crispEdges;
 }
 
@@ -120,7 +119,8 @@ d3.json("energy.json", function(energy) {
   node.append("rect")
       .attr("height", function(d) { return d.dy; })
       .attr("width", sankey.nodeWidth())
-      .style("fill", function(d) { return color(d.name.replace(/ .*/, "")); })
+      .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
+      .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })
     .append("title")
       .text(function(d) { return d.name + "\n" + format(d.value); });
 

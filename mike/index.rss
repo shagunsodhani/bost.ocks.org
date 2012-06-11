@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>June 1 2012 12:00 GMT</pubDate>
-    <lastBuildDate>June 1 2012 12:00 GMT</lastBuildDate>
+    <pubDate>June 10 2012 20:00 GMT</pubDate>
+    <lastBuildDate>June 10 2012 20:00 GMT</lastBuildDate>
+    <item>
+      <title>Zoomable Treemaps</title>
+      <link>http://bost.ocks.org/mike/treemap/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/treemap/"><img src="http://bost.ocks.org/mike/treemap.png"></a>]]></description>
+      <pubDate>June 10 2012 20:00 GMT</pubDate>
+    </item>
     <item>
       <title>Line Simplification</title>
       <link>http://bost.ocks.org/mike/simplify/</link>

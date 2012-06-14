@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Hexbins</title>
+<style>
+
+.receptor {
+  fill: none;
+  pointer-events: all;
+}
+
+.mesh {
+  fill: none;
+  stroke: #ccc;
+}
+
+</style>
+<svg width="960" height="500"></svg>
+<script src="d3.v2.js"></script>
+<script>
+
+var margin = {top: 0, right: 0, bottom: 0, left: 0},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
+    radius = 16;
+
+var svg = d3.select("svg").append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var bin = svg.selectAll("g")
+    .data(hexbins(width, height, radius))
+  .enter().append("g")
+    .attr("transform", function(d) { return "translate(" + d + ")"; })
+    .each(function(d) { d[2] = 0; })
+    .on("mousemove", mousemove);
+
+bin.append("path")
+    .attr("class", "display")
+    .attr("transform", "scale(0)")
+    .attr("d", hexbin_hexagon)
+
+  // .transition()
+  //   .delay(function(d, i) { return (d[0] + d[1]) * .5; })
+  //   .duration(500)
+  //   .attr("transform", "scale(0)");
+
+bin.append("path")
+    .attr("class", "receptor")
+    .attr("d", hexbin_hexagon);
+
+bin.append("path")
+    .attr("class", "mesh")
+    .attr("d", hexbin_hexmesh);
+
+function hexbins(width, height, radius) {
+  var hexagon = d3.range(0, 2 * Math.PI, Math.PI / 3).map(function(a) {
+    return [Math.sin(a), -Math.cos(a)].map(function(p) {
+      return radius * p;
+    });
+  });
+
+  hexbin_hexagon = "M" + hexagon.join("L");
+  hexbin_hexmesh = "M" + hexagon.slice(3).join("L");
+
+  var bins = [],
+      dx = radius * 1.5,
+      dy = radius * 2 * Math.sin(Math.PI / 3);
+
+  for (var y = 0, i = 0; y < height + radius; y += dx, ++i) {
+    for (var x = i & 1 ? -dy / 2 : 0; x < width + dy / 2; x += dy) {
+      bins.push([x, y]);
+    }
+  }
+
+  return bins;
+}
+
+function mousemove(d) {
+  var k = Math.min(1, Math.sqrt(++d[2] * .1));
+
+  d3.select(this).select(".display")
+      .attr("transform", "scale(" + k + ")")
+      .style("fill", "red")
+    .transition()
+      .duration(5000)
+      .style("fill", "black");
+
+  // hexagon.attr("transform", function(d) {
+  //   var dx = d[0] - p[0],
+  //       dy = d[1] - p[1],
+  //       l = Math.pow(dx * dx + dy * dy, .5);
+  //   return "translate(" + d + ")scale(" + Math.min(1, 50 / l) + ")";
+  // });
+
+  // hexagon.style("fill", function(d) {
+  //   return d3.hsl(p[0] - d[0], .5, .5);
+  // });
+}
+
+</script>

@@ -84,21 +84,27 @@ text {
 
 <p id="chart2">
 
-<aside>For more network diagrams, see my posts on <a href="../miserables/">matrix diagrams</a>, <a href="../hive/">hive plots</a> and <a href="../uberdata/">chord diagrams</a>.</aside>
-
 <p>This type of distortion is particularly useful for disambiguating edge-crossings in static network layouts: edges between distant nodes are distorted more strongly than local ones. If you dislike the chaotic appearance of <a href="http://mbostock.github.com/d3/ex/force.html">dynamic force layout</a>, consider using distortion instead.
+
+<aside>For more network diagrams, see my posts on <a href="../miserables/">matrix diagrams</a>, <a href="../hive/">hive plots</a> and <a href="../uberdata/">chord diagrams</a>.</aside>
 
 <h2><a name="cartesian" href="#cartesian">#</a>Cartesian Distortion</h2>
 
-<p>Yet circular distortion is only one of many possible distortion functions. Two disadvantages of circular distortion are that it compresses (rather than magnifies) the area near the circumference of the circle, and that it requires curved grid lines to show the distortion accurately. The latter makes it unsuitable for visualizations that have quantitative position encodings, such as scatterplots. <a href="http://dl.acm.org/citation.cfm?id=142763">Sarkar and Brown</a> recommend a different function that magnifies continuously so as to avoid local minification. Furthermore, they demonstrate applying the distortion to each dimension separately, resulting in <i>Cartesian distortion</i>:
+<p>Circular fisheye is only one of many possible distortion functions. Two disadvantages of circular distortion are that it compresses (rather than magnifies) the area near the circumference of the circle, and that it requires curved grid lines to show the distortion accurately. The latter makes it unsuitable for visualizations that have quantitative position encodings, such as scatterplots.
+
+<p><a href="http://dl.acm.org/citation.cfm?id=142763">Sarkar and Brown</a> therefore recommend a different function that magnifies continuously so as to avoid local minification. Furthermore, they demonstrate applying the distortion to each dimension separately, resulting in <i>Cartesian distortion</i>:
 
 <p id="chart3">
 
-<p>Cartesian distortion
+<p>With this technique, straight lines parallel to the <i>x</i> or <i>y</i> axis remain straight even after distortion. This means you can use standard axes in conjunction with fisheye distortion in scatterplots:
 
 <p id="chart4">
 
-<p>This example uses D3’s force layout in conjunction with a <a href="https://github.com/d3/d3-plugins/tree/master/fisheye">fisheye plugin</a>. For other implementations, see <a href="http://flare.prefuse.org">Flare</a> and <a href="http://sigmajs.org">Sigma.js</a>.
+<p>Fisheye distortion allows you to zoom into small areas of the chart without losing sense of the overall distribution. For example, the Western European countries (purple) are densely clustered in the <a href="../nations/">original chart</a>, making them difficult to compare; with distortion, you can easily differentiate individual countries while retaining global context and comparing regions.
+
+<h2><a name="implementation" href="#implementation">#</a>Implementation</h2>
+
+<p>These examples use D3’s <a href="https://github.com/d3/d3-plugins/tree/master/fisheye">fisheye plugin</a>, which supports both circular and Cartesian distortion. The latter is implemented on top of D3’s <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">quantitative scales</a>, allowing distortion of linear, logarthmic, and exponential scales, as well as compatibility with D3’s <a href="https://github.com/mbostock/d3/wiki/SVG-Axes">axis component</a>. For additional implementations, see <a href="http://flare.prefuse.org">Flare</a> and <a href="http://sigmajs.org">Sigma.js</a>.
 
 <footer>
   <aside>June 21, 2012</aside>
@@ -298,8 +304,7 @@ text {
   function color(d) { return d.region; }
 
   // Chart dimensions.
-  var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
-      padding =  {top: 80, right: 0, bottom: 0, left: 80},
+  var margin = {top: 5.5, right: 19.5, bottom: 12.5, left: 39.5},
       width = 960,
       height = 500 - margin.top - margin.bottom;
 
@@ -307,7 +312,7 @@ text {
   var xScale = d3.fisheye.scale(d3.scale.log).domain([300, 1e5]).range([0, width]),
       yScale = d3.fisheye.scale(d3.scale.linear).domain([20, 90]).range([height, 0]),
       radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
-      colorScale = d3.scale.category10();
+      colorScale = d3.scale.category10().domain(["Sub-Saharan Africa", "South Asia", "Middle East & North Africa", "America", "Europe & Central Asia", "East Asia & Pacific"]);
 
   // The x & y axes.
   var xAxis = d3.svg.axis().orient("bottom").scale(xScale).tickFormat(d3.format(",d")).tickSize(-height),
@@ -315,12 +320,10 @@ text {
 
   // Create the SVG container and set the origin.
   var svg = d3.select("#chart4").append("svg")
-      .attr("width", width + margin.left + margin.right + padding.left + padding.right)
-      .attr("height", height + margin.top + margin.bottom + padding.top + padding.bottom)
-      .style("margin-left", -padding.left + "px")
-      .style("margin-top", -padding.top + "px")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
     .append("g")
-      .attr("transform", "translate(" + (margin.left + padding.left) + "," + (margin.top + padding.top) + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add a background rect for mousemove.
   svg.append("rect")

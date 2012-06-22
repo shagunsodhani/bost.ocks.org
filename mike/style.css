@@ -3,7 +3,6 @@ html {
 }
 
 body {
-  position: relative;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   margin: 1em auto 4em auto;
   width: 960px;
@@ -26,7 +25,7 @@ h1, h2 {
 
 h2 a {
   color: #ccc;
-  left: -20px;
+  margin-left: -20px;
   position: absolute;
   width: 740px;
 }
@@ -48,7 +47,7 @@ footer aside {
 
 aside {
   font-size: small;
-  left: 780px;
+  margin-left: 780px;
   position: absolute;
   width: 180px;
 }

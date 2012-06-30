@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Twenty Years of Browsers</title>
+<style>
+
+@import url(../style.css?20120630);
+
+#browsers {
+  margin-top: 2em;
+}
+
+.browser {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 112px;
+  margin: 0 10px 8px 0;
+}
+
+.browser img {
+  border: solid 1px #999;
+  width: 150px;
+  height: 112px;
+}
+
+.browser span {
+  position: absolute;
+  left: 0;
+  bottom: 40px;
+  width: 150px;
+  text-align: center;
+}
+
+.browser:nth-child(6n) img {
+  margin-right: 0;
+}
+
+</style>
+<body>
+
+<header>
+  <aside>June 30, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Twenty Years of Browsers</h1>
+
+<p>The following browser thumbnails are from <a href="http://www.evolutionoftheweb.com/">The Evolution of the Web</a>, an interactive produced by <a href="http://hyperakt.com/">Hyperakt</a> and <a href="http://vizzuality.com/">Vizzuality</a>. The screenshots are ordered chronologically, starting with NCSA Mosaic 0.1 in 1993 and ending with Google Chrome 20 in 2012.
+
+<div id="browsers"></div>
+<br clear="left">
+
+<p class="attribution">Source: <a href="http://www.evolutionoftheweb.com/">The Evolution of the Web</a>, <a href="http://hyperakt.com/">Hyperakt</a>, <a href="http://vizzuality.com/">Vizzuality</a>, <a href="https://www.google.com/chrome/">Google Chrome</a>.
+
+<footer>
+  <aside>June 30, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="http://d3js.org/d3.v2.min.js?2.9.5"></script>
+<script>
+
+d3.json("browsers.json", function(browsers) {
+  var browser = d3.select("#browsers").selectAll(".browser")
+      .data(d3.merge(browsers.map(function(browser) {
+        return browser.versions.map(function(version) {
+          version.name = browser.name;
+          return version;
+        });
+      })).sort(function(a, b) { return a.x - b.x; }))
+    .enter().append("a")
+      .attr("class", "browser")
+      .attr("href", function(d) { return "http://www.evolutionoftheweb.com/img/browsers/" + d.name + "/desktop_" + d.number + ".jpg"; })
+      .attr("target", "_blank");
+
+  browser.append("img")
+      .attr("src", function(d) { return "http://www.evolutionoftheweb.com/img/browsers/" + d.name + "/desktop_" + d.number + ".jpg"; });
+
+  browser.append("span")
+      .text(function(d) { return d.name + " " + d.number; });
+});
+
+</script>

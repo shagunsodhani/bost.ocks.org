@@ -54,9 +54,9 @@ text {
 
 <p id="chart"></p>
 
-<aside>After the animation finishes, mouseover the year to change.</aside>
+<aside>Mouseover the year to move forward and backwards through time.</aside>
 
-<p class="attribution">Source: <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>.
+<p class="attribution">Source: <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
 
 <p>This is a recreation in <a href="http://d3js.org/">D3</a> of Gapminder’s <a href="http://gapminder.org/world/">Wealth & Health of Nations</a>, made famous by Hans Rosling’s memorable <a href="http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen.html">2006 TED talk</a>. It shows the dynamic fluctuation in per-capita income (<i>x</i>), life expectancy (<i>y</i>) and population (radius) of 180 nations over the last 209 years. Nations are colored by geographic region; mouseover to read their names.
 
@@ -134,7 +134,8 @@ var label = svg.append("text")
     .attr("class", "year label")
     .attr("text-anchor", "end")
     .attr("y", height - 24)
-    .attr("x", width);
+    .attr("x", width)
+    .text(1800);
 
 // Load the data.
 d3.json("nations.json", function(nations) {
@@ -157,6 +158,17 @@ d3.json("nations.json", function(nations) {
   dot.append("title")
       .text(function(d) { return d.name; });
 
+  // Add an overlay for the year label.
+  var box = label.node().getBBox();
+
+  var overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", box.x)
+        .attr("y", box.y)
+        .attr("width", box.width)
+        .attr("height", box.height)
+        .on("mouseover", enableInteraction);
+
   // Start a transition that interpolates the data based on year.
   svg.transition()
       .duration(30000)
@@ -178,19 +190,15 @@ d3.json("nations.json", function(nations) {
 
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
-    var box = label.node().getBBox();
-
     var yearScale = d3.scale.linear()
         .domain([1800, 2009])
         .range([box.x + 10, box.x + box.width - 10])
         .clamp(true);
 
-    svg.append("rect")
-        .attr("class", "overlay")
-        .attr("x", box.x)
-        .attr("y", box.y)
-        .attr("width", box.width)
-        .attr("height", box.height)
+    // Cancel the current transition, if any.
+    svg.transition().duration(0);
+
+    overlay
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("mousemove", mousemove)

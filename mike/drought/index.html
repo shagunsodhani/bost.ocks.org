@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Drought during Month</title>
+<style>
+
+@import url(../style.css?20120620);
+
+body {
+  width: 1280px;
+}
+
+aside {
+  margin-left: 1100px;
+}
+
+#chart {
+  height: 936px;
+  position: relative;
+}
+
+.year {
+  background-size: 1536px 72px;
+  display: inline-block;
+  float: left;
+  height: 72px;
+  position: absolute;
+  width: 128px;
+}
+
+</style>
+
+<header>
+  <aside>August 24, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Drought during <span id="month">Month</span></h1>
+
+<p id="chart">
+
+<p>We published a more serious graphic today on <a href="http://www.nytimes.com/interactive/2012/08/24/us/drought-crops.html">drought’s effect on crops</a>, but this was a fun animation we made to sanity-check parsing drought data. NOAA publishes monthly values for the <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer Drought Severity Index</a> going all the way back to 1895! Dark purple represents extreme drought, while dark green represents extreme moisture.
+
+<footer>
+  <aside>June 21, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="http://d3js.org/d3.v2.min.js?2.10.0"></script>
+<script src="../queue.min.js"></script>
+<script>
+
+var years = d3.range(2012, 1894, -1),
+    formatMonth = d3.time.format("%B");
+
+var q = queue();
+years.forEach(function(year) { q.defer(image, year); });
+q.await(display);
+
+function image(year, callback) {
+  var image = new Image;
+  image.onload = function() { callback(null, image); };
+  image.year = year;
+  image.src = year + ".png";
+}
+
+function display(error, images) {
+  var month = -1;
+
+  var year = d3.select("#chart").selectAll(".year")
+      .data(images)
+    .enter().append("div")
+      .attr("class", "year")
+      .style("top", function(d) { return Math.ceil((2010 - d.year) / 10) * 72 + "px"; })
+      .style("left", function(d) { return d.year % 10 * 128 + "px"; })
+      .style("background-image", function(d) { return "url(" + d.src + ")"; });
+
+  setInterval(function() {
+    month = (month + 1) % 12;
+    d3.select("#month").text(formatMonth(new Date(2012, month, 1)));
+    year.style("background-position", month * 128 + "px 0");
+  }, 1000 / 12);
+}
+
+</script>

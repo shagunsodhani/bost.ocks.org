@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>24 Aug 10:00 GMT</pubDate>
-    <lastBuildDate>24 Aug 10:00 GMT</lastBuildDate>
+    <pubDate>24 Aug 15:00 GMT</pubDate>
+    <lastBuildDate>24 Aug 15:00 GMT</lastBuildDate>
+    <item>
+      <title>Drought during Month</title>
+      <link>http://bost.ocks.org/mike/drought/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/drought/"><img src="http://bost.ocks.org/mike/drought.png" width="720" height="80"></a>]]></description>
+      <pubDate>24 Aug 15:00 GMT</pubDate>
+    </item>
     <item>
       <title>Drought Extends, Crops Wither</title>
       <link>http://www.nytimes.com/interactive/2012/08/24/us/drought-crops.html</link>

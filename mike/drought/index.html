@@ -5,26 +5,26 @@
 
 @import url(../style.css?20120620);
 
-body {
-  width: 1280px;
-}
-
-aside {
-  margin-left: 1100px;
-}
-
 #chart {
-  height: 936px;
   position: relative;
+  height: 1040px;
 }
 
 .year {
-  background-size: 1536px 72px;
-  display: inline-block;
-  float: left;
-  height: 72px;
   position: absolute;
-  width: 128px;
+}
+
+.label {
+  bottom: 4px;
+  color: #aaa;
+  font: 10px sans-serif;
+  left: 4px;
+  position: absolute;
+}
+
+.label.decade {
+  color: #000;
+  font-weight: bold;
 }
 
 </style>
@@ -36,9 +36,9 @@ aside {
 
 <h1>Drought during <span id="month">Month</span></h1>
 
-<p id="chart">
+<div id="chart"></div>
 
-<p>We published a more serious graphic today on <a href="http://www.nytimes.com/interactive/2012/08/24/us/drought-crops.html">drought’s effect on crops</a>, but this was a fun animation we made to sanity-check parsing drought data. NOAA publishes monthly values for the <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer Drought Severity Index</a> going all the way back to 1895! Dark purple represents extreme drought, while dark green represents extreme moisture.
+<p>We published a more serious graphic today on <a href="http://www.nytimes.com/interactive/2012/08/24/us/drought-crops.html">drought’s effect on crops</a>, but this was a fun animation we made to sanity-check parsing drought data. NOAA publishes monthly values for the <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer Drought Severity Index</a> going all the way back to 1895! Dark purple represents extreme drought, while dark green represents extreme moisture. In effect, this is a crazy electric version of Haeyoun Park and Kevin Quealy’s graphic, <a href="http://www.nytimes.com/interactive/2012/07/20/us/drought-footprint.html">Drought’s Footprint</a>.
 
 <footer>
   <aside>June 21, 2012</aside>
@@ -46,39 +46,105 @@ aside {
 </footer>
 
 <script src="http://d3js.org/d3.v2.min.js?2.10.0"></script>
-<script src="../queue.min.js"></script>
 <script>
 
-var years = d3.range(2012, 1894, -1),
+var width = 960 / 10,
+    height = 600 / 10,
+    marginTop = 20;
+
+var pad02 = d3.format("02d"),
     formatMonth = d3.time.format("%B");
 
-var q = queue();
-years.forEach(function(year) { q.defer(image, year); });
-q.await(display);
+var label = d3.select("#month");
 
-function image(year, callback) {
-  var image = new Image;
-  image.onload = function() { callback(null, image); };
-  image.year = year;
-  image.src = year + ".png";
-}
+var projection = d3.geo.albers()
+    .scale(width * 1.38)
+    .translate([width * .48, height * .52]);
 
-function display(error, images) {
-  var month = -1;
+var color = d3.scale.linear()
+    .domain([-4, 0, 4])
+    .range(["#7c003d", "#ffffbf", "#288219"])
+    .interpolate(d3.interpolateHcl);
 
-  var year = d3.select("#chart").selectAll(".year")
-      .data(images)
-    .enter().append("div")
-      .attr("class", "year")
-      .style("top", function(d) { return Math.ceil((2010 - d.year) / 10) * 72 + "px"; })
-      .style("left", function(d) { return d.year % 10 * 128 + "px"; })
-      .style("background-image", function(d) { return "url(" + d.src + ")"; });
+d3.json("climate-divisions.json", function(collection) {
 
-  setInterval(function() {
-    month = (month + 1) % 12;
-    d3.select("#month").text(formatMonth(new Date(2012, month, 1)));
-    year.style("background-position", month * 128 + "px 0");
-  }, 1000 / 12);
-}
+  d3.tsv("pdsi.json", function(pdsi) {
+    var pdsiById = {};
+
+    pdsi.forEach(function(d) { pdsiById[d.id] = d; });
+
+    var year = d3.select("#chart").selectAll(".year")
+        .data(d3.range(1895, 2013))
+      .enter().append("div")
+        .attr("class", "year")
+        .style("top", function(year) { return (201 - Math.floor(year / 10)) * (height + marginTop) + marginTop + "px"; })
+        .style("left", function(year) { return (year % 10) * width + "px"; });
+
+    year.append("span")
+        .attr("class", "label")
+        .classed("decade", function(year) { return !(year % 10); })
+        .text(String);
+
+    var canvas = year.select(function() { return this.appendChild(newCanvas()); })
+        .datum(function(year) {
+          var canvasByMonth = {};
+          return {
+            context: this.getContext("2d"),
+            canvasByMonth: function(month) {
+              var canvas = canvasByMonth[month];
+              if (!canvas) {
+                canvasByMonth[month] = canvas = newCanvas();
+                var context = canvas.getContext("2d");
+                collection.features.forEach(function(feature) {
+                  var z = pdsiById[feature.id][year + pad02(month) + "01"];
+                  if (!isNaN(z)) {
+                    context.fillStyle = color(z);
+                    pathFeature(context, feature);
+                    context.fill();
+                  }
+                });
+              }
+              return canvas;
+            }
+          };
+        });
+
+    var month = 0;
+    setInterval(function() {
+      if (++month > 12) month = 1;
+      canvas.each(function(d) { d.context.drawImage(d.canvasByMonth(month), 0, 0, width, height); });
+      label.text(formatMonth(new Date(2012, month - 1, 1)));
+    }, 1000 / 12);
+  });
+
+  function newCanvas() {
+    var canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d"),
+        ratio = (window.devicePixelRatio / context.webkitBackingStorePixelRatio) || 1;
+
+    d3.select(canvas)
+        .attr("width", width * ratio)
+        .attr("height", height * ratio)
+        .style("width", width + "px")
+        .style("height", height + "px");
+
+    context.scale(ratio, ratio);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, width, height);
+
+    return canvas;
+  }
+
+  // This only works for simple polygons with no holes.
+  function pathFeature(context, feature) {
+    var coordinates = feature.geometry.coordinates[0].map(projection),
+        i = 0,
+        n = coordinates.length;
+    context.beginPath();
+    context.moveTo(coordinates[0][0], coordinates[0][1]);
+    while (++i < n) context.lineTo(coordinates[i][0], coordinates[i][1]);
+    context.closePath();
+  }
+});
 
 </script>

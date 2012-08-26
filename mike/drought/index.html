@@ -68,6 +68,12 @@ var color = d3.scale.linear()
 
 d3.json("climate-divisions.json", function(collection) {
 
+  // Precompute the projected coordinates.
+  collection.features.forEach(function(feature) {
+    var coordinates = feature.geometry.coordinates;
+    coordinates[0] = coordinates[0].map(projection);
+  });
+
   d3.tsv("pdsi.json", function(pdsi) {
     var pdsiById = {};
 
@@ -137,7 +143,7 @@ d3.json("climate-divisions.json", function(collection) {
 
   // This only works for simple polygons with no holes.
   function pathFeature(context, feature) {
-    var coordinates = feature.geometry.coordinates[0].map(projection),
+    var coordinates = feature.geometry.coordinates[0],
         i = 0,
         n = coordinates.length;
     context.beginPath();

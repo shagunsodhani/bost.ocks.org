@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>24 Aug 15:00 GMT</pubDate>
-    <lastBuildDate>24 Aug 15:00 GMT</lastBuildDate>
+    <pubDate>28 Aug 23:00 GMT</pubDate>
+    <lastBuildDate>28 Aug 23:00 GMT</lastBuildDate>
+    <item>
+      <title>At the Republican Convention, the Words Being Used</title>
+      <link>http://www.nytimes.com/interactive/2012/08/28/us/politics/convention-word-counts.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/08/28/us/politics/convention-word-counts.html"><img src="http://localhost:8008/mike/convention-word-counts.png" width="720" height="80"></a>]]></description>
+      <pubDate>28 Aug 23:00 GMT</pubDate>
+    </item>
     <item>
       <title>Drought during Month</title>
       <link>http://bost.ocks.org/mike/drought/</link>

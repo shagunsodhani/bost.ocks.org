@@ -119,7 +119,6 @@ grandparent.append("text")
     .attr("dy", ".75em");
 
 d3.json("flare.json", function(root) {
-  var nodes = [];
 
   initialize(root);
   accumulate(root);
@@ -136,7 +135,6 @@ d3.json("flare.json", function(root) {
   // Aggregate the values for internal nodes. This is normally done by the
   // treemap layout, but not here because of our custom implementation.
   function accumulate(d) {
-    nodes.push(d);
     return d.children
         ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
         : d.value;

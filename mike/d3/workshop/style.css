@@ -189,13 +189,15 @@ q.nogap:after {
 */
 
 @media
-screen and (-webkit-min-device-pixel-ratio: 2),
-screen and (min-device-width: 768px) and (max-device-width: 1024px),
-screen and (max-device-width: 480px) {
+screen and (max-device-width: 1024px) {
+  body {
+    width: 1200px;
+  }
+
   .stack {
     display: block;
     box-shadow: none;
-    margin-bottom: 40px;
+    margin: 40px 0;
     -webkit-transform: none;
   }
 }

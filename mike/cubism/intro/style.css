@@ -10,16 +10,25 @@ a {
   text-decoration: none;
 }
 
+.active {
+  box-shadow: 0px 4px 8px rgba(0,0,0,.5);
+  display: block;
+  position: fixed;
+}
+
 .stack {
   border: solid 1px #000;
   background: #fff;
-  box-shadow: 0px 4px 8px rgba(0,0,0,.5);
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
   display: none;
-  height: 560px;
-  overflow: hidden;
-  padding: 80px;
-  position: relative;
-  width: 1120px;
+  height: 800px;
+  padding: 160px 80px;
+  width: 1280px;
+  -webkit-transform: translate3d(0,0,0);
 }
 
 .stack.full {
@@ -179,13 +188,15 @@ a,
 }
 
 @media
-screen and (-webkit-min-device-pixel-ratio: 2),
-screen and (min-device-width: 768px) and (max-device-width: 1024px),
-screen and (max-device-width: 480px) {
+screen and (max-device-width: 1024px) {
+  body {
+    width: 1200px;
+  }
+
   .stack {
     display: block;
     box-shadow: none;
-    margin-bottom: 40px;
+    margin: 40px 0;
     -webkit-transform: none;
   }
 }

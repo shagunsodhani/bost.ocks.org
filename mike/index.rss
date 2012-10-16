@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>18 Sep 13:00 GMT</pubDate>
-    <lastBuildDate>18 Sep 13:00 GMT</lastBuildDate>
+    <pubDate>14 Oct 19:00 GMT</pubDate>
+    <lastBuildDate>14 Oct 19:00 GMT</lastBuildDate>
+    <item>
+      <title>Over the Decades, How States Have Shifted</title>
+      <link>http://www.nytimes.com/interactive/2012/10/15/us/politics/swing-history.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/10/15/us/politics/swing-history.html"><img src="http://bost.ocks.org/mike/swing-history.png" width="720" height="80"></a>]]></description>
+      <pubDate>14 Oct 19:00 GMT</pubDate>
+    </item>
     <item>
       <title>A Faded Piece of Papyrus Refers to Jesus’ Wife</title>
       <link>http://www.nytimes.com/2012/09/19/us/historian-says-piece-of-papyrus-refers-to-jesus-wife.html</link>

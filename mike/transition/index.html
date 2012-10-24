@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Working With Transitions</title>
+<style>
+
+@import url(../style.css?20121022);
+
+</style>
+
+<header>
+  <aside>October 24, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Working With Transitions</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<p><a href="http://d3js.org">D3</a>’s <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-transition">selection.transition</a> method makes it easy to animate transitions when changing the DOM. For example, to change the text color to red instantaneously, you can select the body element and set the color style:
+
+<pre><code>d3.select("body").style("color", "red");</code></pre>
+
+<p>To instead animate the change over time, derive a transition:
+
+<pre><code>d3.select("body").transition().style("color", "red");</code></pre>
+
+<p>This ease-of-use comes from D3’s <a href="https://github.com/mbostock/d3/wiki/Transitions">transition interface</a> mirroring the <a href="https://github.com/mbostock/d3/wiki/Selections">selection interface</a>: nearly everything you can do to a selection of elements, you can also do to a transition, causing the change to be animated over time rather than instantaneous.
+
+<p>Yet looks can be deceiving because selections and transitions are <i>not</i> perfectly equivalent: transitions provide only a subset of selection functionality. These nuances are due to the long-running, asynchronous nature of transitions. Before you attempt more complicated uses of transitions, it is helpful to understand the system’s underlying design.
+
+<p style="box-shadow:0 8px 16px rgba(0,0,0,.1);background:#ffa;border:solid 1px #cc7;padding:1em;margin:2em 0 0 -1em;"><b>Note:</b> This article discusses transitions as implemented in <b>version 3.0</b>, which includes significant usability improvements to transitions. Although not yet <a href="https://github.com/mbostock/d3/wiki/Release-Notes">officially released</a>, you can start developing against the release candidate by checking out the <a href="https://github.com/mbostock/d3/tree/3.0">3.0 branch</a> or downloading <a href="http://d3js.org/d3.v3.js">d3.v3.js</a>.
+
+<h2><a name="animation" href="#animation">#</a>Transitions Are a Form of Animation</h2>
+
+<aside>For more general uses, consider implementing animations with <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_timer">d3.timer</a> rather than as transitions.</aside>
+
+<p>Transitions are a limited form of <a href="http://en.wikipedia.org/wiki/Key_frame">key frame animation</a> with only two key frames: <i>start</i> and <i>end</i>. The starting key frame is typically the current state of the DOM, and the ending key frame is a set of attributes, styles and other properties you specify. Transitions are thus well-suited for transitioning to a new view without complicated code that depends on the starting view.
+
+<p>Look again at this example transition:
+
+<pre><code>d3.select("body").transition().style("color", "red");</code></pre>
+
+<p>Although only a single attribute value is specified—the color red—a second value is implied. This starting value is computed from the DOM via <a href="https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle">getComputedStyle</a> or <a href="https://developer.mozilla.org/en-US/docs/DOM/element.getAttribute">getAttribute</a>.
+
+<p>In some cases, the computed starting value may not be what you want. For example, it can be different than what was set previously due to browsers converting values to canonical representations, say converting the color string <code>"red"</code> to <code>"rgb(255,0,0)"</code>. Depending on the interpolator you use (more on that in a bit), this may cause the transition to stutter. As another example, transparent colors are reported as <code>"rgba(0,0,0,0)"</code> (transparent black), which is treated as opaque black when using <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolateRgb">RGB interpolation</a>.
+
+<p>One way to make the starting value more explicit is to set it in the DOM before creating the transition. This won’t fix problems related to value conversion, but it can be useful if the inherited or default value isn’t what you want.
+
+<pre><code>d3.select("body")
+    .style("color", "green") // make the body green
+  .transition()
+    .style("color", "red"); // then transition to red</code></pre>
+
+<p>If the transition has a delay, then the starting value should be set only when the transition starts. You can do this by listening for the <i>start</i> event:
+
+<aside>This is a new feature in 3.0; older versions of D3 dispatched the start event <i>after</i> constructing tweens.</aside>
+
+<pre><code>d3.select("body").transition()
+    .delay(750)
+    .each("start", function() { d3.select(this).style("color", "green"); })
+    .style("color", "red");</code></pre>
+
+<p>The most explicit approach to set the starting value is to use <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-styleTween">transition.styleTween</a>. This skips computing the starting value from the DOM by specifying the both values and an interpolator.
+
+<pre><code>d3.select("body").transition()
+    .styleTween("color", function() { return d3.interpolate("green", "red"); });</code></pre>
+
+<p>This last variation gives a hint as to how transitions work under the hood. When you use <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-style">transition.style</a>, D3 creates a style tween for you automatically by retrieving the starting value from the DOM and constructing an interpolator to the specified ending value. If you want to override the start value or the interpolator, do this using <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-styleTween">styleTween</a>, <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-attrTween">attrTween</a> or <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-tween">tween</a>.
+
+<h2><a name="interpolation" href="#interpolation">#</a>Transitions Interpolate Values over Time</h2>
+
+<aside>The same interpolation subsystem is used by D3’s <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">quantitative scales</a>.</aside>
+
+<p>Given start and end key frames, how do we get from here to there? To perform a smooth animated transition, D3 needs to know how to interpolate—or blend—from a given starting value to its corresponding ending value. The <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolate">d3.interpolate</a> method determines an appropriate interpolator by inferring a type for each pair of starting and ending values. D3 supports several common types, including:
+
+<aside>You can extend the set of built-in interpolators by adding to the <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolators">d3.interpolators</a> array. Or create a custom tween.</aside>
+
+<ul>
+  <li>numbers
+  <li>colors
+  <li><a href="http://bl.ocks.org/1345853">geometric transforms</a>
+  <li>strings with embedded numbers (e.g., <code>"96px"</code>)
+</ul>
+
+<p>The string interpolator is particularly useful: it finds numbers embedded within strings, pairing up numbers in the starting string with the corresponding number in the ending string. Those numbers are interpolated separately, and the resulting string is then reconstructed. String interpolators have myriad applications, such as <a href="http://bl.ocks.org/3903818">interpolating path data</a> (e.g., <code>"M0,0L20,30"</code>) and CSS font specifications (e.g., <code>"300 12px/100% Helvetica"</code>).
+
+<p>String interpolation isn’t always appropriate. If the starting and ending path data have a different number of control points, for example, it’s no longer meaningful to pair up numbers. Instead, you need to <a href="http://bl.ocks.org/3916621">resample the path</a> prior to interpolation (or apply more advanced shape blending algorithms). Likewise, arcs require <a href="http://bl.ocks.org/1098617">interpolation in polar coordinates</a> so that the <i>angles</i> are interpolated, rather than the positions.
+
+<p>If you want to implement your own interpolator, you need a function that takes a single argument <i>t</i> ranging from 0 to 1. For <i>t</i> = 0, the interpolator returns the starting value; for <i>t</i> = 1, the interpolator returns the ending value; and for values in-between, the interpolator returns a blending value. For example, to interpolate two numbers:
+
+<aside>When rolling your own interpolator, you may still be able to reuse some of D3’s <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolate">built-in interpolators</a>.</aside>
+
+<pre><code class="javascript">function interpolateNumber(a, b) {
+  return function(t) {
+    return a + t * (b - a);
+  };
+}</code></pre>
+
+<p>When interpolating to or from zero, some interpolated values may be very small. JavaScript formats small numbers in exponential notation, which unfortunately is not supported by CSS. For example, when transitioning opacity to fade in or out, the number <code>0.0000001</code> is converted to the string <code>"1e-7"</code> and then ignored, giving the default value of <code>1</code>! To avoid distracting flicker, start or end the transition at <code>1e-6</code> rather than <code>0</code>; this is the smallest value not formatted in exponential notation.
+
+<h3>Some Things Cannot Be Interpolated</h3>
+
+<p>When modifying the DOM, use selections for any changes that cannot be interpolated; only use transitions for animation. For example, it is impossible to interpolate the creation of an element: it either exists or it doesn’t. Furthermore, in order to schedule a transition, the element must exist and so element creation cannot be deferred to start. Selection methods related to data joins (data, enter, exit) and creating elements (append, insert) can therefore only be performed on selections.
+
+<p>When using transitions in conjunction with the <a href="http://bl.ocks.org/3808218">general update pattern</a>, first perform the data-join on selections using enter and exit. Then derive transitions on each subselection as desired.
+
+<aside>To perform a special <a href="http://bl.ocks.org/3900925">transition on updating nodes</a>, derive a transition before appending to the enter selection.</aside>
+
+<pre><code>var bar = svg.selectAll(".bar")
+    .data(data, function(d) { return d.key; });
+
+bar.enter().append("rect")
+    .attr("class", "bar")
+    … // initialize entering bars
+
+bar.transition()
+    … // transition entering + updating bars
+
+bar.exit().transition()
+    … // transition exiting bars
+    .remove();</code></pre>
+
+<p>For convenience, there are a few exceptions to this rule. You can <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-remove">transition.remove</a> to remove an element at the end of the transition; likewise, <a href="">transition.text</a> sets the text content at the start of the transition, without interpolating. In the future, transitions may support additional non-interpolatable operations, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-classed">classed</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-html">html</a>.
+
+<h2><a name="life-cycle" href="#life-cycle">#</a>The Life of a Transition</h2>
+
+<p>As with concurrent programming, perhaps the trickest aspect of transitions is that they happen <i>over time</i> rather than instantaneously. The code does not proceed in a single straightforward path, as when the page loads, but as a complex sequence of recurring callbacks. While you can safely ignore this complexity in many cases, you must understand the rules which govern the evaluation of transitions if you want to harness their full power.
+
+<aside>A useful mnemonic is that transitions are <i>conceived</i>, <i>born</i>, <i>live</i> and <i>die</i>. But perhaps that takes the metaphor too literally.</aside>
+
+<p>Transitions have a four-phrase life cycle:
+
+<ol>
+  <li>The transition is scheduled.
+  <li>The transition starts.
+  <li>The transition runs.
+  <li>The transition ends.
+</ol>
+
+<aside>This is a new feature in D3 3.0; older versions of D3 deferred computing ending values until the first timer tick after scheduling. See the related <a href="http://bl.ocks.org/3903818">chained transitions</a> example.</aside>
+
+<p>A transition is <i>scheduled</i> when it is created: when you call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-transition">selection.transition</a>, you are scheduling a transition. This is also when you call <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-attr">attr</a>, <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-style">style</a>, and other transition methods to define the ending key frame. Scheduling happens in your code (for example, in response to the user clicking a button), meaning that the code so far is fully synchronous. This makes it easier to debug, and easier to use ending values that depend on changing global state, such as a scale’s domain.
+
+<p>A transition <i>starts</i> based on its <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-delay">delay</a>, which was specified when the transition was scheduled. If no delay was specified, then the transition starts as soon as possible, which is typically after a few milliseconds. The <i>start</i> event is then dispatched, and the transition initializes its tweens, which may involve retrieving starting values from the DOM and constructing interpolators. Deferring the initialization of tweens to start is necessary because starting values aren’t known until the transition starts. Therefore, if you use <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-attrTween">attrTween</a>, <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-styleTween">styleTween</a> and other <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-tween">tween</a> methods, keep in mind that your code will be evaluated asynchronously when the transition starts!
+
+<p>While the transition <i>runs</i>, its tweens are repeatedly invoked with values of <i>t</i> ranging from 0 to 1. In addition to delay and duration, transitions have <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-ease">easing</a> to control timing. Easing distorts time, such as for <a href="http://en.wikipedia.org/wiki/12_basic_principles_of_animation#Slow_in_and_slow_out">slow-in and slow-out</a>. Some easing functions may temporarily give values of <i>t</i> greater than 1 or less than 0; however, the ending time is always exactly 1 so that the ending value is set exactly when the transition ends. A transition <i>ends</i> based on the sum of its delay and <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-duration">duration</a>. When a transition ends, the tweens are invoked a final time with <i>t</i> = 1, and then the <i>end</i> event is dispatched.
+
+<h2><a name="per-element" href="#per-element">#</a>Transitions Are per-Element and Exclusive</h2>
+
+<aside>There is no end event when all selected elements finish transitioning, although you can simulate this <a href="https://groups.google.com/forum/?fromgroups=#!topic/d3-js/WC_7Xi6VV50">by counting</a>.</aside>
+
+<p>Each element transitions independently. When you create a transition from a selection, think of it as a <i>set of transitions</i>, one per element, rather than a single mega-transition running on multiple elements. Different elements can have different delays and duration, and even different easing and tweens. Additionally, transition events are dispatched separately for each element. When you receive an <i>end</i> event for a given element, its transition has ended, but other transitions may still be running on other elements.
+
+<p>For a given element, transitions are exclusive: only one transition can be running on the element at the same time. Starting a new transition on the element stops any transition that is already running. Interrupting a transition on the element has no effect on other elements, and multiple transitions can run concurrently on different elements. While only one transition can be running simultaneously on the element, multiple transitions can be scheduled. For example, you can schedule successive transitions using <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-transition">transition.transition</a>, which creates a new transition whose delay immediately follows the existing transition.
+
+<aside>Prior to 3.0, transitions inherited the <code>id</code> when a new transition was created inside the <i>end</i> event listener. This has been removed in favor of <a href="http://bl.ocks.org/3903818">chained transitions</a>.</aside>
+
+<p>For each element, <b>sequences of transitions only advance forward in time</b>. Transitions are assigned a monotonically-increasing identifier (<code>id</code>) when they are scheduled; each new transition <code>id</code> is greater than the last. When a transition starts on the element, it can only run if the transition is <i>newer</i> than whatever previously ran on the same element. Thus, starting a new transitions implicitly cancels any previous transitions—even if those old transitions have not yet started. This design eliminates the need to cancel transitions explicitly. An excellent illustration of this behavior is the <a href="http://bl.ocks.org/3943967">stacked-to-grouped bar transition</a>. This uses two chained transitions: the bars first slide right and narrow; then the bars drop to the baseline. The first transition also has a staggered delay. If you quickly toggle between stacked and grouped, notice the old transition is only interrupted when the new one starts, not when the new one is scheduled.
+
+<aside>This feature is new in D3 3.0; older versions of D3 stored transitions privately using closures, and created concurrent transitions when reselecting.</aside>
+
+<p>Similar to how data is bound to an element’s <code>__data__</code> property, transitions are bound to a <code>__transition__</code> property. When a transition is first scheduled on an element, this property is created; when the last scheduled transition ends, this property is likewise deleted. Inspecting this property in the console can be useful to debug which transitions are scheduled to run on which elements, as well as to inspect computed tweens and transition timing parameters. Because transitions are bound to elements, you can also reselect elements within a transition and modify tweens or timing. This is most common in conjunction with component-driven transitions, such as the axis component; use <a href="http://bl.ocks.org/3371592">post-selection</a> to customize the appearance of elements after invoking the component.
+
+<h2><a name="more" href="#more">#</a>Additional Reading</h2>
+
+<p>This tutorial covered most of the important details in the mechanics of transitions. I omitted an explanation of transition inheritance using <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-each">transition.each</a>; perhaps I’ll cover that in the future, though see <a href="https://github.com/mbostock/d3/issues/400#issuecomment-9719696">#400</a> for an example. For more on how transitions should be used (and not just implemented), see my earlier post on <a href="http://bost.ocks.org/mike/constancy/">object constancy</a> and Heer & Robertson’s excellent paper, <a href="http://vis.berkeley.edu/papers/animated_transitions/">“Animated Transitions in Statistical Data Graphics”</a>.
+
+<footer>
+  <aside>October 24, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

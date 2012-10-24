@@ -69,11 +69,9 @@
 
 <h2><a name="interpolation" href="#interpolation">#</a>Transitions Interpolate Values over Time</h2>
 
-<aside>The same interpolation subsystem is used by D3’s <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">quantitative scales</a>.</aside>
-
 <p>Given start and end key frames, how do we get from here to there? To perform a smooth animated transition, D3 needs to know how to interpolate—or blend—from a given starting value to its corresponding ending value. The <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolate">d3.interpolate</a> method determines an appropriate interpolator by inferring a type for each pair of starting and ending values. D3 supports several common types, including:
 
-<aside>You can extend the set of built-in interpolators by adding to the <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolators">d3.interpolators</a> array. Or create a custom tween.</aside>
+<aside>The same interpolation subsystem is used by D3’s <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">quantitative scales</a>. You can extend the set of built-in interpolators by adding to the <a href="https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_interpolators">d3.interpolators</a> array. Or create a custom tween.</aside>
 
 <ul>
   <li>numbers

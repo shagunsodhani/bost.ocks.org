@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>14 Oct 19:00 GMT</pubDate>
-    <lastBuildDate>14 Oct 19:00 GMT</lastBuildDate>
+    <pubDate>24 Oct 13:00 GMT</pubDate>
+    <lastBuildDate>24 Oct 13:00 GMT</lastBuildDate>
+    <item>
+      <title>Working with Transitions</title>
+      <link>http://bost.ocks.org/mike/transition/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/transition/"><img src="http://bost.ocks.org/mike/transition.png" width="720" height="80"></a>]]></description>
+      <pubDate>24 Oct 13:00 GMT</pubDate>
+    </item>
     <item>
       <title>Over the Decades, How States Have Shifted</title>
       <link>http://www.nytimes.com/interactive/2012/10/15/us/politics/swing-history.html</link>

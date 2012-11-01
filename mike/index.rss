@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>24 Oct 13:00 GMT</pubDate>
-    <lastBuildDate>24 Oct 13:00 GMT</lastBuildDate>
+    <pubDate>01 Nov 12:00 GMT</pubDate>
+    <lastBuildDate>01 Nov 12:00 GMT</lastBuildDate>
+    <item>
+      <title>Wind Speeds Along Hurricane Sandy’s Path</title>
+      <link>http://www.nytimes.com/interactive/2012/10/29/us/windspeed.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/10/29/us/windspeed.html"><img src="http://bost.ocks.org/mike/sandy-windspeed.png" width="720" height="80"></a>]]></description>
+      <pubDate>01 Nov 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Working with Transitions</title>
       <link>http://bost.ocks.org/mike/transition/</link>

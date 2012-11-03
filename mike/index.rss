@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>01 Nov 12:00 GMT</pubDate>
-    <lastBuildDate>01 Nov 12:00 GMT</lastBuildDate>
+    <pubDate>03 Nov 09:00 GMT</pubDate>
+    <lastBuildDate>03 Nov 09:00 GMT</lastBuildDate>
+    <item>
+      <title>512 Paths to the White House</title>
+      <link>http://www.nytimes.com/interactive/2012/11/02/us/politics/paths-to-the-white-house.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/11/02/us/politics/paths-to-the-white-house.html"><img src="http://bost.ocks.org/mike/512-paths.png" width="720" height="80"></a>]]></description>
+      <pubDate>03 Nov 09:00 GMT</pubDate>
+    </item>
     <item>
       <title>Wind Speeds Along Hurricane Sandy’s Path</title>
       <link>http://www.nytimes.com/interactive/2012/10/29/us/windspeed.html</link>

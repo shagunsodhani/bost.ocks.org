@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>03 Nov 09:00 GMT</pubDate>
-    <lastBuildDate>03 Nov 09:00 GMT</lastBuildDate>
+    <pubDate>08 Nov 14:00 GMT</pubDate>
+    <lastBuildDate>08 Nov 14:00 GMT</lastBuildDate>
+    <item>
+      <title>How Obama Won Re-election</title>
+      <link>http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html"><img src="http://bost.ocks.org/mike/reelection.png" width="720" height="80"></a>]]></description>
+      <pubDate>08 Nov 14:00 GMT</pubDate>
+    </item>
     <item>
       <title>512 Paths to the White House</title>
       <link>http://www.nytimes.com/interactive/2012/11/02/us/politics/paths-to-the-white-house.html</link>

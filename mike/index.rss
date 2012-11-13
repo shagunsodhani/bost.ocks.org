@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>08 Nov 14:00 GMT</pubDate>
-    <lastBuildDate>08 Nov 14:00 GMT</lastBuildDate>
+    <pubDate>13 Nov 11:00 GMT</pubDate>
+    <lastBuildDate>13 Nov 11:00 GMT</lastBuildDate>
+    <item>
+      <title>Counties Blue and Red, Moving Right and Left</title>
+      <link>http://www.nytimes.com/interactive/2012/11/11/sunday-review/counties-moving.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/11/11/sunday-review/counties-moving.html"><img src="http://bost.ocks.org/mike/counties-moving.png" width="720" height="80"></a>]]></description>
+      <pubDate>13 Nov 11:00 GMT</pubDate>
+    </item>
     <item>
       <title>How Obama Won Re-election</title>
       <link>http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html</link>

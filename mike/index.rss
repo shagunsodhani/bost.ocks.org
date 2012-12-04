@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>13 Nov 11:00 GMT</pubDate>
-    <lastBuildDate>13 Nov 11:00 GMT</lastBuildDate>
+    <pubDate>04 Dec 09:00 GMT</pubDate>
+    <lastBuildDate>04 Dec 09:00 GMT</lastBuildDate>
+    <item>
+      <title>How the Tax Burden Has Changed</title>
+      <link>http://www.nytimes.com/interactive/2012/11/30/us/tax-burden.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2012/11/30/us/tax-burden.html"><img src="http://bost.ocks.org/mike/taxes.png" width="720" height="80"></a>]]></description>
+      <pubDate>04 Dec 09:00 GMT</pubDate>
+    </item>
     <item>
       <title>Counties Blue and Red, Moving Right and Left</title>
       <link>http://www.nytimes.com/interactive/2012/11/11/sunday-review/counties-moving.html</link>

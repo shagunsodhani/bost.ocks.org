@@ -1,12 +1,27 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
+
 html {
   min-width: 1040px;
 }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  background: #fcfcfa;
+  color: #333;
+  font-family: "PT Serif", serif;
   margin: 1em auto 4em auto;
   position: relative;
   width: 960px;
+}
+
+header,
+footer,
+h1,
+h2,
+h3,
+h4,
+aside {
+  color: #000;
+  font-family: "PT Sans", sans-serif;
 }
 
 h1 {
@@ -37,7 +52,7 @@ footer {
 }
 
 header aside {
-  margin-top: 88px;
+  margin-top: 80px;
 }
 
 header aside,

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>04 Dec 09:00 GMT</pubDate>
-    <lastBuildDate>04 Dec 09:00 GMT</lastBuildDate>
+    <pubDate>30 Dec 19:00 GMT</pubDate>
+    <lastBuildDate>30 Dec 19:00 GMT</lastBuildDate>
+    <item>
+      <title>Let’s Make a Map</title>
+      <link>http://bost.ocks.org/mike/map/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/map/"><img src="http://bost.ocks.org/mike/map.png" width="720" height="80"></a>]]></description>
+      <pubDate>30 Dec 19:00 GMT</pubDate>
+    </item>
     <item>
       <title>How the Tax Burden Has Changed</title>
       <link>http://www.nytimes.com/interactive/2012/11/30/us/tax-burden.html</link>

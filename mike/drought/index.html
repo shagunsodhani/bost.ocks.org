@@ -137,8 +137,7 @@ d3.json("climate-divisions.json", function(collection) {
         .style("height", height + "px");
 
     context.scale(ratio, ratio);
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, width, height);
+    context.clearRect(0, 0, width, height);
 
     return canvas;
   }

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>03 Jan 00:00 GMT</pubDate>
-    <lastBuildDate>03 Jan 00:00 GMT</lastBuildDate>
+    <pubDate>24 Feb 10:00 GMT</pubDate>
+    <lastBuildDate>24 Feb 10:00 GMT</lastBuildDate>
+    <item>
+      <title>Why Use Make</title>
+      <link>http://bost.ocks.org/mike/make/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/make/"><img src="http://bost.ocks.org/mike/make.png" width="720" height="80"></a>]]></description>
+      <pubDate>24 Feb 10:00 GMT</pubDate>
+    </item>
     <item>
       <title>A Chicago Divided by Killings</title>
       <link>http://www.nytimes.com/interactive/2013/01/02/us/chicago-killings.html</link>

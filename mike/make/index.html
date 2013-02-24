@@ -136,9 +136,11 @@ function sequence(nodes) {
 
 <p>I love <a href="http://en.wikipedia.org/wiki/Make_(software)">Make</a>. You may think of Make as merely a tool for building large binaries or libraries (and it is, almost to a fault), but it’s much more than that. <b>Makefiles are machine-readable documentation that make your workflow reproducible.</b>
 
+<aside>To clarify, this post isn’t just about <a href="http://www.gnu.org/software/make/">GNU Make</a>; it’s about the benefits of capturing workflows via a file-based dependency-tracking build system, including modern alternatives such as <a href="http://rake.rubyforge.org/">Rake</a> and <a href="http://code.google.com/p/waf/">Waf</a>.</aside>
+
 <p>To illustrate with a recent example: yesterday <a href="http://kevinquealy.com/">Kevin</a> and I needed to update a six-month old <a href="http://www.nytimes.com/interactive/2012/08/11/sunday-review/drought-history.html">graphic on drought</a> to accompany a new article on <a href="http://www.nytimes.com/2013/02/23/us/in-drought-stricken-heartland-snow-is-no-savior.html">thin snowpack in the West</a>. The article was already on the homepage, so the clock was ticking to republish with new data as soon as possible.
 
-<p>Shamefully, I hadn’t documented the data-transformation process, and it’s painfully easy to forget details over six months: I had a mess of CSV and GeoJSON data files, but not the exact source URL from the <a href="http://www.ncdc.noaa.gov/">NCDC</a>; then I was temporarily confused as to the right <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer drought metric</a> (Drought Severity Index or Z Index?) and the corresponding categorical thresholds; finally, I had to resurrect the code to calculate drought coverage area.
+<p>Shamefully, I hadn’t documented the data-transformation process, and it’s painfully easy to forget details over six months: I had a mess of CSV and GeoJSON data files, but not the exact source URL from the <a href="http://www.ncdc.noaa.gov/">NCDC</a>; I was temporarily confused as to the right <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer drought metric</a> (Drought Severity Index or Z Index?) and the corresponding categorical thresholds; finally, I had to resurrect the code to calculate drought coverage area.
 
 <p>Despite these challenges, we republished the updated graphic without too much delay. But I was left thinking <i>how much easier it could have been</i> had I simply recorded the process the first time as a makefile. I could have simply typed <code>make</code> in the terminal and be done!
 
@@ -148,7 +150,7 @@ function sequence(nodes) {
 
 <p>The core concept is that generated files depend on other files. When generated files are missing, or when files they depend on have changed, needed files are re-made using a sequence of commands you specify.
 
-<p>For example, to build a <a href="http://bl.ocks.org/mbostock/4060606">choropleth map</a> of U.S. Counties, your workflow might look like:
+<p>Say you’re building a <a href="http://bl.ocks.org/mbostock/4060606">choropleth map</a> of unemployment and you need a TopoJSON file of U.S. counties. This file depends on cartographic boundaries published by the U.S. Census Bureau, so your workflow might look like:
 
 <ol>
   <li>Download a zip archive from the Census Bureau.
@@ -185,7 +187,7 @@ sequence([
 
 <h2><a name="syntax" href="#syntax">#</a>The Syntax Isn’t Pretty</h2>
 
-<p>The ugly side of Make is its syntax and complexity; the <a href="http://www.gnu.org/software/make/manual/make.html">full manual</a> is a whopping 183 pages. Fortunately, you can ignore most of Make’s features, and start by defining simple explicit rules. These have the following form:
+<p>The ugly side of Make is its syntax and complexity; the <a href="http://www.gnu.org/software/make/manual/make.html">full manual</a> is a whopping 183 pages. Fortunately, you can ignore most of this, and start with explicit rules of the following form:
 
 <pre><code>targetfile: sourcefile
 	command</code></pre>
@@ -197,9 +199,11 @@ sequence([
 <pre><code>counties.zip:
 	curl -o counties.zip 'http://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_050_00_20m.zip'</code></pre>
 
-<p>Put this code in a file called <code>Makefile</code>, and then run <code>make</code> from the same directory. (Note: <b>use tabs rather than spaces</b> to indent the commands in your makefile. Otherwise Make will crash with a cryptic error.) If it worked, you should see a downloaded <code>counties.zip</code> in the directory.
+<p>Put this code in a file called <code><a href="Makefile" download>Makefile</a></code>, and then run <code>make</code> from the same directory. (Note: <b>use tabs rather than spaces</b> to indent the commands in your makefile. Otherwise Make will crash with a cryptic error.) If it worked, you should see a downloaded <code>counties.zip</code> in the directory.
 
-<p>This first rule has no dependencies because it’s the first step in the workflow, or equivalently a leaf node in the dependency graph. Although the zip file depends on the Census Bureau’s website, and thus <i>can</i> change, Make has no native facility for checking if the contents of a URL have changed, and thus a makefile cannot specify a URL as a prerequisite. (You can however approximate this by checking the Last-Modified header via <code>curl -I</code>.) As a result, the <code>counties.zip</code> file will only be downloaded if it does not yet exist. If the Census Bureau releases new cartographic boundaries, you’ll need to delete the previously-downloaded zip file before running <code>make</code>.
+<aside style="margin-top:3em;">You can approximate URL dependencies by checking the Last-Modified header via <code>curl -I</code>.</aside>
+
+<p>This first rule has no dependencies because it’s the first step in the workflow, or equivalently a leaf node in the dependency graph. Although the zip file depends on the Census Bureau’s website, and thus <i>can</i> change, Make has no native facility for checking if the contents of a URL have changed, and thus a makefile cannot specify a URL as a prerequisite. As a result, the <code>counties.zip</code> file will only be downloaded if it does not yet exist. If the Census Bureau releases new cartographic boundaries, you’ll need to delete the previously-downloaded zip file before running <code>make</code>.
 
 <p>The second rule for creating the shapefile now has a prerequisite: the zip archive.
 
@@ -211,7 +215,7 @@ sequence([
 
 <p>This rule also has <i>two</i> commands. First, <code>unzip</code> expands the zip archive, producing the desired shapefile and its related files. Second, <code><a href="http://en.wikipedia.org/wiki/Touch_(Unix)">touch</a></code> sets the modification date of the shapefile to the current time.
 
-<p>The final touch is critical to Make’s understanding of the dependency graph. Without it, the modification time of the shapefile will be whenever it was created by the Census Bureau, rather than the current time. Since the shapefile is apparently <i>older</i> than the zip archive from which it was extracted, Make thinks it needs to be rebuilt—even though it was just made. Fortunately, most programs set the modification dates of their output files to the current time, so you’ll probably only need <code>touch</code> when using <code>unzip</code>.
+<p>The final touch is critical to Make’s understanding of the dependency graph. Without it, the modification time of the shapefile will be when it was created by the Census Bureau, rather than when it was extracted. Since the shapefile is apparently <i>older</i> than the zip archive from which it was extracted, Make thinks it needs to be rebuilt—even though it was just made! Fortunately, most programs set the modification dates of their output files to the current time, so you’ll probably only need <code>touch</code> when using <code>unzip</code>.
 
 <p>Lastly to convert to <a href="https://github.com/mbostock/topojson">TopoJSON</a>, a rule with one command and one prerequisite:
 
@@ -220,7 +224,7 @@ sequence([
 
 <p>With these three rules together in a makefile (<a href="Makefile" download>which you can download</a>), <code>make counties.json</code> will perform the necessary steps to produce a U.S. Counties TopoJSON file from scratch.
 
-<p>You can get a lot fancier with your makefiles; for example, <a href="http://www.gnu.org/software/make/manual/html_node/Pattern-Rules.html">pattern rules</a> and <a href="http://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">automatic variables</a> are useful for generic rules that generate multiple files. But even without these fancy features, hopefully you now have a sense of how Make elegantly captures file-based workflows.
+<p>You can get a lot fancier with your makefiles; for example, <a href="http://www.gnu.org/software/make/manual/html_node/Pattern-Rules.html">pattern rules</a> and <a href="http://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">automatic variables</a> are useful for generic rules that generate multiple files. But even without these fancy features, hopefully you now have a sense of how Make can capture file-based workflows.
 
 <h2><a href="#action" name="action">#</a>You Should Use Make</h2>
 
@@ -232,7 +236,7 @@ sequence([
 
 <li><p>Makefiles are testable. Even if you’re taking rigorous notes on how you built something, chances are a makefile is more reliable. A makefile won’t run if it’s missing a step; delete your generated files and rebuild from scratch to test. You can then be confident that you’ve fully captured your workflow.
 
-</ul><p>To see more real-world examples of makefiles, see my <a href="https://github.com/mbostock/world-atlas">World Atlas</a> and <a href="https://github.com/mbostock/us-atlas">U.S. Atlas</a> projects, which contain makefiles for deriving TopoJSON from Natural Earth, the National Atlas, the Census Bureau, and other sources. The beauty of the makefile approach is that I don’t need gigabytes of source data in my git repositories (Make will download them as needed), and the makefile is infinitely more customizable than pregenerating a fixed set of files. If you want to customize how the files are generated, or even just use the makefile to learn by example, it’s all there.
+</ul><p>To see more real-world examples of makefiles, see my <a href="https://github.com/mbostock/world-atlas">World Atlas</a> and <a href="https://github.com/mbostock/us-atlas">U.S. Atlas</a> projects, which contain makefiles for generating TopoJSON from Natural Earth, the National Atlas, the Census Bureau, and other sources. The beauty of the makefile approach is that I don’t need gigabytes of source data in my git repositories (Make will download them as needed), and the makefile is infinitely more customizable than pre-generating a fixed set of files. If you want to customize how the files are generated, or even just use the makefile to learn by example, it’s all there.
 
 <p>So do your future self and coworkers a favor, and use Make!
 

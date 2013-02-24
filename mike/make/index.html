@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Why Use Make</title>
+<style>
+
+@import url(../style.css?20121227);
+
+code {
+  tab-size: 2;
+}
+
+.link path,
+.node rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.link path {
+  marker-end: url(#marker);
+}
+
+.node rect {
+  fill: white;
+}
+
+.null rect {
+  display: none;
+}
+
+.from-null.link path {
+  marker-start: url(#circle);
+}
+
+.to-null.link path {
+  marker-end: url(#circle);
+}
+
+.special rect {
+  fill: orange;
+  fill-opacity: .2;
+  stroke: orange;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+</style>
+
+<header>
+  <aside>February 23, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Why Use Make</h1>
+
+<svg style="position:absolute;width:0;height:0;top:-200px;">
+  <marker id="marker"
+      viewBox="0 0 6 6"
+      refY="3"
+      markerWidth="7"
+      markerHeight="7"
+      orient="auto">
+    <path d="M0,3v-3l6,3l-6,3z"></path>
+  </marker>
+  <marker id="circle"
+      viewBox="0 0 8 8"
+      refX="4"
+      refY="4"
+      markerWidth="9"
+      markerHeight="9"
+      orient="auto">
+    <circle stroke="black" fill="white" r="2.5" cx="4" cy="4"></circle>
+  </marker>
+</svg>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+function sequence(nodes) {
+  var margin = {top: 20, right: 440, bottom: 0, left: 40},
+      width = 960 - margin.right,
+      height = 40 - margin.top - margin.bottom,
+      step = 160;
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .style("margin", "1em 0 1em " + -margin.left + "px");
+
+  var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var node = g.selectAll(".node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", function(d) { return (d.type || "") + " node"; })
+      .attr("transform", function(d, i) { return "translate(" + i * step + ",0)"; });
+
+  node.append("text")
+      .attr("x", 6)
+      .attr("dy", ".32em")
+      .text(function(d) { return d.name; })
+      .each(function(d) { d.width = d.name ? this.getComputedTextLength() + 12 : 0; });
+
+  node.insert("rect", "text")
+      .attr("ry", 6)
+      .attr("rx", 6)
+      .attr("y", -10)
+      .attr("height", 20)
+      .attr("width", function(d) { return d.width; });
+
+  var link = g.selectAll(".link")
+      .data(d3.range(nodes.length - 1))
+    .enter().insert("g", ".node")
+      .attr("class", function(i) {
+        return (nodes[i + 1].type ? "to-" + nodes[i + 1].type + " " : " ")
+          + (nodes[i].type ? "from-" + nodes[i].type + " " : " ")
+          + " link";
+      });
+
+  link.append("path")
+      .attr("d", function(i) { return "M" + (i * step + nodes[i].width) + ",0H" + ((i + 1) * step - 11); });
+
+  link.append("text")
+      .attr("x", function(i) { return (i + .5) * step + nodes[i].width / 2; })
+      .attr("y", -6)
+      .style("text-anchor", "middle")
+      .text(function(i) { return nodes[i].link; });
+
+  return svg;
+}
+
+</script>
+
+<p>I love <a href="http://en.wikipedia.org/wiki/Make_(software)">Make</a>. You may think of Make as merely a tool for building large binaries or libraries (and it is, almost to a fault), but it’s much more than that. <b>Makefiles are machine-readable documentation that make your workflow reproducible.</b>
+
+<p>To illustrate with a recent example: yesterday <a href="http://kevinquealy.com/">Kevin</a> and I needed to update a six-month old <a href="http://www.nytimes.com/interactive/2012/08/11/sunday-review/drought-history.html">graphic on drought</a> to accompany a new article on <a href="http://www.nytimes.com/2013/02/23/us/in-drought-stricken-heartland-snow-is-no-savior.html">thin snowpack in the West</a>. The article was already on the homepage, so the clock was ticking to republish with new data as soon as possible.
+
+<p>Shamefully, I hadn’t documented the data-transformation process, and it’s painfully easy to forget details over six months: I had a mess of CSV and GeoJSON data files, but not the exact source URL from the <a href="http://www.ncdc.noaa.gov/">NCDC</a>; then I was temporarily confused as to the right <a href="http://www.ncdc.noaa.gov/oa/climate/research/prelim/drought/palmer.html">Palmer drought metric</a> (Drought Severity Index or Z Index?) and the corresponding categorical thresholds; finally, I had to resurrect the code to calculate drought coverage area.
+
+<p>Despite these challenges, we republished the updated graphic without too much delay. But I was left thinking <i>how much easier it could have been</i> had I simply recorded the process the first time as a makefile. I could have simply typed <code>make</code> in the terminal and be done!
+
+<h2><a name="files" href="#files">#</a>It’s Files All The Way Down</h2>
+
+<p>The beauty of Make is that it’s simply a rigorous way of recording what you’re already doing. It doesn’t fundamentally change <i>how</i> you do something, but it encourages to you record each step in the process, enabling you (and your coworkers) to reproduce the entire process later.
+
+<p>The core concept is that generated files depend on other files. When generated files are missing, or when files they depend on have changed, needed files are re-made using a sequence of commands you specify.
+
+<p>For example, to build a <a href="http://bl.ocks.org/mbostock/4060606">choropleth map</a> of U.S. Counties, your workflow might look like:
+
+<ol>
+  <li>Download a zip archive from the Census Bureau.
+  <li>Extract the shapefile from the archive.
+  <li>Convert the shapefile to TopoJSON.
+</ol>
+
+<p>As a flow chart:
+
+<script>
+
+sequence([
+  {type: "null", link: "download"},
+  {name: "counties.zip", link: "extract"},
+  {name: "counties.shp", link: "convert"},
+  {name: "counties.json", type: "special"}
+]);
+
+</script>
+
+<p>In a mildly mind-bending maneuver, Make encourages you to express your workflow <i>backwards</i> as dependencies between files, rather than <i>forwards</i> as a sequential recipe. For example, the shapefile depends on the zip archive because you must download the archive before you can extract the shapefile (obviously). So to express your workflow in language that Make understands, consider instead the dependency graph:
+
+<script>
+
+sequence([
+  {name: "counties.json", type: "special", link: "depends on"},
+  {name: "counties.shp", link: "depends on"},
+  {name: "counties.zip"}
+]);
+
+</script>
+
+<p>This way of thinking can be uncomfortable at first, but it has advantages. Unlike a linear script, a dependency graph is flexible and modular; for example, you can augment the makefile to derive multiple shapefiles from the same zip archive without repeated downloads. Capturing dependencies also begets efficiency: you can remake generated files with only minimal effort when anything changes. A well-designed makefile allows you to iterate quickly while keeping generated files consistent and up-to-date.
+
+<h2><a name="syntax" href="#syntax">#</a>The Syntax Isn’t Pretty</h2>
+
+<p>The ugly side of Make is its syntax and complexity; the <a href="http://www.gnu.org/software/make/manual/make.html">full manual</a> is a whopping 183 pages. Fortunately, you can ignore most of Make’s features, and start by defining simple explicit rules. These have the following form:
+
+<pre><code>targetfile: sourcefile
+	command</code></pre>
+
+<p>Here <code>targetfile</code> is the file you want to generate, <code>sourcefile</code> is the file it depends on (is derived from), and <code>command</code> is something you run on the terminal to generate the target file. These terms generalize: a source file can itself be a generated file, in turn dependent on other source files; there can be multiple source files, or zero source files; and a command can be a sequence of commands or a complex script that you invoke. In Make parlance, source files are referred to as <i>prerequisites</i>, while target files are simply <i>targets</i>.
+
+<p>Here’s the rule to download the zip archive from the <a href="http://www.census.gov/geo/www/cob/cbf_counties.html">Census Bureau</a>:
+
+<pre><code>counties.zip:
+	curl -o counties.zip 'http://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_050_00_20m.zip'</code></pre>
+
+<p>Put this code in a file called <code>Makefile</code>, and then run <code>make</code> from the same directory. (Note: <b>use tabs rather than spaces</b> to indent the commands in your makefile. Otherwise Make will crash with a cryptic error.) If it worked, you should see a downloaded <code>counties.zip</code> in the directory.
+
+<p>This first rule has no dependencies because it’s the first step in the workflow, or equivalently a leaf node in the dependency graph. Although the zip file depends on the Census Bureau’s website, and thus <i>can</i> change, Make has no native facility for checking if the contents of a URL have changed, and thus a makefile cannot specify a URL as a prerequisite. (You can however approximate this by checking the Last-Modified header via <code>curl -I</code>.) As a result, the <code>counties.zip</code> file will only be downloaded if it does not yet exist. If the Census Bureau releases new cartographic boundaries, you’ll need to delete the previously-downloaded zip file before running <code>make</code>.
+
+<p>The second rule for creating the shapefile now has a prerequisite: the zip archive.
+
+<aside>I preserved the Census Bureau’s original verbose file name (<code>gz_2010_us_050_00_20m</code>). I’ll show you how to rename files in the final makefile, but for now let’s keep things simple.</aside>
+
+<pre><code>gz_2010_us_050_00_20m.shp: counties.zip
+	unzip counties.zip
+	touch gz_2010_us_050_00_20m.shp</code></pre>
+
+<p>This rule also has <i>two</i> commands. First, <code>unzip</code> expands the zip archive, producing the desired shapefile and its related files. Second, <code><a href="http://en.wikipedia.org/wiki/Touch_(Unix)">touch</a></code> sets the modification date of the shapefile to the current time.
+
+<p>The final touch is critical to Make’s understanding of the dependency graph. Without it, the modification time of the shapefile will be whenever it was created by the Census Bureau, rather than the current time. Since the shapefile is apparently <i>older</i> than the zip archive from which it was extracted, Make thinks it needs to be rebuilt—even though it was just made. Fortunately, most programs set the modification dates of their output files to the current time, so you’ll probably only need <code>touch</code> when using <code>unzip</code>.
+
+<p>Lastly to convert to <a href="https://github.com/mbostock/topojson">TopoJSON</a>, a rule with one command and one prerequisite:
+
+<pre><code>counties.json: gz_2010_us_050_00_20m.shp
+	topojson -o counties.json -- counties=gz_2010_us_050_00_20m.shp</code></pre>
+
+<p>With these three rules together in a makefile (<a href="Makefile" download>which you can download</a>), <code>make counties.json</code> will perform the necessary steps to produce a U.S. Counties TopoJSON file from scratch.
+
+<p>You can get a lot fancier with your makefiles; for example, <a href="http://www.gnu.org/software/make/manual/html_node/Pattern-Rules.html">pattern rules</a> and <a href="http://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">automatic variables</a> are useful for generic rules that generate multiple files. But even without these fancy features, hopefully you now have a sense of how Make elegantly captures file-based workflows.
+
+<h2><a href="#action" name="action">#</a>You Should Use Make</h2>
+
+<p>Created in 1977, Make has its quirks. But whether you prefer GNU Make or a more recent alternative, consider the benefits of capturing your workflow in a machine-readable format:<ul>
+
+<li><p>Update any source file, and any dependent files are regenerated with minimal effort. Keep your generated files consistent and up-to-date without memorizing and running your entire workflow by hand. Let the computer work for you!
+
+<li><p>Modify any step in the workflow by editing the makefile, and regenerate files with minimal effort. The modular nature of makefiles means that each rule is (typically) self-contained. When starting new projects, recycle rules from earlier projects with a similar workflow.
+
+<li><p>Makefiles are testable. Even if you’re taking rigorous notes on how you built something, chances are a makefile is more reliable. A makefile won’t run if it’s missing a step; delete your generated files and rebuild from scratch to test. You can then be confident that you’ve fully captured your workflow.
+
+</ul><p>To see more real-world examples of makefiles, see my <a href="https://github.com/mbostock/world-atlas">World Atlas</a> and <a href="https://github.com/mbostock/us-atlas">U.S. Atlas</a> projects, which contain makefiles for deriving TopoJSON from Natural Earth, the National Atlas, the Census Bureau, and other sources. The beauty of the makefile approach is that I don’t need gigabytes of source data in my git repositories (Make will download them as needed), and the makefile is infinitely more customizable than pregenerating a fixed set of files. If you want to customize how the files are generated, or even just use the makefile to learn by example, it’s all there.
+
+<p>So do your future self and coworkers a favor, and use Make!
+
+<footer>
+  <aside>February 23, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

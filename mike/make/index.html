@@ -203,7 +203,7 @@ sequence([
 
 <p>The second rule for creating the shapefile now has a prerequisite: the zip archive.
 
-<aside>I preserved the Census Bureau’s original verbose file name (<code>gz_2010_us_050_00_20m</code>). I’ll show you how to rename files in the final makefile, but for now let’s keep things simple.</aside>
+<aside>I preserved the Census Bureau’s original verbose file name (<code>gz_2010_us_050_00_20m</code>). You could instead rename files using <a href="http://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion</a>.</aside>
 
 <pre><code>gz_2010_us_050_00_20m.shp: counties.zip
 	unzip counties.zip

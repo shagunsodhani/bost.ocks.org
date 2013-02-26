@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>24 Feb 10:00 GMT</pubDate>
-    <lastBuildDate>24 Feb 10:00 GMT</lastBuildDate>
+    <pubDate>25 Feb 17:30 GMT</pubDate>
+    <lastBuildDate>25 Feb 17:30 GMT</lastBuildDate>
+    <item>
+      <title>Among the Oscar Contenders, a Host of Connections</title>
+      <link>http://www.nytimes.com/interactive/2013/02/20/movies/among-the-oscar-contenders-a-host-of-connections.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/02/20/movies/among-the-oscar-contenders-a-host-of-connections.html"><img src="http://bost.ocks.org/mike/oscar-network.png" width="720" height="80"></a>]]></description>
+      <pubDate>25 Feb 17:30 GMT</pubDate>
+    </item>
     <item>
       <title>Why Use Make</title>
       <link>http://bost.ocks.org/mike/make/</link>

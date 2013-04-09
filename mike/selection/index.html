@@ -264,13 +264,11 @@ tree(
 
 </script>
 
-<p>Nested selections also have the advantage that indexes are within-group rather than within-selection. So, the index of each cell of each row is always zero, one, two and three. To color the first column red, you can say:
+<aside>You can inspect the <code>parentNode</code> of each group in a selection using your browser’s JavaScript console.</aside>
 
-<pre><code>td.style("color", function(d, i) { return i ? null : "red"; });</code></pre>
+<p>Nested selections also have the advantage that indexes are within-group rather than within-selection. For example, the first cell of each row is always index zero. And groups define the parent node, which determines where entering elements in a data join are appended. In the nested join above, the td selection has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended to the appropriate tr element. (If this is confusing, rest assured we’ll revisit this topic when we get to data joins.)
 
-<p>Groups also define the parent node, which determines where entering elements in a data join are appended. In the nested join above, the td selection has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended to the appropriate tr element. (If this is confusing, we’ll revisit this topic when we get to data joins.)
-
-<p>In many cases, you don’t need nested selections. So what does a “flat” D3 selection look like, as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>? A selection with only one group:
+<p>Nested selections only result when selectAll is followed by another selectAll. In many cases, you don’t need nesting. So what does a “flat” D3 selection look like, as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>? A selection with only one group:
 
 <script>
 

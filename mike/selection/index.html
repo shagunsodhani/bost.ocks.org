@@ -165,6 +165,8 @@ tree(
 
 <p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements; that is, <a href="../nest/">nested</a> arrays of elements. A selection is an array of groups, and each group is an array of related elements (typically siblings).
 
+<aside>A selection’s groups can have different numbers of elements. This selection has three groups with three, four and three elements respectively.</aside>
+
 <script>
 
 tree(
@@ -259,7 +261,7 @@ tree(
 
 <h2><a href="#sparse" name="sparse">#</a>Sparse Arrays</h2>
 
-<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
+<p>Sometimes it’s useful to select a subset of elements from an existing selection, while retaining the same grouped structure. To support this use case, selections can contain null elements which are ignored for most operations:
 
 <script>
 
@@ -273,6 +275,7 @@ tree(
     {type: "array", name: "group", children: [
       {name: "null", type: "null"},
       {type: "element", name: "element"},
+      {type: "element", name: "element"},
       {type: "element", name: "element"}
     ]},
     {type: "array", name: "group", children: [
@@ -285,6 +288,9 @@ tree(
 );
 
 </script>
+
+<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
+
 <h2><a href="#data" name="data">#</a>Elements and Data</h2>
 
 <p>Perhaps surprisingly, data is <i>not</i> a property of selections; data is a property of elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection. In this way selections are transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.

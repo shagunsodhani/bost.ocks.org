@@ -113,9 +113,11 @@ function tree(root, outerHeight) {
 
 </script>
 
-<p>This article explains selections in more detail: how they are implemented. Maybe not the first thing you need to read to get started with D3, since you can tinker from examples. But good if you want to understand D3’s core concept completely.
+<p>In the past I have presented <a href="http://bost.ocks.org/mike/join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; I will instead explain in detail how selections are implemented. This will take longer to read, but it should dispel any sense of magic and give you everything you need to grasp selections completely.
 
-<p>You may have been told that selections are arrays of elements. This is technically true but not a precise definition.
+<h2><a href="#subclass" name="subclass">#</a>A Subclass of Array</h2>
+
+<p>You were probably told that selections are <i><a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array">arrays</a> of <a href="https://developer.mozilla.org/en-US/docs/DOM">DOM</a> <a href="https://developer.mozilla.org/en-US/docs/DOM/element">elements</a></i>. This is technically true but imprecise. For a more accurate definition, let’s start with a simple array of elements, to which we will add implementation details incrementally:
 
 <script>
 
@@ -133,7 +135,11 @@ tree(
 
 </script>
 
-<p>Selections are a subclass of array. JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <code>__proto__</code>. See d3_arraySubclass. Can do <code>instanceof</code> d3.selection. This is how selections have special methods on them, such as attr, style and append. Selections still have normal array methods on them, such as forEach and map. However, some of these methods are overridden for selections: filter, sort. And you should generally use each instead of forEach.
+<p>For starters, selections are a <i>subclass</i> of array, not literal arrays. This is how selections provide methods to manipulate selected elements, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">setting attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>. Selections retain native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often want to use native methods as D3 provides convenient alternatives such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. Also, some native methods are overridden to adapt their behavior to selections: <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.
+
+<aside>JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <a href="http://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array/">prototype chain injection</a>.</aside>
+
+<p>Replacing the gray vanilla array with the selection subclass in orange:
 
 <script>
 
@@ -150,6 +156,70 @@ tree(
 );
 
 </script>
+
+<h2><a href="#nested" name="nested">#</a>Arrays of Arrays of Elements</h2>
+
+<p>Selections are arrays of arrays of elements. Each outer array defines a <i>group</i> of elements. Needed to create hierarchical structures: selectAll followed by selectAll. The outer array defines the <code>parentNode</code>; this determines where elements are inserted following a data-join, and the data used for a data-join on multiple groups.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [ // TODO parentNode
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"}
+    ]}
+  ]},
+  240
+);
+
+</script>
+
+<p>Why nested selections? Short answer is it makes it easier to create nested elements (without resorting to nested loops, as when using selection.each). Consider the case where you selectAll("tr") then selectAll("td"). What would you expect the index of the <code>td</code> elements to be? What about if you wanted to join data to the <code>td</code> selection—would you rather specify a single array for all those elements, or have a way to derive the data for those elements from data you had already bound to the <code>tr</code> elements?
+
+<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element"},
+      {name: "null", type: "null"},
+      {name: "null", type: "null"}
+    ]},
+    {type: "array", name: "group", children: [
+      {name: "null", type: "null"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {name: "null", type: "null"}
+    ]}
+  ]},
+  220
+);
+
+</script>
+<h2><a href="#data" name="data">#</a>Elements and Data</h2>
+
+<p>Perhaps surprisingly, data is <i>not</i> a property of selections; data is a property of elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection. In this way selections are transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+
+<p>Note, however, that selection.select propagates data from parent to child, which can overwrite data that was previously bound.
 
 <p>Elements can have data bound to them. This is stored in <code>__data__</code> and so isn’t strictly part of the selection; if you reselect elements from the document, they will retain whatever data was bound to them previously.
 
@@ -183,63 +253,6 @@ tree(
     {type: "element", name: "element", children: [{type: "data", name: "data"}]}
   ]},
   140
-);
-
-</script>
-
-<p>Selections are arrays of arrays of elements. Each outer array defines a <i>group</i> of elements. Needed to create hierarchical structures: selectAll followed by selectAll. The outer array defines the <code>parentNode</code>; this determines where elements are inserted following a data-join, and the data used for a data-join on multiple groups.
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
-    ]}
-  ]},
-  240
-);
-
-</script>
-
-<p>Why nested selections? Short answer is it makes it easier to create nested elements (without resorting to nested loops, as when using selection.each). Consider the case where you selectAll("tr") then selectAll("td"). What would you expect the index of the <code>td</code> elements to be? What about if you wanted to join data to the <code>td</code> selection—would you rather specify a single array for all those elements, or have a way to derive the data for those elements from data you had already bound to the <code>tr</code> elements?
-
-<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {name: "null", type: "null"},
-      {name: "null", type: "null"}
-    ]},
-    {type: "array", name: "group", children: [
-      {name: "null", type: "null"},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-      {name: "null", type: "null"}
-    ]}
-  ]},
-  220
 );
 
 </script>

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>02 Mar 12:00 GMT</pubDate>
-    <lastBuildDate>03 Mar 21:12 GMT</lastBuildDate>
+    <pubDate>08 Apr 21:00 GMT</pubDate>
+    <lastBuildDate>09 Apr 08:00 GMT</lastBuildDate>
+    <item>
+      <title>China Still Dominates, but Some Manufacturers Look Elsewhere</title>
+      <link>http://www.nytimes.com/interactive/2013/04/08/business/global/asia-map.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/04/08/business/global/asia-map.html"><img src="http://bost.ocks.org/mike/asia-cartogram.png" width="720" height="80"></a>]]></description>
+      <pubDate>08 Apr 21:00 GMT</pubDate>
+    </item>
     <item>
       <title>Increased Border Enforcement, With Varying Results</title>
       <link>http://www.nytimes.com/interactive/2013/03/01/world/americas/border-graphic.html</link>

@@ -28,8 +28,17 @@
   stroke: #636363;
 }
 
-.node.element rect {
-  stroke: #3182bd;
+.node.element rect,
+.node.null rect {
+  stroke: none;
+}
+
+.node.null rect {
+  fill: none;
+}
+
+.node.null text {
+  fill: #777;
 }
 
 .node.selection rect {
@@ -41,8 +50,7 @@
   stroke: none;
 }
 
-.link.to-null,
-.node.null rect {
+.link.to-null {
   stroke-opacity: .5;
   stroke-dasharray: .5,3.5;
   stroke-linecap: round;
@@ -51,7 +59,7 @@
 </style>
 
 <header>
-  <aside>March 17, 2013</aside>
+  <aside>April 9, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </header>
 
@@ -113,11 +121,11 @@ function tree(root, outerHeight) {
 
 </script>
 
-<p>In the past I have presented <a href="http://bost.ocks.org/mike/join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; I will instead explain in detail how selections are implemented. This will take longer to read, but it should dispel any sense of magic and give you everything you need to grasp selections completely.
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain in detail how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and reveal everything you need to grasp selections completely.
 
 <h2><a href="#subclass" name="subclass">#</a>A Subclass of Array</h2>
 
-<p>You were probably told that selections are <i><a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array">arrays</a> of <a href="https://developer.mozilla.org/en-US/docs/DOM">DOM</a> <a href="https://developer.mozilla.org/en-US/docs/DOM/element">elements</a></i>. This is technically true but imprecise. For a more accurate definition, let’s start with a simple array of elements, to which we will add implementation details incrementally:
+<p>You were probably told that selections are <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array">arrays</a> of <a href="https://developer.mozilla.org/en-US/docs/DOM">DOM</a> <a href="https://developer.mozilla.org/en-US/docs/DOM/element">elements</a>. This is technically true but imprecise. To produce a more accurate definition, let’s start with a simple array of elements and incrementally add detail:
 
 <script>
 
@@ -135,11 +143,9 @@ tree(
 
 </script>
 
-<p>For starters, selections are a <i>subclass</i> of array, not literal arrays. This is how selections provide methods to manipulate selected elements, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">setting attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>. Selections retain native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often want to use native methods as D3 provides convenient alternatives such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. Also, some native methods are overridden to adapt their behavior to selections: <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.
-
 <aside>JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <a href="http://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array/">prototype chain injection</a>.</aside>
 
-<p>Replacing the gray vanilla array with the selection subclass in orange:
+<p>The first detail is that selections are a <i>subclass</i> of array, not plain arrays. This subclass provides methods to manipulate selected elements, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">setting attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>.
 
 <script>
 
@@ -157,9 +163,11 @@ tree(
 
 </script>
 
-<h2><a href="#nested" name="nested">#</a>Arrays of Arrays of Elements</h2>
+<p>Selections retain native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often use native methods as D3 provides convenient alternatives, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. Some native methods are overridden to adapt their behavior to selections (<a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>).
 
-<p>Selections are arrays of arrays of elements. Each outer array defines a <i>group</i> of elements. Needed to create hierarchical structures: selectAll followed by selectAll. The outer array defines the <code>parentNode</code>; this determines where elements are inserted following a data-join, and the data used for a data-join on multiple groups.
+<h2><a href="#group" name="group">#</a>Groups of Elements</h2>
+
+<p>The other reason selections aren’t simply arrays of elements is that they are <i>arrays of arrays</i> of elements; that is, <a href="../nest/">nested</a> arrays of elements. A selection is an array of groups, and each group is an array of related elements (typically siblings).
 
 <script>
 
@@ -187,7 +195,69 @@ tree(
 
 </script>
 
-<p>Why nested selections? Short answer is it makes it easier to create nested elements (without resorting to nested loops, as when using selection.each). Consider the case where you selectAll("tr") then selectAll("td"). What would you expect the index of the <code>td</code> elements to be? What about if you wanted to join data to the <code>td</code> selection—would you rather specify a single array for all those elements, or have a way to derive the data for those elements from data you had already bound to the <code>tr</code> elements?
+<p>If you are familiar with jQuery, D3’s nested selections may be surprising: why the extra complexity over flat selections? D3 is <i>data-driven</i> documents, and nesting is essential to map hierarchical data to hierarchical DOM elements. This will become more clear in a moment when we get to data joins, but for now consider this simple two-dimensional data structure:
+
+<pre><code>var matrix = [
+  [ 0,  1,  2,  3],
+  [ 4,  5,  6,  7],
+  [ 8,  9, 10, 11],
+  [12, 13, 14, 15],
+];</code></pre>
+
+<p>To create a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/table">table</a> from this matrix with matching structure, we need four <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/tr">tr</a> elements, each containing four <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/td">td</a> elements. A data join can enter the rows:
+
+<pre><code>var tr = table.selectAll("tr")
+    .data(matrix)
+  .enter().append("tr");</code></pre>
+
+<p>Yet to create the cells without resorting to manual iteration, we need a nested data join. Instead of a single flat join for all 16 numbers, it is more convenient to express separate data joins for each row, joining only the four numbers for that row. D3 allows data to be specified as a function which is computed for each group in the selection (here, each row). The identity function unrolls the nested array, returning the four numbers for each row:
+
+<pre><code>var td = tr.selectAll("td")
+    .data(function(d) { return d; })
+  .enter().append("td");</code></pre>
+
+<p>Another advantage of nested selections is that it provides sensible indexes within each group.
+
+<p>Groups define the parent node.
+
+<p>So what does a “flat” D3 selection look like, as returned by d3.selectAll?
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [ // TODO parentNode
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"},
+      {type: "element", name: "element"}
+    ]}
+  ]},
+  140
+);
+
+</script>
+
+<p>Or, even simpler, for a singleton selection as returned by d3.select:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [ // TODO parentNode
+      {type: "element", name: "element"}
+    ]}
+  ]},
+  30
+);
+
+</script>
+
+<p>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although generally it’s better to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
+
+<h2><a href="#sparse" name="sparse">#</a>Sparse Arrays</h2>
 
 <p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
 
@@ -266,7 +336,7 @@ tree(
 <p>The <i>enter</i> selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
 
 <footer>
-  <aside>March 17, 2013</aside>
+  <aside>April 9, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
 

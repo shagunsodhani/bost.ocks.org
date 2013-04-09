@@ -16,10 +16,6 @@
   fill: white;
 }
 
-.node text {
-  font: 10px sans-serif;
-}
-
 .link.to-data {
   stroke: #ddd;
 }
@@ -210,7 +206,7 @@ tree(
     .data(matrix)
   .enter().append("tr");</code></pre>
 
-<p>Yet to create the cells without resorting to manual iteration, we need a nested data join. Instead of a single flat join for all 16 numbers, it is more convenient to express separate data joins for each row, joining only the four numbers for that row. D3 allows data to be specified as a function which is computed for each group in the selection (here, each row). The identity function unrolls the nested array, returning the four numbers for each row:
+<p>Yet to create the cells without resorting to manual iteration, we need a nested data join. Instead of a single flat join for all 16 numbers, it is more convenient to express separate data joins for each row, joining only the four numbers for that row. D3 allows data to be specified as a function which is computed for each group in the selection (here, each row). The identity function dereferences the nested array, returning the four numbers for each row:
 
 <pre><code>var td = tr.selectAll("td")
     .data(function(d) { return d; })
@@ -220,9 +216,9 @@ tree(
 
 <pre><code>td.style("color", function(d, i) { return i ? null : "red"; });</code></pre>
 
-<p>Groups have one additional special property: they define the parent node. The parent node determines where entering elements in a data join are appended. In the example above, the nested selection of td elements has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended in the appropriate tr element. (If this is confusing, we’ll revisit this topic when we get to data joins.)
+<p>Groups also define the parent node, which determines where entering elements in a data join are appended. In the nested join above, the td selection has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended to the appropriate tr element. (If this is confusing, we’ll revisit this topic when we get to data joins.)
 
-<p>Of course, in many cases, you don’t need nested selections. So what does a “flat” D3 selection look like, as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>?
+<p>In many cases, you don’t need nested selections. So what does a “flat” D3 selection look like, as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>? A selection with only one group:
 
 <script>
 

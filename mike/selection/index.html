@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>How Selections Work</title>
+<style>
+
+@import url(../style.css?20121227);
+
+.link,
+.node rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.node rect {
+  fill: white;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.link.to-data {
+  stroke: #ddd;
+}
+
+.node.array rect {
+  stroke: #636363;
+}
+
+.node.element rect {
+  stroke: #3182bd;
+}
+
+.node.selection rect {
+  stroke: #e6550d;
+}
+
+.node.data rect {
+  fill: #eee;
+  stroke: none;
+}
+
+.link.to-null,
+.node.null rect {
+  stroke-opacity: .5;
+  stroke-dasharray: .5,3.5;
+  stroke-linecap: round;
+}
+
+</style>
+
+<header>
+  <aside>March 17, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>How Selections Work</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+function tree(root, outerHeight) {
+  var margin = {top: 0, right: 440, bottom: 0, left: 40},
+      width = 960 - margin.right,
+      height = outerHeight - margin.top - margin.bottom,
+      step = 120;
+
+  var tree = d3.layout.tree()
+      .size([height, 1])
+      .separation(function() { return 1; });
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .style("margin", "1em 0 1em " + -margin.left + "px");
+
+  var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var nodes = tree.nodes(root);
+
+  var node = g.selectAll(".node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", function(d) { return (d.type || "") + " node"; })
+      .attr("transform", function(d) { return "translate(" + d.depth * step + "," + d.x + ")"; })
+
+  node.append("text")
+      .attr("x", 6)
+      .attr("dy", ".32em")
+      .text(function(d) { return d.name; })
+      .each(function(d) { d.width = this.getComputedTextLength() + 12; });
+
+  node.insert("rect", "text")
+      .attr("ry", 6)
+      .attr("rx", 6)
+      .attr("y", -10)
+      .attr("height", 20)
+      .attr("width", function(d) { return Math.max(32, d.width); });
+
+  var link = g.selectAll(".link")
+      .data(tree.links(nodes))
+    .enter().insert("path", ".node")
+      .attr("class", function(d) { return "to-" + d.target.type + " from-" + d.source.type + " link";})
+      .attr("d", d3.svg.diagonal()
+      .source(function(d) { return {y: d.source.depth * step + d.source.width, x: d.source.x}; })
+      .target(function(d) { return {y: d.target.depth * step, x: d.target.x}; })
+      .projection(function(d) { return [d.y, d.x]; }));
+
+  return svg;
+}
+
+</script>
+
+<p>This article explains selections in more detail: how they are implemented. Maybe not the first thing you need to read to get started with D3, since you can tinker from examples. But good if you want to understand D3’s core concept completely.
+
+<p>You may have been told that selections are arrays of elements. This is technically true but not a precise definition.
+
+<script>
+
+tree(
+  {type: "array", name: "array", children: [
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"}
+  ]},
+  140
+);
+
+</script>
+
+<p>Selections are a subclass of array. JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <code>__proto__</code>. See d3_arraySubclass. Can do <code>instanceof</code> d3.selection. This is how selections have special methods on them, such as attr, style and append. Selections still have normal array methods on them, such as forEach and map. However, some of these methods are overridden for selections: filter, sort. And you should generally use each instead of forEach.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"}
+  ]},
+  140
+);
+
+</script>
+
+<p>Elements can have data bound to them. This is stored in <code>__data__</code> and so isn’t strictly part of the selection; if you reselect elements from the document, they will retain whatever data was bound to them previously.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+  ]},
+  140
+);
+
+</script>
+
+<p>And of course, not every element may have data associated with it.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element"},
+    {type: "element", name: "element"},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+    {type: "element", name: "element"},
+    {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+  ]},
+  140
+);
+
+</script>
+
+<p>Selections are arrays of arrays of elements. Each outer array defines a <i>group</i> of elements. Needed to create hierarchical structures: selectAll followed by selectAll. The outer array defines the <code>parentNode</code>; this determines where elements are inserted following a data-join, and the data used for a data-join on multiple groups.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    ]}
+  ]},
+  240
+);
+
+</script>
+
+<p>Why nested selections? Short answer is it makes it easier to create nested elements (without resorting to nested loops, as when using selection.each). Consider the case where you selectAll("tr") then selectAll("td"). What would you expect the index of the <code>td</code> elements to be? What about if you wanted to join data to the <code>td</code> selection—would you rather specify a single array for all those elements, or have a way to derive the data for those elements from data you had already bound to the <code>tr</code> elements?
+
+<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {name: "null", type: "null"},
+      {name: "null", type: "null"}
+    ]},
+    {type: "array", name: "group", children: [
+      {name: "null", type: "null"},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {type: "element", name: "element", children: [{type: "data", name: "data"}]},
+      {name: "null", type: "null"}
+    ]}
+  ]},
+  220
+);
+
+</script>
+
+<p>There are two forms of data-join, by <i>index</i> and by <i>key</i>. A data-join by index occurs when you call selection.data with only one argument; <i>i.e.</i>, you specify the data but not the key function. A data-join by key occurs when you specify two arguments, the second being the key function.
+
+<p>Consider the more general join by key first. The key function is invoked for each element in the selection, and for each datum in the data. The key function returns a string key. If the key for an element matches the key for a datum, the element and the datum are considered “joined” and the element is put in the <i>update</i> selection.
+
+<p>The <i>update</i> selection is simply the return value of selection.data. Why not an explicit update method? Well, for brevity.
+
+<p>The <i>enter</i> selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
+
+<footer>
+  <aside>March 17, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

@@ -208,11 +208,61 @@ tree(
     .data(matrix)
   .enter().append("tr");</code></pre>
 
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [
+      {type: "element", name: "tr"},
+      {type: "element", name: "tr"},
+      {type: "element", name: "tr"},
+      {type: "element", name: "tr"}
+    ]}
+  ]},
+  100
+);
+
+</script>
+
 <p>Yet to create the cells without resorting to manual iteration, we need a nested data join. Instead of a single flat join for all 16 numbers, it is more convenient to express separate data joins for each row, joining only the four numbers for that row. D3 allows data to be specified as a function which is computed for each group in the selection (here, each row). The identity function dereferences the nested array, returning the four numbers for each row:
 
 <pre><code>var td = tr.selectAll("td")
     .data(function(d) { return d; })
   .enter().append("td");</code></pre>
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group", children: [
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"}
+    ]},
+    {type: "array", name: "group", children: [
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"},
+      {type: "element", name: "td"}
+    ]}
+  ]},
+  400
+);
+
+</script>
 
 <p>Nested selections also have the advantage that indexes are within-group rather than within-selection. So, the index of each cell of each row is always zero, one, two and three. To color the first column red, you can say:
 
@@ -288,6 +338,8 @@ tree(
 );
 
 </script>
+
+<p>For example selection.select
 
 <p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
 

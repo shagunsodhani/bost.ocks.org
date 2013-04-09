@@ -167,7 +167,7 @@ tree(
 
 <h2><a href="#group" name="group">#</a>Groups of Elements</h2>
 
-<p>The other reason selections aren’t simply arrays of elements is that they are <i>arrays of arrays</i> of elements; that is, <a href="../nest/">nested</a> arrays of elements. A selection is an array of groups, and each group is an array of related elements (typically siblings).
+<p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements; that is, <a href="../nest/">nested</a> arrays of elements. A selection is an array of groups, and each group is an array of related elements (typically siblings).
 
 <script>
 
@@ -216,11 +216,13 @@ tree(
     .data(function(d) { return d; })
   .enter().append("td");</code></pre>
 
-<p>Another advantage of nested selections is that it provides sensible indexes within each group.
+<p>Nested selections also have the advantage that indexes are within-group rather than within-selection. So, the index of each cell of each row is always zero, one, two and three. To color the first column red, you can say:
 
-<p>Groups define the parent node.
+<pre><code>td.style("color", function(d, i) { return i ? null : "red"; });</code></pre>
 
-<p>So what does a “flat” D3 selection look like, as returned by d3.selectAll?
+<p>Groups have one additional special property: they define the parent node. The parent node determines where entering elements in a data join are appended. In the example above, the nested selection of td elements has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended in the appropriate tr element. (If this is confusing, we’ll revisit this topic when we get to data joins.)
+
+<p>Of course, in many cases, you don’t need nested selections. So what does a “flat” D3 selection look like, as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>?
 
 <script>
 
@@ -240,7 +242,9 @@ tree(
 
 </script>
 
-<p>Or, even simpler, for a singleton selection as returned by d3.select:
+<aside>The parent node for selections returned by d3.select and d3.selectAll is the root <a href="https://developer.mozilla.org/en-US/docs/DOM/document.documentElement">document element</a>.</aside>
+
+<p>Or, even simpler, for a singleton selection as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a>:
 
 <script>
 

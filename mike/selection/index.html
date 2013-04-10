@@ -8,7 +8,7 @@
 .link,
 .node rect {
   fill: none;
-  stroke: black;
+  stroke: #636363;
   stroke-width: 1.5px;
 }
 
@@ -24,17 +24,25 @@
   stroke: #636363;
 }
 
-.node.element rect,
-.node.null rect {
+.link.to-element {
+  stroke: #bdbdbd;
+}
+
+.node.element rect {
+  fill: #bdbdbd;
   stroke: none;
 }
 
 .node.null rect {
-  fill: none;
+  stroke: none;
 }
 
 .node.null text {
-  fill: #777;
+  fill: #636363;
+}
+
+.node.function rect {
+  stroke: #3182bd;
 }
 
 .node.selection rect {
@@ -42,7 +50,16 @@
 }
 
 .node.data rect {
-  fill: #eee;
+  fill: #d9d9d9;
+  stroke: none;
+}
+
+.link.to-key {
+  stroke: #a1d99b;
+}
+
+.node.key rect {
+  fill: #a1d99b;
   stroke: none;
 }
 
@@ -64,11 +81,13 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-function tree(root, outerHeight) {
-  var margin = {top: 0, right: 440, bottom: 0, left: 40},
-      width = 960 - margin.right,
+function tree(leftRoot, rightRoot, outerHeight) {
+  if (arguments.length < 3) outerHeight = rightRoot, rightRoot = null;
+
+  var margin = {top: 0, right: 40, bottom: 0, left: 40},
+      width = 720,
       height = outerHeight - margin.top - margin.bottom,
-      step = 120;
+      step = 100;
 
   var tree = d3.layout.tree()
       .size([height, 1])
@@ -79,13 +98,18 @@ function tree(root, outerHeight) {
       .attr("height", height + margin.top + margin.bottom)
       .style("margin", "1em 0 1em " + -margin.left + "px");
 
-  var g = svg.append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var nodes = tree.nodes(root);
+  var g = svg.selectAll("g")
+      .data([].concat(
+        leftRoot ? {nodes: tree.nodes(leftRoot)} : [],
+        rightRoot ? {nodes: tree.nodes(rightRoot).map(flip), flipped: true} : []
+      ))
+    .enter().append("g")
+      .attr("transform", function(d) {
+        return "translate(" + (!!d.flipped * width + margin.left) + "," + margin.top + ")";
+      });
 
   var node = g.selectAll(".node")
-      .data(nodes)
+      .data(function(d) { return d.nodes; })
     .enter().append("g")
       .attr("class", function(d) { return (d.type || "") + " node"; })
       .attr("transform", function(d) { return "translate(" + d.depth * step + "," + d.x + ")"; })
@@ -94,23 +118,33 @@ function tree(root, outerHeight) {
       .attr("x", 6)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; })
-      .each(function(d) { d.width = this.getComputedTextLength() + 12; });
+      .each(function(d) { d.width = Math.max(32, this.getComputedTextLength() + 12); })
+    .filter(function(d) { return d.flipped; })
+      .attr("x", function(d) { return 6 - d.width; });
 
   node.insert("rect", "text")
       .attr("ry", 6)
       .attr("rx", 6)
       .attr("y", -10)
       .attr("height", 20)
-      .attr("width", function(d) { return Math.max(32, d.width); });
+      .attr("width", function(d) { return d.width; })
+    .filter(function(d) { return d.flipped; })
+      .attr("x", function(d) { return -d.width; });
 
   var link = g.selectAll(".link")
-      .data(tree.links(nodes))
+      .data(function(d) { return tree.links(d.nodes); })
     .enter().insert("path", ".node")
       .attr("class", function(d) { return "to-" + d.target.type + " from-" + d.source.type + " link";})
       .attr("d", d3.svg.diagonal()
-      .source(function(d) { return {y: d.source.depth * step + d.source.width, x: d.source.x}; })
+      .source(function(d) { return {y: d.source.depth * step + (d.source.flipped ? -1 : +1) * d.source.width, x: d.source.x}; })
       .target(function(d) { return {y: d.target.depth * step, x: d.target.x}; })
       .projection(function(d) { return [d.y, d.x]; }));
+
+  function flip(d) {
+    d.depth *= -1;
+    d.flipped = true;
+    return d;
+  }
 
   return svg;
 }
@@ -134,7 +168,7 @@ tree(
     {type: "element", name: "element₄"},
     {type: "element", name: "element₅"}
   ]},
-  140
+  24 * 6
 );
 
 </script>
@@ -154,7 +188,7 @@ tree(
     {type: "element", name: "element₄"},
     {type: "element", name: "element₅"}
   ]},
-  140
+  24 * 6
 );
 
 </script>
@@ -180,7 +214,7 @@ tree(
       {type: "element", name: "element₅"}
     ]}
   ]},
-  140
+  24 * 6
 );
 
 </script>
@@ -199,7 +233,7 @@ tree(
       {type: "element", name: "element₀"}
     ]}
   ]},
-  30
+  24 * 1
 );
 
 </script>
@@ -219,7 +253,7 @@ tree(
       {type: "element", name: "tr₃"}
     ]}
   ]},
-  100
+  24 * 4
 );
 
 </script>
@@ -259,7 +293,7 @@ tree(
       {type: "element", name: "td₃"}
     ]}
   ]},
-  400
+  24 * 16
 );
 
 </script>
@@ -304,7 +338,7 @@ tree(
       {type: "element", name: "section₃"}
     ]}
   ]},
-  100
+  24 * 4
 );
 
 </script>
@@ -324,7 +358,7 @@ tree(
       {type: "element", name: "p₃"}
     ]}
   ]},
-  100
+  24 * 4
 );
 
 </script>
@@ -344,7 +378,7 @@ tree(
       {type: "element", name: "aside₃"}
     ]}
   ]},
-  100
+  24 * 4
 );
 
 </script>
@@ -353,20 +387,19 @@ tree(
 
 <h2><a href="#data" name="data">#</a>Bound to Data</h2>
 
-<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is simply assigned as the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is assigned to the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
 
 <aside>To verify that data is a property of elements, see <a href="https://github.com/mbostock/d3/blob/master/src/selection/datum.js">selection.datum</a>’s implementation.</aside>
 
-<p>How is data bound to elements? Several ways:<ul>
+<p>Data is bound to elements one of several ways:<ul>
 
-  <li>Set the <code>__data__</code> property directly.
-  <li>Use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-datum">selection.datum</a> to assign data to individual elements.
-  <li>Inherit data from a parent via append, insert, or select.
-  <li>Use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> to join data to groups of elements.
+  <li>Inherited from a parent via append, insert, or select.
+  <li>Assigned to individual elements via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-datum">selection.datum</a>.
+  <li>Joined to groups of elements via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>.
 
 </ul>
 
-<p>Let’s cover these mechanisms in order, starting with the simplest. To bind a simple number to the body element by hand, say:
+<p>There’s no reason to set the <code>__data__</code> property directly when you can use selection.datum, but doing so illustrates how data binding is implemented. You might also find this knowledge useful when inspecting selections in your browser’s developer tools; <code>$0.__data__</code> shows the data bound to the inspected element. To bind the number 42 to the body element by hand:
 
 <pre><code>document.body.__data__ = 42;</code></pre>
 
@@ -376,12 +409,12 @@ tree(
   {type: "element", name: "body₀", children: [
     {type: "data", name: "42"}
   ]},
-  30
+  24 * 1
 );
 
 </script>
 
-<p>Underscores are ugly; to avoid them, select the body and call datum instead:
+<p>The idiomatic equivalent is to select the body and call datum:
 
 <pre><code>var body = d3.select("body").datum(42);</code></pre>
 
@@ -395,12 +428,12 @@ tree(
       ]}
     ]}
   ]},
-  30
+  24 * 1
 );
 
 </script>
 
-<p>If we append an element to the body, the child automatically inherits data from the parent:
+<p>If we now append an element to the body, the child automatically inherits data from the parent:
 
 <pre><code>var h1 = body.append("h1");</code></pre>
 
@@ -414,12 +447,124 @@ tree(
       ]}
     ]}
   ]},
-  30
+  24 * 1
 );
 
 </script>
 
-<p>And that brings us to the last method: the mysterious data join.
+<p>And that brings us to the last method: the mysterious data join. But before we can achieve enlightenment with joins, we first need to answer a more existential question: What is data?
+
+<h2>Arrays of Data</h2>
+
+<p>To explain the data join, we need a visual representation for data. Data in D3 is represented as a plain array of values:
+
+<script>
+
+tree(
+  null,
+  {type: "array", name: "data", children: [
+    {type: "data", name: "4"},
+    {type: "data", name: "5"},
+    {type: "data", name: "18"},
+    {type: "data", name: "23"},
+    {type: "data", name: "42"}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>The data can be expressed as a function:
+
+<script>
+
+tree(
+  null,
+  {type: "function", name: "function", children: [
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4"},
+      {type: "data", name: "5"},
+      {type: "data", name: "18"},
+      {type: "data", name: "23"},
+      {type: "data", name: "42"}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<h2>Keys to the Kingdom</h2>
+
+<p>Before we can compute the join, we must first compute keys for the data:
+
+<script>
+
+tree(
+  null,
+  {type: "function", name: "function", children: [
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]},
+      {type: "data", name: "42", children: [{type: "key", name: "key₄"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>And likewise keys for the elements:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]},
+      {type: "element", name: "p₄", children: [{type: "key", name: "key₄"}]}
+    ]}
+  ]},
+  null,
+  24 * 5
+);
+
+</script>
+
+<p>And then pair up matching keys:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]},
+      {type: "element", name: "p₄", children: [{type: "key", name: "key₄"}]}
+    ]}
+  ]},
+  {type: "function", name: "function", children: [
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]},
+      {type: "data", name: "42", children: [{type: "key", name: "key₄"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<h2>Enter, Update and Exit</h2>
 
 <p>We only have to rebind new data when we perform an operation that regroups the selection.
 

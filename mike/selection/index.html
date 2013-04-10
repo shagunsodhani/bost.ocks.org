@@ -201,45 +201,6 @@ tree(
 
 <aside>While the selection is a subclass of array, groups are plain arrays. They do, however, have a <code>parentNode</code> property which stores the shared ancestor of the group’s elements.</aside>
 
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "element₀"},
-      {type: "element", name: "element₁"},
-      {type: "element", name: "element₂"},
-      {type: "element", name: "element₃"},
-      {type: "element", name: "element₄"},
-      {type: "element", name: "element₅"}
-    ]}
-  ]},
-  24 * 6
-);
-
-</script>
-
-<p>Likewise, for a single-element selection as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a>:
-
-<!-- ; that is, <a href="../nest/">nested</a> arrays of elements -->
-
-<aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s better to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "element₀"}
-    ]}
-  ]},
-  24 * 1
-);
-
-</script>
-
-<p>Selections returned by d3.select and d3.selectAll only have a single group, so the only way you to get a selection with multiple groups is selectAll followed by (one or more) <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. For example, selecting the rows of a table returns a selection with a single group:
-
 <pre><code>d3.selectAll("tr")</code></pre>
 
 <script>
@@ -257,6 +218,29 @@ tree(
 );
 
 </script>
+
+<p>Likewise, for a single-element selection as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a>:
+
+<!-- ; that is, <a href="../nest/">nested</a> arrays of elements -->
+
+<aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s better to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
+
+<pre><code>d3.select("table")</code></pre>
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "table₀"}
+    ]}
+  ]},
+  24 * 1
+);
+
+</script>
+
+<p>Selections returned by d3.select and d3.selectAll only have a single group, so the only way you to get a selection with multiple groups is selectAll followed by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. So if you select the rows and then select the rows’ cells, you now have a group of sibling cells for each row:
 
 <!-- <p>The tr elements have child nodes:
 
@@ -296,8 +280,6 @@ tree(
 
 </script> -->
 
-<p>But if you then select the rows’ cells, you’ll get a group of sibling cells for each row. With selection.selectAll, every element in the old selection becomes a group in the new selection:
-
 <pre><code>d3.selectAll("tr").selectAll("td")</code></pre>
 
 <aside>Although this selection’s groups all have four elements, in general a selection’s groups can have different numbers of elements. Some groups might even be empty!</aside>
@@ -336,7 +318,7 @@ tree(
 
 </script>
 
-<p>Each group contains the matching descendant elements for the corresponding previously-selected element. So, if you called selectAll a third time (!), you’d now get a selection with sixteen groups:
+<p>With selection.selectAll, every element in the old selection becomes a group in the new selection. Each group contains the matching descendant elements for the corresponding previously-selected element. So, if you called selectAll a third time (!), you’d now get a selection with sixteen groups:
 
 <pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
 

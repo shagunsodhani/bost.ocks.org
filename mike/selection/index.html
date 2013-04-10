@@ -329,9 +329,7 @@ tree(
 
 </script>
 
-<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select!
-
-<p>Yet there’s an important difference: while append always creates a new element, select finds a matching element. Sometimes, there is no matching element. In this case, the returned selection has null elements, which are then ignored for most operations. For example, if only the first and last sections have asides, we might see:
+<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the first and last sections have asides, we might see:
 
 <pre><code>var aside = section.select("aside");</code></pre>
 
@@ -351,41 +349,11 @@ tree(
 
 </script>
 
-<!-- <script>
+<p>Null elements are ignored for most operations. For example, D3 skips over any null elements when applying styles and attributes. Yet null elements serve an important purpose in preserving the grouped structure of a selection (and the within-group index). This is critical when handling the result of a data join, which splits a selection into three parts: <i>enter</i>, <i>update</i> and <i>exit</i>. These three selections share the original selection’s structure, with null elements in-between.
 
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "element₀"},
-      {type: "null", name: "null"},
-      {type: "null", name: "null"}
-    ]},
-    {type: "array", name: "group₁", children: [
-      {type: "null", name: "null"},
-      {type: "element", name: "element₁"},
-      {type: "element", name: "element₂"},
-      {type: "element", name: "element₃"}
-    ]},
-    {type: "array", name: "group₂", children: [
-      {type: "element", name: "element₀"},
-      {type: "element", name: "element₁"},
-      {type: "null", name: "null"}
-    ]}
-  ]},
-  220
-);
+<h2><a href="#data" name="data">#</a>Bound to Data</h2>
 
-</script>
-
-<p>For example selection.select -->
-
-<p>Select propagates data, whereas selectAll does not. Select preserves grouping, whereas selectAll creates a new grouping.
-
-<p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
-
-<h2><a href="#data" name="data">#</a>Elements and Data</h2>
-
-<p>Perhaps surprisingly, data is <i>not</i> a property of selections; data is a property of elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection. In this way selections are transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+<p>Perhaps surprisingly, data is <i>not</i> a property of selections, but a property of elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
 
 <p>Note, however, that selection.select propagates data from parent to child, which can overwrite data that was previously bound.
 

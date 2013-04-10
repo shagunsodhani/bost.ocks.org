@@ -171,7 +171,7 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [ // TODO parentNode
+    {type: "array", name: "group₀", children: [
       {type: "element", name: "element₀"},
       {type: "element", name: "element₁"},
       {type: "element", name: "element₂"},
@@ -195,7 +195,7 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [ // TODO parentNode
+    {type: "array", name: "group₀", children: [
       {type: "element", name: "element₀"}
     ]}
   ]},
@@ -353,45 +353,75 @@ tree(
 
 <h2><a href="#data" name="data">#</a>Bound to Data</h2>
 
-<p>Perhaps surprisingly, data is <i>not</i> a property of selections, but a property of elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is simply assigned as the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
 
-<p>Note, however, that selection.select propagates data from parent to child, which can overwrite data that was previously bound.
+<aside>To verify that data is a property of elements, see <a href="https://github.com/mbostock/d3/blob/master/src/selection/datum.js">selection.datum</a>’s implementation.</aside>
 
-<p>Elements can have data bound to them. This is stored in <code>__data__</code> and so isn’t strictly part of the selection; if you reselect elements from the document, they will retain whatever data was bound to them previously.
+<p>How is data bound to elements? Several ways:<ul>
+
+  <li>Set the <code>__data__</code> property directly.
+  <li>Use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-datum">selection.datum</a> to assign data to individual elements.
+  <li>Inherit data from a parent via append, insert, or select.
+  <li>Use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> to join data to groups of elements.
+
+</ul>
+
+<p>Let’s cover these mechanisms in order, starting with the simplest. To bind a simple number to the body element by hand, say:
+
+<pre><code>document.body.__data__ = 42;</code></pre>
+
+<script>
+
+tree(
+  {type: "element", name: "body₀", children: [
+    {type: "data", name: "42"}
+  ]},
+  30
+);
+
+</script>
+
+<p>Underscores are ugly; to avoid them, select the body and call datum instead:
+
+<pre><code>var body = d3.select("body").datum(42);</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "body₀", children: [
+        {type: "data", name: "42"}
+      ]}
+    ]}
   ]},
-  140
+  30
 );
 
 </script>
 
-<p>And of course, not every element may have data associated with it.
+<p>If we append an element to the body, the child automatically inherits data from the parent:
+
+<pre><code>var h1 = body.append("h1");</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]},
-    {type: "element", name: "element"},
-    {type: "element", name: "element", children: [{type: "data", name: "data"}]}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "h1₀", children: [
+        {type: "data", name: "42"}
+      ]}
+    ]}
   ]},
-  140
+  30
 );
 
 </script>
+
+<p>And that brings us to the last method: the mysterious data join.
+
+<p>We only have to rebind new data when we perform an operation that regroups the selection.
 
 <p>There are two forms of data-join, by <i>index</i> and by <i>key</i>. A data-join by index occurs when you call selection.data with only one argument; <i>i.e.</i>, you specify the data but not the key function. A data-join by key occurs when you specify two arguments, the second being the key function.
 

@@ -564,6 +564,68 @@ tree(
 
 </script>
 
+<p>Which can get quite complicated:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+    ]}
+  ]},
+  {type: "function", name: "function", children: [
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]}
+    ]},
+    {type: "array", name: "data", children: [
+      {type: "data", name: "4", children: [{type: "key", name: "key₀"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "key₁"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "key₂"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "key₃"}]}
+    ]}
+  ]},
+  24 * 16
+);
+
+</script>
+
 <h2>Enter, Update and Exit</h2>
 
 <p>We only have to rebind new data when we perform an operation that regroups the selection.

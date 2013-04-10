@@ -92,7 +92,7 @@ function tree(root, outerHeight) {
 
   node.append("text")
       .attr("x", 6)
-      .attr("dy", ".32em")
+      .attr("dy", ".35em")
       .text(function(d) { return d.name; })
       .each(function(d) { d.width = this.getComputedTextLength() + 12; });
 
@@ -117,7 +117,7 @@ function tree(root, outerHeight) {
 
 </script>
 
-<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and reveal everything you need to grasp selections completely.
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and cover everything you need to grasp selections completely.
 
 <h2><a href="#subclass" name="subclass">#</a>A Subclass of Array</h2>
 
@@ -127,12 +127,12 @@ function tree(root, outerHeight) {
 
 tree(
   {type: "array", name: "array", children: [
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"}
+    {type: "element", name: "element₀"},
+    {type: "element", name: "element₁"},
+    {type: "element", name: "element₂"},
+    {type: "element", name: "element₃"},
+    {type: "element", name: "element₄"},
+    {type: "element", name: "element₅"}
   ]},
   140
 );
@@ -147,12 +147,12 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"},
-    {type: "element", name: "element"}
+    {type: "element", name: "element₀"},
+    {type: "element", name: "element₁"},
+    {type: "element", name: "element₂"},
+    {type: "element", name: "element₃"},
+    {type: "element", name: "element₄"},
+    {type: "element", name: "element₅"}
   ]},
   140
 );
@@ -171,13 +171,13 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [ // TODO parentNode
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"}
+    {type: "array", name: "group₀", children: [ // TODO parentNode
+      {type: "element", name: "element₀"},
+      {type: "element", name: "element₁"},
+      {type: "element", name: "element₂"},
+      {type: "element", name: "element₃"},
+      {type: "element", name: "element₄"},
+      {type: "element", name: "element₅"}
     ]}
   ]},
   140
@@ -195,8 +195,8 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [ // TODO parentNode
-      {type: "element", name: "element"}
+    {type: "array", name: "group₀", children: [ // TODO parentNode
+      {type: "element", name: "element₀"}
     ]}
   ]},
   30
@@ -212,11 +212,11 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "tr"},
-      {type: "element", name: "tr"},
-      {type: "element", name: "tr"},
-      {type: "element", name: "tr"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "tr₀"},
+      {type: "element", name: "tr₁"},
+      {type: "element", name: "tr₂"},
+      {type: "element", name: "tr₃"}
     ]}
   ]},
   100
@@ -234,29 +234,29 @@ tree(
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "td₀"},
+      {type: "element", name: "td₁"},
+      {type: "element", name: "td₂"},
+      {type: "element", name: "td₃"}
     ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"}
+    {type: "array", name: "group₁", children: [
+      {type: "element", name: "td₀"},
+      {type: "element", name: "td₁"},
+      {type: "element", name: "td₂"},
+      {type: "element", name: "td₃"}
     ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"}
+    {type: "array", name: "group₂", children: [
+      {type: "element", name: "td₀"},
+      {type: "element", name: "td₁"},
+      {type: "element", name: "td₂"},
+      {type: "element", name: "td₃"}
     ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"}
+    {type: "array", name: "group₃", children: [
+      {type: "element", name: "td₀"},
+      {type: "element", name: "td₁"},
+      {type: "element", name: "td₂"},
+      {type: "element", name: "td₃"}
     ]}
   ]},
   400
@@ -264,7 +264,7 @@ tree(
 
 </script>
 
-<p>Most of the time, you can ignore that selections are nested. Even when you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element, so the only difference with a grouped selection is that the second argument to your function (typically <code>i</code>) is the within-group index rather than the within-selection index. The killer feature for nesting is the behavior of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group, and more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
+<p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element, so the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for nesting is the behavior of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group, and more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
 
 <!-- <h3>Why Nested?</h3>
 
@@ -289,19 +289,19 @@ tree(
 
 <h2><a href="#sparse" name="sparse">#</a>Sparse Arrays</h2>
 
-<p>Sometimes it’s useful to derive a new selection from an existing selection while retaining the original grouped structure. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a>, which selects the first matching element within each selected element; select is also the basis of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">append</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-insert">insert</a> (see <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append.js</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert.js</a>). If we amend the previous example to use select rather than selectAll, note that the result only has a single group:
+<p>Sometimes it’s useful to derive a new selection from the current selection while retaining the existing grouping. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a>, which appends a new element to each selected element. For example, if the document has four sections, and we select them all:
 
-<pre><code>var td = tr.select("td");</code></pre>
+<pre><code>var section = d3.selectAll("section");</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"},
-      {type: "element", name: "td"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "section₀"},
+      {type: "element", name: "section₁"},
+      {type: "element", name: "section₂"},
+      {type: "element", name: "section₃"}
     ]}
   ]},
   100
@@ -309,53 +309,67 @@ tree(
 
 </script>
 
-<!-- <p>Whereas if we used selectAll with the <code>:first-child</code> selector, the same elements would be selected, but grouped by row:
+<p>If we then append a paragraph element to each section, the returned selection still has only a single group containing four elements:
 
-<pre><code>var td = tr.selectAll("td:first-child");</code></pre>
+<pre><code>var p = section.append("p");</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"}
-    ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "td"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀"},
+      {type: "element", name: "p₁"},
+      {type: "element", name: "p₂"},
+      {type: "element", name: "p₃"}
     ]}
   ]},
   100
 );
 
-</script> -->
+</script>
 
-<p>To support this use case, selections can have null elements which are ignored for most operations:
+<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select!
+
+<p>Yet there’s an important difference: while append always creates a new element, select finds a matching element. Sometimes, there is no matching element. In this case, the returned selection has null elements, which are then ignored for most operations. For example, if only the first and last sections have asides, we might see:
+
+<pre><code>var aside = section.select("aside");</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element"},
-      {name: "null", type: "null"},
-      {name: "null", type: "null"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "aside₀"},
+      {type: "null", name: "null"},
+      {type: "null", name: "null"},
+      {type: "element", name: "aside₃"}
+    ]}
+  ]},
+  100
+);
+
+</script>
+
+<!-- <script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "element₀"},
+      {type: "null", name: "null"},
+      {type: "null", name: "null"}
     ]},
-    {type: "array", name: "group", children: [
-      {name: "null", type: "null"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {type: "element", name: "element"}
+    {type: "array", name: "group₁", children: [
+      {type: "null", name: "null"},
+      {type: "element", name: "element₁"},
+      {type: "element", name: "element₂"},
+      {type: "element", name: "element₃"}
     ]},
-    {type: "array", name: "group", children: [
-      {type: "element", name: "element"},
-      {type: "element", name: "element"},
-      {name: "null", type: "null"}
+    {type: "array", name: "group₂", children: [
+      {type: "element", name: "element₀"},
+      {type: "element", name: "element₁"},
+      {type: "null", name: "null"}
     ]}
   ]},
   220
@@ -363,7 +377,9 @@ tree(
 
 </script>
 
-<p>For example selection.select
+<p>For example selection.select -->
+
+<p>Select propagates data, whereas selectAll does not. Select preserves grouping, whereas selectAll creates a new grouping.
 
 <p>Selections can contain null elements. This allows <i>sparse</i> selections which are missing elements. Most commonly this applies during a data-join, where the <i>enter</i>, <i>update</i> and <i>exit</i> selections are derived from an input selection and an array (or multiple arrays) of data. The <i>enter</i> and <i>update</i> selections match the indexes of the data; element <i>i</i> in the <i>enter</i> selection corresponds to datum <i>i</i>; if element <i>i</i> is in the <i>update</i> selection instead, element <i>i</i> in the <i>enter</i> selection is null.
 

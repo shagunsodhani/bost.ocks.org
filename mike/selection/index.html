@@ -197,7 +197,7 @@ tree(
 
 <h2><a href="#group" name="group">#</a>Groups of Elements</h2>
 
-<p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, when you call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a>, it returns a selection with a single group, and this group contains the selected elements:
+<p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with a single group containing the selected elements:
 
 <aside>While the selection is a subclass of array, groups are plain arrays. They do, however, have a <code>parentNode</code> property which stores the shared ancestor of the group’s elements.</aside>
 
@@ -240,7 +240,7 @@ tree(
 
 <p>Selections returned by d3.select and d3.selectAll only have a single group, so the only way you to get a selection with multiple groups is selectAll followed by (one or more) <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. For example, selecting the rows of a table returns a selection with a single group:
 
-<pre><code>var tr = d3.selectAll("tr");</code></pre>
+<pre><code>d3.selectAll("tr")</code></pre>
 
 <script>
 
@@ -258,9 +258,47 @@ tree(
 
 </script>
 
-<p>But if you then select the rows’ cells, you get a group for each row, grouping sibling cells:
+<!-- <p>The tr elements have child nodes:
 
-<pre><code>var td = tr.selectAll("td");</code></pre>
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "tr₀", children: [
+        {type: "element", name: "td₀"},
+        {type: "element", name: "td₁"},
+        {type: "element", name: "td₂"},
+        {type: "element", name: "td₃"}
+      ]},
+      {type: "element", name: "tr₁", children: [
+        {type: "element", name: "td₀"},
+        {type: "element", name: "td₁"},
+        {type: "element", name: "td₂"},
+        {type: "element", name: "td₃"}
+      ]},
+      {type: "element", name: "tr₂", children: [
+        {type: "element", name: "td₀"},
+        {type: "element", name: "td₁"},
+        {type: "element", name: "td₂"},
+        {type: "element", name: "td₃"}
+      ]},
+      {type: "element", name: "tr₃", children: [
+        {type: "element", name: "td₀"},
+        {type: "element", name: "td₁"},
+        {type: "element", name: "td₂"},
+        {type: "element", name: "td₃"}
+      ]}
+    ]}
+  ]},
+  24 * 16
+);
+
+</script> -->
+
+<p>But if you then select the rows’ cells, you’ll get a group of sibling cells for each row. With selection.selectAll, every element in the old selection becomes a group in the new selection:
+
+<pre><code>d3.selectAll("tr").selectAll("td")</code></pre>
 
 <aside>Although this selection’s groups all have four elements, in general a selection’s groups can have different numbers of elements. Some groups might even be empty!</aside>
 
@@ -298,6 +336,10 @@ tree(
 
 </script>
 
+<p>Each group contains the matching descendant elements for the corresponding previously-selected element. So, if you called selectAll a third time (!), you’d now get a selection with sixteen groups:
+
+<pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
+
 <script>
 
 tree(
@@ -318,6 +360,44 @@ tree(
     {type: "array", name: "group₁₃", children: [{type: "element", name: "span₀"}]},
     {type: "array", name: "group₁₄", children: [{type: "element", name: "span₀"}]},
     {type: "array", name: "group₁₅", children: [{type: "element", name: "span₀"}]}
+  ]},
+  24 * 16
+);
+
+</script>
+
+<p>It’s only selectAll that has this special behavior. Select, in contrast, preserves the grouping:
+
+<pre><code>d3.selectAll("tr").selectAll("td").select("span")</code></pre>
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "span₀"},
+      {type: "element", name: "span₁"},
+      {type: "element", name: "span₂"},
+      {type: "element", name: "span₃"}
+    ]},
+    {type: "array", name: "group₁", children: [
+      {type: "element", name: "span₀"},
+      {type: "element", name: "span₁"},
+      {type: "element", name: "span₂"},
+      {type: "element", name: "span₃"}
+    ]},
+    {type: "array", name: "group₂", children: [
+      {type: "element", name: "span₀"},
+      {type: "element", name: "span₁"},
+      {type: "element", name: "span₂"},
+      {type: "element", name: "span₃"}
+    ]},
+    {type: "array", name: "group₃", children: [
+      {type: "element", name: "span₀"},
+      {type: "element", name: "span₁"},
+      {type: "element", name: "span₂"},
+      {type: "element", name: "span₃"}
+    ]}
   ]},
   24 * 16
 );
@@ -351,7 +431,7 @@ tree(
 
 <p>Sometimes it’s useful to derive a new selection from the current selection while retaining the existing grouping. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a>, which appends a new element to each selected element. For example, if the document has four sections, and we select them all:
 
-<pre><code>var section = d3.selectAll("section");</code></pre>
+<pre><code>d3.selectAll("section")</code></pre>
 
 <script>
 
@@ -371,7 +451,7 @@ tree(
 
 <p>If we then append a paragraph element to each section, the returned selection still has only a single group containing four elements:
 
-<pre><code>var p = section.append("p");</code></pre>
+<pre><code>d3.selectAll("section").append("p")</code></pre>
 
 <script>
 
@@ -391,7 +471,7 @@ tree(
 
 <p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the first and last sections have asides, we might see:
 
-<pre><code>var aside = section.select("aside");</code></pre>
+<pre><code>d3.selectAll("section").select("aside")</code></pre>
 
 <script>
 
@@ -442,7 +522,7 @@ tree(
 
 <p>The idiomatic equivalent is to select the body and call datum:
 
-<pre><code>var body = d3.select("body").datum(42);</code></pre>
+<pre><code>d3.select("body").datum(42)</code></pre>
 
 <script>
 
@@ -461,7 +541,7 @@ tree(
 
 <p>If we now append an element to the body, the child automatically inherits data from the parent:
 
-<pre><code>var h1 = body.append("h1");</code></pre>
+<pre><code>d3.select("body").datum(42).append("h1")</code></pre>
 
 <script>
 

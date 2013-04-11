@@ -85,6 +85,11 @@ body > blockquote {
   width: 640px;
 }
 
+blockquote q {
+  display: block;
+  font-style: oblique;
+}
+
 li {
   width: 680px;
 }
@@ -157,13 +162,11 @@ sup, sub {
   line-height: 0;
 }
 
-q:before,
-blockquote:before {
+q:before {
   content: "“";
 }
 
-q:after,
-blockquote:after {
+q:after {
   content: "”";
 }
 

@@ -334,7 +334,7 @@ tree(
 
 </script>
 
-<p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>. Each group contains an old element’s matching descendant elements. So, if you call selectAll a third time (!), you get a selection with sixteen groups:
+<p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>. Each group contains an old element’s matching descendant elements. So, if each table cell contained a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/span">span</a> element, and you called selectAll a third time (!), you’d get a selection with sixteen groups:
 
 <pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
 
@@ -427,7 +427,7 @@ tree(
 
 <p>Nested selections also have the advantage that indexes are within-group rather than within-selection. For example, the first cell of each row is always index zero. And groups define the parent node, which determines where entering elements in a data join are appended. In the nested join above, the td selection has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended to the appropriate tr element. -->
 
-<h2><a href="#sparse" name="sparse">#</a>Sparse Arrays</h2>
+<h2><a href="#null" name="null">#</a>Null Elements</h2>
 
 <p>Sometimes it’s useful to derive a new selection from the current selection while retaining the existing grouping. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a>, which appends a new element to each selected element. For example, if the document has four sections, and we select them all:
 
@@ -452,6 +452,8 @@ tree(
 <p>If we then append a paragraph element to each section, the returned selection still has only a single group containing four elements:
 
 <pre><code>d3.selectAll("section").append("p")</code></pre>
+
+<aside>Because the grouping was preserved, the <code>parentNode</code> of this selection is the same as before: the document element.</aside>
 
 <script>
 
@@ -652,7 +654,7 @@ tree(
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>At last we are ready to put two and two together, joining data to elements. The first step is to identify which data should be assigned to which element. This is accomplished by computing a key for each data and element. A <i>key</i> is simply a unique identifying string; when the key for a datum and an element are equal, the datum is assigned to that element.
+<p>At last we are ready to put two and two together, joining data and elements in holy matrimony. The first step is to identify which data should be assigned to which element. This is accomplished by computing a key for each data and element. A <i>key</i> is simply a unique identifying string; when the key for a datum and an element are the same, the datum is assigned to that element.
 
 <p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements looks like this:
 
@@ -686,7 +688,9 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order, but often you want to specify a key function so that you have more control over how the data is assigned to elements. For example, if your data is an array of objects, each with a <code>letter</code> property, you can specify a key function that uses the letter for the join. Thus, if your elements are in a different order than your data (say because the data is alphabetically, while the elements are sorted by frequency), you can still rebind the data to the desired elements and maintain <a href="../constancy/">object constancy</a>:
+<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! For examples, your elements might be sorted by frequency, while your data is sorted alphabetically. To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient.
+
+<p>For greater control, specify a key function to compute the key for each datum and element. For example, if your data is an array of objects, each with a <code>letter</code> property, this key function will return the associated letter:
 
 <pre><code>function key(d) {
   return d.letter;
@@ -718,7 +722,7 @@ tree(
 
 </script>
 
-<p>Which can get quite complicated:
+<p>With large grouped selections, the data join can appear quite complicated:
 
 <script>
 

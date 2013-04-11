@@ -52,6 +52,10 @@
   stroke: none;
 }
 
+.node .data text {
+  font-family: monospace;
+}
+
 .node .key rect {
   fill: #a1d99b;
   stroke: none;
@@ -659,7 +663,7 @@ tree(
 
 <p>At last we are ready to put two and two together, joining data and elements in holy matrimony. The first step is to identify which data should be assigned to which element. This is accomplished by computing a key for each data and element. A <i>key</i> is simply a unique identifying string; when the key for a datum and an element are the same, the datum is assigned to that element.
 
-<p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements looks like this:
+<p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements looks like this, with keys shown in green:
 
 <pre><code>function key(d, i) {
   return i;
@@ -691,6 +695,25 @@ tree(
 
 </script>
 
+<p>The resulting selection now has elements bound to data!
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "p₀", children: [{type: "data", name: "4"}]},
+      {type: "element", name: "p₁", children: [{type: "data", name: "5"}]},
+      {type: "element", name: "p₂", children: [{type: "data", name: "18"}]},
+      {type: "element", name: "p₃", children: [{type: "data", name: "23"}]},
+      {type: "element", name: "p₄", children: [{type: "data", name: "42"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
 <p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! For examples, your elements might be sorted by frequency, while your data is sorted alphabetically. To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient.
 
 <p>For greater control, specify a key function to compute the key for each datum and element. For example, if your data is an array of objects, each with a <code>letter</code> property, this key function will return the associated letter:
@@ -713,11 +736,32 @@ tree(
   ]},
   {type: "function", name: "function", children: [
     {type: "array", name: "data", children: [
-      {type: "data", name: "{letter: …}", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "{letter: …}", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "{letter: …}", children: [{type: "key", name: "I"}]},
-      {type: "data", name: "{letter: …}", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "{letter: …}", children: [{type: "key", name: "U"}]}
+      {type: "data", name: "{letter: \"A\"}", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "{letter: \"E\"}", children: [{type: "key", name: "E"}]},
+      {type: "data", name: "{letter: \"I\"}", children: [{type: "key", name: "I"}]},
+      {type: "data", name: "{letter: \"O\"}", children: [{type: "key", name: "O"}]},
+      {type: "data", name: "{letter: \"U\"}", children: [{type: "key", name: "U"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>Again, the resulting selection has elements bound to data. However, now the elements have been reordered within the selection to match the bound data:
+
+<aside>Although the selection now matches the data, the elements are <i>not</i> automatically reordered in the DOM. For that you must call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-order">selection.order</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.</aside>
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "g₁", children: [{type: "data", name: "{letter: \"A\"}"}]},
+      {type: "element", name: "g₀", children: [{type: "data", name: "{letter: \"E\"}"}]},
+      {type: "element", name: "g₃", children: [{type: "data", name: "{letter: \"I\"}"}]},
+      {type: "element", name: "g₂", children: [{type: "data", name: "{letter: \"O\"}"}]},
+      {type: "element", name: "g₄", children: [{type: "data", name: "{letter: \"U\"}"}]}
     ]}
   ]},
   24 * 5
@@ -789,7 +833,7 @@ tree(
 
 <aside>You can read more about key functions in my previous tutorial on <a href="../constancy/">object constancy</a>.</aside>
 
-<p>The data join is processed for each group separately.
+<p>Yet there’s an important case the above examples don’t consider. What happens when there’s no matching element for a given datum, or no matching datum for a given element?
 
 <h2>Enter, Update and Exit</h2>
 

@@ -3,7 +3,7 @@
 <title>How Selections Work</title>
 <style>
 
-@import url(../style.css?20121227);
+@import url(../style.css?20130411);
 
 .join,
 .link,
@@ -93,6 +93,13 @@
 
 <h1>How Selections Work</h1>
 
+<blockquote>
+  <q>Any sufficiently advanced technology is indistinguishable from magic.</q>
+  –Arthur C. Clarke
+</blockquote>
+
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -176,53 +183,34 @@ function tree(leftRoot, rightRoot, outerHeight) {
 
 </script>
 
-<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and cover everything you need to grasp selections completely.
-
 <h2><a href="#subclass" name="subclass">#</a>A Subclass of Array</h2>
-
-<p>You were probably told that selections are <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array">arrays</a> of <a href="https://developer.mozilla.org/en-US/docs/DOM">DOM</a> <a href="https://developer.mozilla.org/en-US/docs/DOM/element">elements</a>. This is technically true, but imprecise. To craft a more accurate definition, we’ll start with a simple array of elements and incrementally add detail:
-
-<script>
-
-tree(
-  {type: "array", name: "array", children: [
-    {type: "element", name: "element₀"},
-    {type: "element", name: "element₁"},
-    {type: "element", name: "element₂"},
-    {type: "element", name: "element₃"},
-    {type: "element", name: "element₄"},
-    {type: "element", name: "element₅"}
-  ]},
-  24 * 6
-);
-
-</script>
 
 <aside>JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <a href="http://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array/">prototype chain injection</a>.</aside>
 
-<p>The first bit is that selections are a <i>subclass</i> of array, not plain arrays. This subclass provides methods to manipulate selected elements, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">setting attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>.
+<p>You were probably told that selections are arrays of DOM elements. This is technically true, but imprecise. Selections are a <i>subclass</i> of array, not plain arrays; this subclass provides methods to manipulate selected elements, such as setting attributes and styles. Selections inherit native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often use native methods as D3 provides convenient alternatives, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. A few native methods are overridden to adapt their behavior to selections, namely <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.
+
+<h2><a href="#group" name="group">#</a>Groups of Elements</h2>
+
+<p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a> returns a selection with one group containing the selected element:
+
+<aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s more robust to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
+
+<pre><code>d3.select("table")</code></pre>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
-    {type: "element", name: "element₀"},
-    {type: "element", name: "element₁"},
-    {type: "element", name: "element₂"},
-    {type: "element", name: "element₃"},
-    {type: "element", name: "element₄"},
-    {type: "element", name: "element₅"}
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "table₀"}
+    ]}
   ]},
-  24 * 6
+  24 * 1
 );
 
 </script>
 
-<p>Selections retain native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often use native methods as D3 provides convenient alternatives, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. A few native methods are overridden to adapt their behavior to selections (namely <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>).
-
-<h2><a href="#group" name="group">#</a>Groups of Elements</h2>
-
-<p>The other reason selections aren’t arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with a single group containing the selected elements:
+<p>Likewise, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with one group and any number of elements:
 
 <aside>While the selection is a subclass of array, groups are plain arrays. They do, however, have a <code>parentNode</code> property which stores the shared ancestor (here the <a href="https://developer.mozilla.org/en-US/docs/DOM/document.documentElement">document element</a>) of the group’s elements.</aside>
 
@@ -244,64 +232,7 @@ tree(
 
 </script>
 
-<p>Likewise, for a single-element selection as returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a>:
-
-<aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s more robust to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
-
-<pre><code>d3.select("table")</code></pre>
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "table₀"}
-    ]}
-  ]},
-  24 * 1
-);
-
-</script>
-
-<p>Selections returned by d3.select and d3.selectAll have just a single group. The only way you to get a selection with multiple groups is selectAll followed by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. For example, if you select the rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
-
-<!-- <p>The tr elements have child nodes:
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "tr₀", children: [
-        {type: "element", name: "td₀"},
-        {type: "element", name: "td₁"},
-        {type: "element", name: "td₂"},
-        {type: "element", name: "td₃"}
-      ]},
-      {type: "element", name: "tr₁", children: [
-        {type: "element", name: "td₀"},
-        {type: "element", name: "td₁"},
-        {type: "element", name: "td₂"},
-        {type: "element", name: "td₃"}
-      ]},
-      {type: "element", name: "tr₂", children: [
-        {type: "element", name: "td₀"},
-        {type: "element", name: "td₁"},
-        {type: "element", name: "td₂"},
-        {type: "element", name: "td₃"}
-      ]},
-      {type: "element", name: "tr₃", children: [
-        {type: "element", name: "td₀"},
-        {type: "element", name: "td₁"},
-        {type: "element", name: "td₂"},
-        {type: "element", name: "td₃"}
-      ]}
-    ]}
-  ]},
-  24 * 16
-);
-
-</script> -->
+<p>Selections returned by d3.select and d3.selectAll always have exactly one group. The only way you to obtain a selection with multiple groups is selectAll followed by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. For example, if you select all table rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
 
 <pre><code>d3.selectAll("tr").selectAll("td")</code></pre>
 
@@ -341,7 +272,7 @@ tree(
 
 </script>
 
-<p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>. Each group contains an old element’s matching descendant elements. So, if each table cell contained a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/span">span</a> element, and you called selectAll a third time (!), you’d get a selection with sixteen groups:
+<p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>. Each group contains an old element’s matching descendant elements. So, if each table cell contained a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/span">span</a> element, and you called selectAll a third time, you’d get a selection with sixteen groups:
 
 <pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
 
@@ -373,43 +304,7 @@ tree(
 
 </script>
 
-<!-- <pre><code>d3.selectAll("tr").selectAll("td").select("span")</code></pre>
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "element", name: "span₀"},
-      {type: "element", name: "span₁"},
-      {type: "element", name: "span₂"},
-      {type: "element", name: "span₃"}
-    ]},
-    {type: "array", name: "group₁", children: [
-      {type: "element", name: "span₀"},
-      {type: "element", name: "span₁"},
-      {type: "element", name: "span₂"},
-      {type: "element", name: "span₃"}
-    ]},
-    {type: "array", name: "group₂", children: [
-      {type: "element", name: "span₀"},
-      {type: "element", name: "span₁"},
-      {type: "element", name: "span₂"},
-      {type: "element", name: "span₃"}
-    ]},
-    {type: "array", name: "group₃", children: [
-      {type: "element", name: "span₀"},
-      {type: "element", name: "span₁"},
-      {type: "element", name: "span₂"},
-      {type: "element", name: "span₃"}
-    ]}
-  ]},
-  24 * 16
-);
-
-</script> -->
-
-<aside>You can read more about grouping in my previous tutorial on <a href="../nest/">nested selections</a>.</aside>
+<aside>For more examples, pop open the JavaScript console with <span style="font-family:'Lucida Grande';">⌥⌘J</span> and experiment! You can also read more about grouping in my previous tutorial on <a href="../nest/">nested selections</a>.</aside>
 
 <p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element; the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for nesting is the behavior of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group (rather than for the entire selection), and more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
 

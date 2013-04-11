@@ -373,7 +373,7 @@ tree(
 
 </script>
 
-<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, if you read the source, you’ll see <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the last two sections have asides, we might see:
+<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, if you read the source, you’ll see <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s a difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the last two sections have asides, we might see:
 
 <pre><code>d3.selectAll("section").select("aside");</code></pre>
 
@@ -499,7 +499,7 @@ tree(
   [12, 13, 14, 15],
 ];</code></pre>
 
-<p>For this document, we’ll mirror the visual representation of selections to represent data. Here’s the plain array of five numbers:
+<p>For this document, we’ll mirror the visual representation of selections to represent data. Here’s a plain array of five numbers:
 
 <script>
 
@@ -517,9 +517,9 @@ tree(
 
 </script>
 
-<p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped as well, by specifing a function that returns the desired array of data for a given group.
+<p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant value. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped as well, by specifing a function that returns the appropriate array of data for a given group.
 
-<aside>Your data function is passed the datum bound to the group’s parent node. Thus, it is common to express child data as a function of parent data. For nested arrays of data, like the <code>matrix</code> above, the identity function is frequently used.</aside>
+<aside>Your data function is passed the data bound to the group’s parent node. Thus, it is common to express child data as a function of parent data. For nested arrays of data, like the <code>matrix</code> above, the identity function is frequently used.</aside>
 
 <script>
 
@@ -556,13 +556,13 @@ tree(
 
 </script>
 
-<p>For selections with only a single group, it is sufficient to pass an array to selection.data; however, for selections with multiple groups, you will typically specify a function that returns an array instead.
+<p>For selections with only a single group, you can pass the corresponding single array to selection.data directly. You only need a function when binding data to selections with multiple groups.
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>At last we are ready to put two and two together, joining data and elements in holy matrimony. The first step is to identify which data should be assigned to which element. This is accomplished by computing a key for each data and element. A <i>key</i> is simply a unique identifying string; when the key for a datum and an element are the same, the datum is assigned to that element.
+<p>At last we are ready to put two and two together, joining data and elements in holy matrimony. The first step is to identify which data should be assigned to which element. This is done by computing a key for each data and element. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
 
-<p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements looks like this, with keys shown in green:
+<p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
 
 <pre><code>function key(d, i) {
   return i;
@@ -615,9 +615,7 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! For examples, your elements might be sorted by frequency, while your data is sorted alphabetically. To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient.
-
-<p>For greater control, specify a key function to compute the key for each datum and element. For example, if your data is an array of objects, each with a <code>letter</code> property, this key function will return the associated letter:
+<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient. The solution is to specify a key function as the second argument to selection.data which returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>letter</code> property, your key function can return the associated letter:
 
 <pre><code>function key(d) {
   return d.letter;
@@ -649,7 +647,7 @@ tree(
 
 </script>
 
-<p>Again, the resulting selection has elements bound to data. However, now the elements have been reordered within the selection to match the bound data:
+<p>Again, the resulting selection has elements bound to data. The elements have also been reordered within the selection to match the bound data:
 
 <aside>Although the selection now matches the data, the elements are <i>not</i> automatically reordered in the DOM. For that you must call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-order">selection.order</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.</aside>
 
@@ -670,7 +668,7 @@ tree(
 
 </script>
 
-<p>This process can be quite complicated for large grouped selections, but is simplified somewhat because each group is joined independently. Thus, you only need to worry about unique keys within a group, not across the entire selection:
+<p>This process can be quite complicated for large grouped selections, but is simplified somewhat because each group is joined independently. Thus, you only need to worry about unique keys within a group, not across the entire selection.
 
 <script>
 

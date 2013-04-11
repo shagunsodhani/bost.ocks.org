@@ -594,20 +594,39 @@ tree(
 
 <p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped as well, by specifing a function that returns the desired array of data for a given group.
 
+<aside>Your data function is passed the datum bound to the group’s parent node. Thus, it is common to express child data as a function of parent data. For nested arrays of data, like the <code>matrix</code> above, the identity function is frequently used.</aside>
+
 <script>
 
 tree(
   null,
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
+      {type: "data", name: "0"},
+      {type: "data", name: "1"},
+      {type: "data", name: "2"},
+      {type: "data", name: "3"}
+    ]},
+    {type: "array", name: "array", children: [
       {type: "data", name: "4"},
       {type: "data", name: "5"},
-      {type: "data", name: "18"},
-      {type: "data", name: "23"},
-      {type: "data", name: "42"}
+      {type: "data", name: "6"},
+      {type: "data", name: "7"}
+    ]},
+    {type: "array", name: "array", children: [
+      {type: "data", name: "8"},
+      {type: "data", name: "9"},
+      {type: "data", name: "10"},
+      {type: "data", name: "11"}
+    ]},
+    {type: "array", name: "array", children: [
+      {type: "data", name: "12"},
+      {type: "data", name: "13"},
+      {type: "data", name: "14"},
+      {type: "data", name: "15"}
     ]}
   ]},
-  24 * 5
+  24 * 16
 );
 
 </script>
@@ -616,7 +635,7 @@ tree(
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>Before we can compute the join, we must first compute keys for the data:
+<p>At last we are ready to put two and two together, joining data to elements.
 
 <script>
 

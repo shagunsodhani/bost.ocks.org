@@ -87,7 +87,7 @@
 </style>
 
 <header>
-  <aside>April 9, 2013</aside>
+  <aside>April 12, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </header>
 
@@ -249,22 +249,22 @@ tree(
       {type: "element", name: "td₃"}
     ]},
     {type: "array", name: "group₁", children: [
-      {type: "element", name: "td₀"},
-      {type: "element", name: "td₁"},
-      {type: "element", name: "td₂"},
-      {type: "element", name: "td₃"}
+      {type: "element", name: "td₄"},
+      {type: "element", name: "td₅"},
+      {type: "element", name: "td₆"},
+      {type: "element", name: "td₇"}
     ]},
     {type: "array", name: "group₂", children: [
-      {type: "element", name: "td₀"},
-      {type: "element", name: "td₁"},
-      {type: "element", name: "td₂"},
-      {type: "element", name: "td₃"}
+      {type: "element", name: "td₈"},
+      {type: "element", name: "td₉"},
+      {type: "element", name: "td₁₀"},
+      {type: "element", name: "td₁₁"}
     ]},
     {type: "array", name: "group₃", children: [
-      {type: "element", name: "td₀"},
-      {type: "element", name: "td₁"},
-      {type: "element", name: "td₂"},
-      {type: "element", name: "td₃"}
+      {type: "element", name: "td₁₂"},
+      {type: "element", name: "td₁₃"},
+      {type: "element", name: "td₁₄"},
+      {type: "element", name: "td₁₅"}
     ]}
   ]},
   24 * 16
@@ -283,21 +283,21 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₂", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₃", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₄", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₅", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₆", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₇", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₈", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₉", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₀", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₁", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₂", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₃", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₄", children: [{type: "element", name: "span₀"}]},
-    {type: "array", name: "group₁₅", children: [{type: "element", name: "span₀"}]}
+    {type: "array", name: "group₁", children: [{type: "element", name: "span₁"}]},
+    {type: "array", name: "group₂", children: [{type: "element", name: "span₂"}]},
+    {type: "array", name: "group₃", children: [{type: "element", name: "span₃"}]},
+    {type: "array", name: "group₄", children: [{type: "element", name: "span₄"}]},
+    {type: "array", name: "group₅", children: [{type: "element", name: "span₅"}]},
+    {type: "array", name: "group₆", children: [{type: "element", name: "span₆"}]},
+    {type: "array", name: "group₇", children: [{type: "element", name: "span₇"}]},
+    {type: "array", name: "group₈", children: [{type: "element", name: "span₈"}]},
+    {type: "array", name: "group₉", children: [{type: "element", name: "span₉"}]},
+    {type: "array", name: "group₁₀", children: [{type: "element", name: "span₁₀"}]},
+    {type: "array", name: "group₁₁", children: [{type: "element", name: "span₁₁"}]},
+    {type: "array", name: "group₁₂", children: [{type: "element", name: "span₁₂"}]},
+    {type: "array", name: "group₁₃", children: [{type: "element", name: "span₁₃"}]},
+    {type: "array", name: "group₁₄", children: [{type: "element", name: "span₁₄"}]},
+    {type: "array", name: "group₁₅", children: [{type: "element", name: "span₁₅"}]}
   ]},
   24 * 16
 );
@@ -373,7 +373,7 @@ tree(
 
 </script>
 
-<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the last two sections have asides, we might see:
+<p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, if you read the source, you’ll see <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the last two sections have asides, we might see:
 
 <pre><code>d3.selectAll("section").select("aside");</code></pre>
 
@@ -386,8 +386,8 @@ tree(
     {type: "array", name: "group₀", children: [
       {type: "null", name: "null"},
       {type: "null", name: "null"},
-      {type: "element", name: "aside₂"},
-      {type: "element", name: "aside₃"}
+      {type: "element", name: "aside₀"},
+      {type: "element", name: "aside₁"}
     ]}
   ]},
   24 * 4
@@ -683,22 +683,22 @@ tree(
       {type: "element", name: "p₃", children: [{type: "key", name: "δ", join: -3}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "ε", join: 0}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "ζ", join: 0}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "η", join: 1}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "θ", join: -1}]}
+      {type: "element", name: "p₄", children: [{type: "key", name: "ε", join: 0}]},
+      {type: "element", name: "p₅", children: [{type: "key", name: "ζ", join: 0}]},
+      {type: "element", name: "p₆", children: [{type: "key", name: "η", join: 1}]},
+      {type: "element", name: "p₇", children: [{type: "key", name: "θ", join: -1}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "ι", join: 0}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "κ", join: +2}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "λ", join: 0}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "μ", join: -2}]}
+      {type: "element", name: "p₈", children: [{type: "key", name: "ι", join: 0}]},
+      {type: "element", name: "p₉", children: [{type: "key", name: "κ", join: +2}]},
+      {type: "element", name: "p₁₀", children: [{type: "key", name: "λ", join: 0}]},
+      {type: "element", name: "p₁₁", children: [{type: "key", name: "μ", join: -2}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "ν", join: +2}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "ξ", join: +2}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "ο", join: -2}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "π", join: -2}]}
+      {type: "element", name: "p₁₂", children: [{type: "key", name: "ν", join: +2}]},
+      {type: "element", name: "p₁₃", children: [{type: "key", name: "ξ", join: +2}]},
+      {type: "element", name: "p₁₄", children: [{type: "key", name: "ο", join: -2}]},
+      {type: "element", name: "p₁₅", children: [{type: "key", name: "π", join: -2}]}
     ]}
   ]},
   {type: "function", name: "function", children: [
@@ -749,7 +749,7 @@ tree(
 <p>The <i>enter</i> selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
 
 <footer>
-  <aside>April 9, 2013</aside>
+  <aside>April 12, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
 

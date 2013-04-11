@@ -772,7 +772,7 @@ tree(
 
 </script>
 
-<p>Two of the previously-displayed letters (A and E) are vowels. These bars are therefore placed in the update selection, in order of the new data:
+<p>Two of the previously-displayed letters (A and E) are vowels. These bars are therefore placed in the <b>update</b> selection, in order of the new data:
 
 <script>
 
@@ -791,7 +791,26 @@ tree(
 
 </script>
 
-<p>Three of the vowels (I, O and U) were not previously displayed, and thus have no corresponding element. These are therefore placed in the enter selection:
+<p>The other three displayed letters (B, C and D) are consonants, and thus have no corresponding data in the new dataset. These elements are therefore placed in the <b>exit</b> selection. Note that the exit selection preserves the order of the original selection, which is sometimes useful when animating prior to removal:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "null", name: "null"},
+      {type: "element", name: "element₁", children: [{type: "data", name: "B"}]},
+      {type: "element", name: "element₂", children: [{type: "data", name: "C"}]},
+      {type: "element", name: "element₃", children: [{type: "data", name: "D"}]},
+      {type: "null", name: "null"}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>Lastly, three of the vowels (I, O and U) were not previously displayed, and thus have no corresponding element. These form the <b>enter</b> selection:
 
 <script>
 
@@ -810,28 +829,9 @@ tree(
 
 </script>
 
-<p>The enter selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
+<aside>An enter selection is typically transient; it is immediately replaced with a normal selection when you call enter.append or enter.insert.</aside>
 
-<p>The other three displayed letters (B, C and D) are consonants.
-
-<p>Exit, whatever old elements are not in Update:
-
-<script>
-
-tree(
-  {type: "selection", name: "selection", children: [
-    {type: "array", name: "group₀", children: [
-      {type: "null", name: "null"},
-      {type: "element", name: "element₁", children: [{type: "data", name: "B"}]},
-      {type: "element", name: "element₂", children: [{type: "data", name: "C"}]},
-      {type: "element", name: "element₃", children: [{type: "data", name: "D"}]},
-      {type: "null", name: "null"}
-    ]}
-  ]},
-  24 * 5
-);
-
-</script>
+<p>While update and exit are normal selections, enter is a subclass of selection. This is necessary because it represents elements that <i>do not yet exist</i>. An enter selection contains placeholders rather than DOM elements; these placeholders are simply objects with a <code>__data__</code> property. The implementation of <a href="https://github.com/mbostock/d3/blob/master/src/selection/enter-select.js">enter.select</a> is then specialized such that nodes are inserted into the group’s parent, replacing the placeholder. This is why it is critical to call selectAll prior to a data join: it establishes the parent for entering elements.
 
 <p>Update + Enter, following enter.append:
 

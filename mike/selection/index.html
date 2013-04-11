@@ -13,6 +13,10 @@
   stroke-width: 1.5px;
 }
 
+.right text {
+  text-anchor: end;
+}
+
 .node rect {
   fill: white;
 }
@@ -107,10 +111,11 @@ function tree(leftRoot, rightRoot, outerHeight) {
 
   var g = svg.selectAll("g")
       .data([].concat(
-        leftRoot ? {nodes: tree.nodes(leftRoot)} : [],
-        rightRoot ? {nodes: tree.nodes(rightRoot).map(flip), flipped: true} : []
+        leftRoot ? {type: "left", nodes: tree.nodes(leftRoot)} : [],
+        rightRoot ? {type: "right", nodes: tree.nodes(rightRoot).map(flip), flipped: true} : []
       ))
     .enter().append("g")
+      .attr("class", function(d) { return d.type; })
       .attr("transform", function(d) {
         return "translate(" + (!!d.flipped * width + margin.left) + "," + margin.top + ")";
       });
@@ -124,12 +129,10 @@ function tree(leftRoot, rightRoot, outerHeight) {
       .attr("transform", function(d) { return "translate(" + d.depth * step + "," + d.x + ")"; })
 
   node.append("text")
-      .attr("x", 6)
+      .attr("x", function(d) { return d.flipped ? -6 : 6; })
       .attr("dy", ".35em")
       .text(function(d) { return d.name; })
-      .each(function(d) { d.width = Math.max(32, this.getComputedTextLength() + 12); })
-    .filter(function(d) { return d.flipped; })
-      .attr("x", function(d) { return 6 - d.width; });
+      .each(function(d) { d.width = Math.max(32, this.getComputedTextLength() + 12); });
 
   node.filter(function(d) { return "join" in d; }).insert("path", "text")
       .attr("class", "join")
@@ -722,61 +725,61 @@ tree(
 
 </script>
 
-<p>With large grouped selections, the data join can appear quite complicated:
+<p>This process can be quite complicated for large grouped selections, but is simplified somewhat because each group is joined independently. Thus, you only need to worry about unique keys within a group, not across the entire selection:
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+      {type: "element", name: "p₀", children: [{type: "key", name: "α", join: 1}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "β", join: 1}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "γ", join: 1}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "δ", join: -3}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+      {type: "element", name: "p₀", children: [{type: "key", name: "ε", join: 0}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "ζ", join: 0}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "η", join: 1}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "θ", join: -1}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+      {type: "element", name: "p₀", children: [{type: "key", name: "ι", join: 0}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "κ", join: +2}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "λ", join: 0}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "μ", join: -2}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "key₀"}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "key₁"}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "key₂"}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "key₃"}]}
+      {type: "element", name: "p₀", children: [{type: "key", name: "ν", join: +2}]},
+      {type: "element", name: "p₁", children: [{type: "key", name: "ξ", join: +2}]},
+      {type: "element", name: "p₂", children: [{type: "key", name: "ο", join: -2}]},
+      {type: "element", name: "p₃", children: [{type: "key", name: "π", join: -2}]}
     ]}
   ]},
   {type: "function", name: "function", children: [
     {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₀"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₁"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₂"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₃"}]}
+      {type: "data", name: "{…}", children: [{type: "key", name: "δ"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "α"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "β"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "γ"}]}
     ]},
     {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₀"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₁"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₂"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₃"}]}
+      {type: "data", name: "{…}", children: [{type: "key", name: "ε"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "ζ"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "θ"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "η"}]}
     ]},
     {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₀"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₁"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₂"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₃"}]}
+      {type: "data", name: "{…}", children: [{type: "key", name: "ι"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "μ"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "λ"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "κ"}]}
     ]},
     {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₀"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₁"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₂"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "key₃"}]}
+      {type: "data", name: "{…}", children: [{type: "key", name: "ο"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "π"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "ν"}]},
+      {type: "data", name: "{…}", children: [{type: "key", name: "ξ"}]}
     ]}
   ]},
   24 * 16

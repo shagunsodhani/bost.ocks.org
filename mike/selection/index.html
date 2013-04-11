@@ -322,6 +322,8 @@ tree(
 
 <pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
 
+<aside>It’s only selectAll that has this special behavior regarding grouping. Select, in contrast, preserves the grouping because there is exactly one element (or null) in the new selection for each element in the old selection.</aside>
+
 <script>
 
 tree(
@@ -348,9 +350,7 @@ tree(
 
 </script>
 
-<p>It’s only selectAll that has this special behavior. Select, in contrast, preserves the grouping:
-
-<pre><code>d3.selectAll("tr").selectAll("td").select("span")</code></pre>
+<!-- <pre><code>d3.selectAll("tr").selectAll("td").select("span")</code></pre>
 
 <script>
 
@@ -384,7 +384,7 @@ tree(
   24 * 16
 );
 
-</script>
+</script> -->
 
 <p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element, so the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for nesting is the behavior of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group, and more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
 

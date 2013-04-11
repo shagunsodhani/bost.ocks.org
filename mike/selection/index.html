@@ -52,7 +52,7 @@
   stroke: none;
 }
 
-.node .data text {
+.node .code text {
   font-family: monospace;
 }
 
@@ -421,7 +421,7 @@ tree(
 
 tree(
   {type: "element", name: "body₀", children: [
-    {type: "data", name: "42"}
+    {type: "code data", name: "42"}
   ]},
   24 * 1
 );
@@ -438,7 +438,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
       {type: "element", name: "body₀", children: [
-        {type: "data", name: "42"}
+        {type: "code data", name: "42"}
       ]}
     ]}
   ]},
@@ -457,7 +457,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
       {type: "element", name: "h1₀", children: [
-        {type: "data", name: "42"}
+        {type: "code data", name: "42"}
       ]}
     ]}
   ]},
@@ -506,11 +506,11 @@ tree(
 tree(
   null,
   {type: "array", name: "array", children: [
-    {type: "data", name: "4"},
-    {type: "data", name: "5"},
-    {type: "data", name: "18"},
-    {type: "data", name: "23"},
-    {type: "data", name: "42"}
+    {type: "code data", name: "4"},
+    {type: "code data", name: "5"},
+    {type: "code data", name: "18"},
+    {type: "code data", name: "23"},
+    {type: "code data", name: "42"}
   ]},
   24 * 5
 );
@@ -527,28 +527,28 @@ tree(
   null,
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "0"},
-      {type: "data", name: "1"},
-      {type: "data", name: "2"},
-      {type: "data", name: "3"}
+      {type: "code data", name: "0"},
+      {type: "code data", name: "1"},
+      {type: "code data", name: "2"},
+      {type: "code data", name: "3"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "4"},
-      {type: "data", name: "5"},
-      {type: "data", name: "6"},
-      {type: "data", name: "7"}
+      {type: "code data", name: "4"},
+      {type: "code data", name: "5"},
+      {type: "code data", name: "6"},
+      {type: "code data", name: "7"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "8"},
-      {type: "data", name: "9"},
-      {type: "data", name: "10"},
-      {type: "data", name: "11"}
+      {type: "code data", name: "8"},
+      {type: "code data", name: "9"},
+      {type: "code data", name: "10"},
+      {type: "code data", name: "11"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "12"},
-      {type: "data", name: "13"},
-      {type: "data", name: "14"},
-      {type: "data", name: "15"}
+      {type: "code data", name: "12"},
+      {type: "code data", name: "13"},
+      {type: "code data", name: "14"},
+      {type: "code data", name: "15"}
     ]}
   ]},
   24 * 16
@@ -583,12 +583,12 @@ tree(
     ]}
   ]},
   {type: "function", name: "function", children: [
-    {type: "array", name: "data", children: [
-      {type: "data", name: "4", children: [{type: "key", name: "0"}]},
-      {type: "data", name: "5", children: [{type: "key", name: "1"}]},
-      {type: "data", name: "18", children: [{type: "key", name: "2"}]},
-      {type: "data", name: "23", children: [{type: "key", name: "3"}]},
-      {type: "data", name: "42", children: [{type: "key", name: "4"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "4", children: [{type: "key", name: "0"}]},
+      {type: "code data", name: "5", children: [{type: "key", name: "1"}]},
+      {type: "code data", name: "18", children: [{type: "key", name: "2"}]},
+      {type: "code data", name: "23", children: [{type: "key", name: "3"}]},
+      {type: "code data", name: "42", children: [{type: "key", name: "4"}]}
     ]}
   ]},
   24 * 5
@@ -603,11 +603,11 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "data", name: "4"}]},
-      {type: "element", name: "p₁", children: [{type: "data", name: "5"}]},
-      {type: "element", name: "p₂", children: [{type: "data", name: "18"}]},
-      {type: "element", name: "p₃", children: [{type: "data", name: "23"}]},
-      {type: "element", name: "p₄", children: [{type: "data", name: "42"}]}
+      {type: "element", name: "p₀", children: [{type: "code data", name: "4"}]},
+      {type: "element", name: "p₁", children: [{type: "code data", name: "5"}]},
+      {type: "element", name: "p₂", children: [{type: "code data", name: "18"}]},
+      {type: "element", name: "p₃", children: [{type: "code data", name: "23"}]},
+      {type: "element", name: "p₄", children: [{type: "code data", name: "42"}]}
     ]}
   ]},
   24 * 5
@@ -634,12 +634,12 @@ tree(
     ]}
   ]},
   {type: "function", name: "function", children: [
-    {type: "array", name: "data", children: [
-      {type: "data", name: "{letter: \"A\"}", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "{letter: \"E\"}", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "{letter: \"I\"}", children: [{type: "key", name: "I"}]},
-      {type: "data", name: "{letter: \"O\"}", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "{letter: \"U\"}", children: [{type: "key", name: "U"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "{letter: \"A\"}", children: [{type: "key", name: "A"}]},
+      {type: "code data", name: "{letter: \"E\"}", children: [{type: "key", name: "E"}]},
+      {type: "code data", name: "{letter: \"I\"}", children: [{type: "key", name: "I"}]},
+      {type: "code data", name: "{letter: \"O\"}", children: [{type: "key", name: "O"}]},
+      {type: "code data", name: "{letter: \"U\"}", children: [{type: "key", name: "U"}]}
     ]}
   ]},
   24 * 5
@@ -656,11 +656,11 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "g₁", children: [{type: "data", name: "{letter: \"A\"}"}]},
-      {type: "element", name: "g₀", children: [{type: "data", name: "{letter: \"E\"}"}]},
-      {type: "element", name: "g₃", children: [{type: "data", name: "{letter: \"I\"}"}]},
-      {type: "element", name: "g₂", children: [{type: "data", name: "{letter: \"O\"}"}]},
-      {type: "element", name: "g₄", children: [{type: "data", name: "{letter: \"U\"}"}]}
+      {type: "element", name: "g₁", children: [{type: "code data", name: "{letter: \"A\"}"}]},
+      {type: "element", name: "g₀", children: [{type: "code data", name: "{letter: \"E\"}"}]},
+      {type: "element", name: "g₃", children: [{type: "code data", name: "{letter: \"I\"}"}]},
+      {type: "element", name: "g₂", children: [{type: "code data", name: "{letter: \"O\"}"}]},
+      {type: "element", name: "g₄", children: [{type: "code data", name: "{letter: \"U\"}"}]}
     ]}
   ]},
   24 * 5
@@ -700,29 +700,29 @@ tree(
     ]}
   ]},
   {type: "function", name: "function", children: [
-    {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "δ"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "α"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "β"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "γ"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "{…}", children: [{type: "key", name: "δ"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "α"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "β"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "γ"}]}
     ]},
-    {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "ε"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "ζ"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "θ"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "η"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ε"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ζ"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "θ"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "η"}]}
     ]},
-    {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "ι"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "μ"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "λ"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "κ"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ι"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "μ"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "λ"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "κ"}]}
     ]},
-    {type: "array", name: "data", children: [
-      {type: "data", name: "{…}", children: [{type: "key", name: "ο"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "π"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "ν"}]},
-      {type: "data", name: "{…}", children: [{type: "key", name: "ξ"}]}
+    {type: "array", name: "array", children: [
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ο"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "π"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ν"}]},
+      {type: "code data", name: "{…}", children: [{type: "key", name: "ξ"}]}
     ]}
   ]},
   24 * 16
@@ -734,17 +734,125 @@ tree(
 
 <p>Yet there’s an important case the above examples don’t consider. What happens when there’s no matching element for a given datum, or no matching datum for a given element?
 
-<h2>Enter, Update and Exit</h2>
+<h2><a href="#enter-update-exit" name="enter-update-exit">#</a>Enter, Update and Exit</h2>
 
-<p>We only have to rebind new data when we perform an operation that regroups the selection.
+<p>When joining elements to data by key, there are three possible logical outcomes:<ul>
 
-<p>There are two forms of data-join, by <i>index</i> and by <i>key</i>. A data-join by index occurs when you call selection.data with only one argument; <i>i.e.</i>, you specify the data but not the key function. A data-join by key occurs when you specify two arguments, the second being the key function.
+  <li><i>Update</i> - There was a matching element for a given datum.
+  <li><i>Enter</i> - There was no matching element for a given datum.
+  <li><i>Exit</i> - There was no matching datum for a given element.
 
-<p>Consider the more general join by key first. The key function is invoked for each element in the selection, and for each datum in the data. The key function returns a string key. If the key for an element matches the key for a datum, the element and the datum are considered “joined” and the element is put in the <i>update</i> selection.
+</ul>
 
-<p>The <i>update</i> selection is simply the return value of selection.data. Why not an explicit update method? Well, for brevity.
+<p>These are the three selections returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">selection.exit</a>, respectively. To illustrate, imagine you were showing a bar chart of the first five letters of the alphabet, and you wanted to transition to the five major vowels. You could use a key function to maintain association of letters to bars across the transition, resulting in the following data join:
 
-<p>The <i>enter</i> selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "element₀", children: [{type: "key", name: "A", join: 0}]},
+      {type: "element", name: "element₁", children: [{type: "key", name: "B"}]},
+      {type: "element", name: "element₂", children: [{type: "key", name: "C"}]},
+      {type: "element", name: "element₃", children: [{type: "key", name: "D"}]},
+      {type: "element", name: "element₄", children: [{type: "key", name: "E", join: -3}]}
+    ]}
+  ]},
+  {type: "function", name: "function", children: [
+    {type: "array", name: "array", children: [
+      {type: "data", name: "data₀", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "data₁", children: [{type: "key", name: "E"}]},
+      {type: "data", name: "data₂", children: [{type: "key", name: "I"}]},
+      {type: "data", name: "data₃", children: [{type: "key", name: "O"}]},
+      {type: "data", name: "data₄", children: [{type: "key", name: "U"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>Two of the previously-displayed letters (A and E) are vowels. These bars are therefore placed in the update selection, in order of the new data:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "element₀", children: [{type: "data", name: "A"}]},
+      {type: "element", name: "element₄", children: [{type: "data", name: "E"}]},
+      {type: "null", name: "null"},
+      {type: "null", name: "null"},
+      {type: "null", name: "null"}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>Three of the vowels (I, O and U) were not previously displayed, and thus have no corresponding element. These are therefore placed in the enter selection:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "null", name: "null"},
+      {type: "null", name: "null"},
+      {type: "element", name: "placeholder₀", children: [{type: "data", name: "I"}]},
+      {type: "element", name: "placeholder₁", children: [{type: "data", name: "O"}]},
+      {type: "element", name: "placeholder₂", children: [{type: "data", name: "U"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>The enter selection contains <i>placeholder</i> nodes. What are these? Furthermore, the <i>enter</i> selection is not a full d3.selection, and only supports a subset of methods. Generally, an enter selection should only exist transiently; you are expected to call enter.append or enter.insert to immediately create a full selection.
+
+<p>The other three displayed letters (B, C and D) are consonants.
+
+<p>Exit, whatever old elements are not in Update:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "null", name: "null"},
+      {type: "element", name: "element₁", children: [{type: "data", name: "B"}]},
+      {type: "element", name: "element₂", children: [{type: "data", name: "C"}]},
+      {type: "element", name: "element₃", children: [{type: "data", name: "D"}]},
+      {type: "null", name: "null"}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>Update + Enter, following enter.append:
+
+<script>
+
+tree(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "element₀", children: [{type: "data", name: "A"}]},
+      {type: "element", name: "element₄", children: [{type: "data", name: "E"}]},
+      {type: "element", name: "element₅", children: [{type: "data", name: "I"}]},
+      {type: "element", name: "element₆", children: [{type: "data", name: "O"}]},
+      {type: "element", name: "element₇", children: [{type: "data", name: "U"}]}
+    ]}
+  ]},
+  24 * 5
+);
+
+</script>
+
+<p>General update pattern. Define transitions on each state independently.
 
 <footer>
   <aside>April 12, 2013</aside>

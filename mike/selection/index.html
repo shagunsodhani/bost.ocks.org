@@ -98,7 +98,7 @@
   –Arthur C. Clarke
 </blockquote>
 
-<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This document takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This post takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -195,7 +195,7 @@ function tree(leftRoot, rightRoot, outerHeight) {
 
 <aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s more robust to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
 
-<pre><code>d3.select("table")</code></pre>
+<pre><code>d3.select("table");</code></pre>
 
 <script>
 
@@ -214,7 +214,7 @@ tree(
 
 <aside>While the selection is a subclass of array, groups are plain arrays. They do, however, have a <code>parentNode</code> property which stores the shared ancestor (here the <a href="https://developer.mozilla.org/en-US/docs/DOM/document.documentElement">document element</a>) of the group’s elements.</aside>
 
-<pre><code>d3.selectAll("tr")</code></pre>
+<pre><code>d3.selectAll("tr");</code></pre>
 
 <script>
 
@@ -232,9 +232,9 @@ tree(
 
 </script>
 
-<p>Selections returned by d3.select and d3.selectAll always have exactly one group. The only way you to obtain a selection with multiple groups is selectAll followed by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selectAll</a>. For example, if you select all table rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
+<p>Selections returned by d3.select and d3.selectAll have exactly one group. The only way you to obtain a selection with multiple groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selection.selectAll</a>. For example, if you select all table rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
 
-<pre><code>d3.selectAll("tr").selectAll("td")</code></pre>
+<pre><code>d3.selectAll("tr").selectAll("td");</code></pre>
 
 <aside>Although this selection’s groups all have four elements, in general a selection’s groups can have different numbers of elements. Some groups might even be empty!</aside>
 
@@ -274,7 +274,7 @@ tree(
 
 <p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>. Each group contains an old element’s matching descendant elements. So, if each table cell contained a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/span">span</a> element, and you called selectAll a third time, you’d get a selection with sixteen groups:
 
-<pre><code>d3.selectAll("tr").selectAll("td").selectAll("span")</code></pre>
+<pre><code>d3.selectAll("tr").selectAll("td").selectAll("span");</code></pre>
 
 <aside>It’s only selectAll that has this special behavior regarding grouping. <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">Select</a>, in contrast, preserves the grouping because there is exactly one element (or null) in the new selection for each element in the old selection.</aside>
 
@@ -306,7 +306,7 @@ tree(
 
 <aside>For more examples, pop open the JavaScript console with <span style="font-family:'Lucida Grande';">⌥⌘J</span> and experiment! You can also read more about grouping in my previous tutorial on <a href="../nest/">nested selections</a>.</aside>
 
-<p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element; the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for nesting is the behavior of <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group (rather than for the entire selection), and more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
+<p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element; the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group (rather than for the entire selection), and thus more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
 
 <!-- <h3>Why Nested?</h3>
 
@@ -333,7 +333,7 @@ tree(
 
 <p>Sometimes it’s useful to derive a new selection from the current selection while retaining the existing grouping. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a>, which appends a new element to each selected element. For example, if the document has four sections, and we select them all:
 
-<pre><code>d3.selectAll("section")</code></pre>
+<pre><code>d3.selectAll("section");</code></pre>
 
 <script>
 
@@ -353,7 +353,7 @@ tree(
 
 <p>If we then append a paragraph element to each section, the returned selection still has only a single group containing four elements:
 
-<pre><code>d3.selectAll("section").append("p")</code></pre>
+<pre><code>d3.selectAll("section").append("p");</code></pre>
 
 <aside>Because the grouping was preserved, the <code>parentNode</code> of this selection is the same as before: the document element.</aside>
 
@@ -375,7 +375,7 @@ tree(
 
 <p>The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">selection.select</a> method functions the same way. In fact, as you can see from the source code, <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> are just simple wrappers on top of select! Yet there’s an important difference: while append creates a new element, select must find a matching element. Sometimes, there is no such element; in this case, the returned selection has null elements. For example, if only the last two sections have asides, we might see:
 
-<pre><code>d3.selectAll("section").select("aside")</code></pre>
+<pre><code>d3.selectAll("section").select("aside");</code></pre>
 
 <aside>Here, selection.node would return <code>selection[0][2]</code>, because this aside is the first non-null element.</aside>
 
@@ -411,7 +411,9 @@ tree(
 
 </ul>
 
-<p>There’s no reason to set the <code>__data__</code> property directly when you can use selection.datum, but doing so illustrates how data binding is implemented. You might also find this knowledge useful when inspecting selections in your browser’s developer tools; <code>$0.__data__</code> shows the data bound to the inspected element. To bind the number 42 to the body element by hand:
+<p>There’s no reason to set the <code>__data__</code> property directly when you can use selection.datum, but doing so illustrates how data binding is implemented:
+
+<aside>You might also find this knowledge useful when inspecting selections in your browser’s developer tools; <code>$0.__data__</code> shows the data bound to the inspected element.</aside>
 
 <pre><code>document.body.__data__ = 42;</code></pre>
 
@@ -428,7 +430,7 @@ tree(
 
 <p>The D3-idiomatic equivalent is to select the body and call datum:
 
-<pre><code>d3.select("body").datum(42)</code></pre>
+<pre><code>d3.select("body").datum(42);</code></pre>
 
 <script>
 
@@ -447,7 +449,7 @@ tree(
 
 <p>If we now append an element to the body, the child automatically inherits data from the parent:
 
-<pre><code>d3.select("body").datum(42).append("h1")</code></pre>
+<pre><code>d3.select("body").datum(42).append("h1");</code></pre>
 
 <script>
 
@@ -473,6 +475,8 @@ tree(
 <pre><code>var data = [4, 5, 18, 23, 42];</code></pre>
 
 <p>Or an array of objects:
+
+<aside>One of <a href="http://alignedleft.com">Scott Murray</a>’s many tutorials covers <a href="http://alignedleft.com/tutorials/d3/data-types/">common types of data</a> in JavaScript.</aside>
 
 <pre><code>var data = [
   {letter: "A", frequency: .08167},
@@ -563,6 +567,8 @@ tree(
 <pre><code>function key(d, i) {
   return i;
 }</code></pre>
+
+<aside><a href="http://macwright.org/">Tom MacWright</a>’s “fun, difficult” <a href="http://macwright.org/presentations/dcjq/">introduction to D3</a> explains <a href="http://macwright.org/mistakes/#5010465" style="white-space:nowrap;">data joins</a> by way of a simple reimplementation.</aside>
 
 <script>
 

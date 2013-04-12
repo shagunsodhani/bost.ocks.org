@@ -217,8 +217,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
       transform = "translate(" + margin.left + "," + offset + ")";
 
   var play = start.append("g")
-      .attr("class", "play")
-      .on("click", start);
+      .attr("class", "play");
 
   play.append("circle")
       .attr("r", 45)

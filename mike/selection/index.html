@@ -281,7 +281,16 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
   }
 
   function animation() {
-    start.style("display", null).style("opacity", 0).transition().delay(150).duration(500).style("opacity", 1);
+    start
+        .style("display", null)
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0)
+      .transition()
+        .delay(150)
+        .duration(0)
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
+
     end.style("display", "none");
     play.style("display", "none");
     setTimeout(transition1, 1250);

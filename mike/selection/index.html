@@ -545,6 +545,72 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
   }
 }
 
+function exitAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
+  var start = tree(leftRoot, rightRoot, outerHeight),
+      left = d3.select(start.node().firstChild),
+      right = d3.select(left.node().nextSibling),
+      end = tree(endRoot, outerHeight).remove(),
+      height = +start.attr("height");
+
+  end = d3.select(start.node().appendChild(end.node().firstChild));
+  start.node().appendChild(left.node());
+  start.node().appendChild(right.node());
+
+  var play = start.append("g")
+      .attr("class", "play");
+
+  play.append("circle")
+      .attr("r", 45)
+      .attr("transform", "translate(" + (margin.left + width / 2) + "," + height / 2 + ")");
+
+  play.append("path")
+      .attr("d", "M-22,-30l60,30l-60,30z")
+      .attr("transform", "translate(" + (margin.left + width / 2) + "," + height / 2 + ")scale(.7)");
+
+  play.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .on("mousedown", function() {
+        play.classed("mousedown", true);
+        d3.select(window).on("mouseup", function() { play.classed("mousedown", false); });
+      })
+      .on("click", function() {
+        resetAll();
+        animation();
+      });
+
+  resetAll();
+
+  function resetAll() {
+    play.style("display", null);
+    left.style("display", "none").call(reset);
+    right.style("display", "none").call(reset);
+    end.call(reset);
+  }
+
+  function animation() {
+    play.style("display", "none");
+    end.style("display", "none");
+    left.call(fadeIn);
+    right.call(fadeIn);
+    setTimeout(transition1, 1250);
+  }
+
+  function transition1() {
+    end.style("display", null);
+
+    left
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+
+    right
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+
+    setTimeout(resetAll, 2000);
+  }
+}
+
 function fadeIn(selection, delay) {
   selection
       .style("display", null)
@@ -1226,7 +1292,25 @@ updateAnimation(
 
 <script>
 
-tree(
+exitAnimation(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "element₀", children: [{type: "key", name: "A", join: 0}]},
+      {type: "element", name: "element₁", children: [{type: "key", name: "B"}]},
+      {type: "element", name: "element₂", children: [{type: "key", name: "C"}]},
+      {type: "element", name: "element₃", children: [{type: "key", name: "D"}]},
+      {type: "element", name: "element₄", children: [{type: "key", name: "E", join: -3}]}
+    ]}
+  ]},
+  {type: "function", name: "function", children: [
+    {type: "array", name: "array", children: [
+      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "E", children: [{type: "key", name: "E"}]},
+      {type: "data", name: "I", children: [{type: "key", name: "I"}]},
+      {type: "data", name: "O", children: [{type: "key", name: "O"}]},
+      {type: "data", name: "U", children: [{type: "key", name: "U"}]}
+    ]}
+  ]},
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
       {type: "null", name: "null"},

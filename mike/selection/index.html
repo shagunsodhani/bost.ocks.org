@@ -201,7 +201,11 @@ function tree(leftRoot, rightRoot, outerHeight) {
     .selectAll("path")
       .data(function(d) { return tree.links(d.nodes); })
     .enter().append("path")
-      .attr("class", function(d) { return "to-" + d.target.type + " from-" + d.source.type; })
+      .attr("class", function(d) {
+        return d.target.type.split(/\s+/).map(function(t) { return "to-" + t; })
+            .concat(d.source.type.split(/\s+/).map(function(t) { return "from-" + t; }))
+            .join(" ");
+      })
       .attr("d", d3.svg.diagonal()
         .source(function(d) { return {y: d.source.depth * step + (d.source.flipped ? -1 : +1) * d.source.width, x: d.source.x}; })
         .target(function(d) { return {y: d.target.depth * step, x: d.target.x}; })

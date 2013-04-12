@@ -270,7 +270,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
     play.style("display", "none");
 
     var t = start.transition()
-        .duration(1250)
+        .duration(1000 + (startElements.length - 1) * 50)
         .each("end", transition2);
 
     t.selectAll(".selection,.array,.link")
@@ -284,7 +284,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
         .attr("transform", function(d) { return "translate(" + (d.depth - 1) * step + "," + d.x + ")"; })
         .attr("class", "array")
       .selectAll("rect")
-        .attr("width", 42);
+        .attr("width", function(d, i) { return endGroups[i].width; });
   }
 
   function transition2() {
@@ -332,7 +332,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
           .projection(function(d) { return [d.y, d.x]; }));
 
     end.transition()
-        .duration(500)
+        .duration(startHeight === endHeight ? 0 : 500 + (startElements.length - 1) * 50)
         .each("end", transition4);
   }
 
@@ -473,7 +473,34 @@ treeAnimation(
 
 <script>
 
-tree(
+treeAnimation(
+  {type: "selection", name: "selection", children: [
+    {type: "array", name: "group₀", children: [
+      {type: "element", name: "td₀"},
+      {type: "element", name: "td₁"},
+      {type: "element", name: "td₂"},
+      {type: "element", name: "td₃"}
+    ]},
+    {type: "array", name: "group₁", children: [
+      {type: "element", name: "td₄"},
+      {type: "element", name: "td₅"},
+      {type: "element", name: "td₆"},
+      {type: "element", name: "td₇"}
+    ]},
+    {type: "array", name: "group₂", children: [
+      {type: "element", name: "td₈"},
+      {type: "element", name: "td₉"},
+      {type: "element", name: "td₁₀"},
+      {type: "element", name: "td₁₁"}
+    ]},
+    {type: "array", name: "group₃", children: [
+      {type: "element", name: "td₁₂"},
+      {type: "element", name: "td₁₃"},
+      {type: "element", name: "td₁₄"},
+      {type: "element", name: "td₁₅"}
+    ]}
+  ]},
+  24 * 16,
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [{type: "element", name: "span₀"}]},
     {type: "array", name: "group₁", children: [{type: "element", name: "span₁"}]},

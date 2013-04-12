@@ -101,7 +101,15 @@
 }
 
 .play:hover path {
-  fill: red;
+  fill: #f00;
+}
+
+.play.mousedown circle {
+  fill: #f00;
+}
+
+.play.mousedown path {
+  fill: #fff;
 }
 
 .play rect {
@@ -230,10 +238,18 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
   play.append("rect")
       .attr("width", width)
       .attr("height", height)
-      .on("click", function() { resetAll(); transition1(); });
+      .on("mousedown", function() {
+        play.classed("mousedown", true);
+        d3.select(window).on("mouseup", function() { play.classed("mousedown", false); });
+      })
+      .on("click", function() {
+        resetAll();
+        transition1();
+      });
 
   end = d3.select(svg.appendChild(end.node().firstChild));
   start = d3.select(svg.firstChild).attr("transform", transform);
+  end.selectAll(".array").each(function() { this.parentNode.appendChild(this); }); // mask elements
 
   var startNodes = start.datum().nodes,
       startElements = startNodes.filter(function(d) { return d.type === "element"; }),
@@ -253,17 +269,11 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
         .style("stroke-opacity", null)
         .style("fill-opacity", null);
 
-    svg.selectAll(".node g")
+    start.selectAll(".array")
         .attr("class", function(d) { return d.type; })
         .attr("transform", function(d, i) { return "translate(" + d.depth * step + "," + d.x + ")"; })
       .select("rect")
         .attr("width", function(d) { return d.width; });
-
-    svg.selectAll(".link path")
-        .attr("d", d3.svg.diagonal()
-          .source(function(d) { return {y: d.source.depth * step + d.source.width, x: d.source.x}; })
-          .target(function(d, i) { return {y: d.target.depth * step, x: d.target.x}; })
-          .projection(function(d) { return [d.y, d.x]; }));
   }
 
   function transition1() {
@@ -281,24 +291,16 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
     t.selectAll(".element")
         .duration(500)
         .delay(function(d, i) { return 500 + i * 50; })
-        .attr("transform", function(d) { return "translate(" + (d.depth - 1) * step + "," + d.x + ")"; })
+        .attr("transform", function(d, i) { return "translate(" + (d.depth - 1) * step + "," + (endGroups[i].x - offset) + ")"; })
         .attr("class", "array")
       .select("rect")
         .attr("width", function(d, i) { return endGroups[i].width; });
   }
 
   function transition2() {
-    end.selectAll(".element,.to-element").style("display", "none");
-    end.style("display", null);
-
-    end.selectAll(".array")
-        .attr("transform", function(d, i) { return "translate(" + d.depth * step + "," + (startElements[i].x + offset) + ")"; });
-
-    end.selectAll(".to-array")
-        .attr("d", d3.svg.diagonal()
-          .source(function(d) { return {y: d.source.depth * step + d.source.width, x: d.source.x}; })
-          .target(function(d, i) { return {y: d.target.depth * step, x: startElements[i].x + offset}; })
-          .projection(function(d) { return [d.y, d.x]; }));
+    end.style("display", null)
+      .selectAll(".element,.to-element")
+        .style("display", "none");
 
     end.selectAll(".selection,.to-array,.array")
         .style("stroke-opacity", 0)
@@ -316,27 +318,6 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
   function transition3() {
     start.style("display", "none");
 
-    end.selectAll(".array")
-        .each(function() { this.parentNode.appendChild(this); }) // mask elements
-      .transition()
-        .duration(500)
-        .delay(function(d, i) { return i * 50; })
-        .attr("transform", function(d, i) { return "translate(" + d.depth * step + "," + d.x + ")"; });
-
-    end.selectAll(".to-array").transition()
-        .duration(500)
-        .delay(function(d, i) { return i * 50; })
-        .attr("d", d3.svg.diagonal()
-          .source(function(d) { return {y: d.source.depth * step + d.source.width, x: d.source.x}; })
-          .target(function(d, i) { return {y: d.target.depth * step, x: d.target.x}; })
-          .projection(function(d) { return [d.y, d.x]; }));
-
-    end.transition()
-        .duration(startHeight === endHeight ? 0 : 500 + (startElements.length - 1) * 50)
-        .each("end", transition4);
-  }
-
-  function transition4() {
     end.selectAll(".element")
         .style("display", null)
         .attr("transform", function(d) { return "translate(" + d.parent.depth * step + "," + d.parent.x + ")"; })

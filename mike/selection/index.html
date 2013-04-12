@@ -256,7 +256,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
     svg.selectAll(".node g")
         .attr("class", function(d) { return d.type; })
         .attr("transform", function(d, i) { return "translate(" + d.depth * step + "," + d.x + ")"; })
-      .selectAll("rect")
+      .select("rect")
         .attr("width", function(d) { return d.width; });
 
     svg.selectAll(".link path")
@@ -283,7 +283,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
         .delay(function(d, i) { return 500 + i * 50; })
         .attr("transform", function(d) { return "translate(" + (d.depth - 1) * step + "," + d.x + ")"; })
         .attr("class", "array")
-      .selectAll("rect")
+      .select("rect")
         .attr("width", function(d, i) { return endGroups[i].width; });
   }
 

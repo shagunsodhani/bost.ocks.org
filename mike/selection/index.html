@@ -789,9 +789,11 @@ tree(
 
 <p>Selections returned by d3.select and d3.selectAll have exactly one group. The only way you to obtain a selection with multiple groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selection.selectAll</a>. For example, if you select all table rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
 
-<pre><code>d3.selectAll("tr").selectAll("td");</code></pre>
+<pre><code>d3.selectAll("tr")<span id="select-all-1">.selectAll("td")</span>;</code></pre>
 
 <aside>Although this selection’s groups all have four elements, in general a selection’s groups can have different numbers of elements. Some groups might even be empty!</aside>
+
+<!-- TODO Highlight the relevant part of the code during the animation. -->
 
 <script>
 
@@ -899,28 +901,9 @@ selectAllAnimation(
 
 <p>Most of the time, you can ignore that selections are grouped. When you pass a function to <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a>, the function is called for each element; the only difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index. The killer feature for groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group (rather than for the entire selection), and thus more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins.
 
-<!-- <h3>Why Nested?</h3>
-
-<p>If you are familiar with jQuery, D3’s nested selections may be surprising: why the extra complexity over flat selections? D3 is <i>data-driven</i> documents, and nesting is essential to map hierarchical data to hierarchical DOM elements. This will become more clear in a moment when we get to data joins, but for now consider this simple two-dimensional data structure:
-
-<pre><code>var matrix = [
-  [ 0,  1,  2,  3],
-  [ 4,  5,  6,  7],
-  [ 8,  9, 10, 11],
-  [12, 13, 14, 15],
-];</code></pre>
-
-<p>To create a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/table">table</a> from this matrix with matching structure, we need four <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/tr">tr</a> elements, each containing four <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/td">td</a> elements. A data join can enter the rows:
-
-<aside>You can inspect the <code>parentNode</code> of each group in a selection using your browser’s JavaScript console.</aside>
-
-<p>Yet to create the cells without resorting to manual iteration, we need a nested data join. Instead of a single flat join for all 16 numbers, it is more convenient to express separate data joins for each row, joining only the four numbers for that row. D3 allows data to be specified as a function which is computed for each group in the selection (here, each row). The identity function dereferences the nested array, returning the four numbers for each row:
-
-<aside>The parent node for selections returned by d3.select and d3.selectAll is the root <a href="https://developer.mozilla.org/en-US/docs/DOM/document.documentElement">document element</a>.</aside>
-
-<p>Nested selections also have the advantage that indexes are within-group rather than within-selection. For example, the first cell of each row is always index zero. And groups define the parent node, which determines where entering elements in a data join are appended. In the nested join above, the td selection has four groups, and each group’s parent node is one of the four tr elements. The entering td elements are therefore appended to the appropriate tr element. -->
-
 <h2><a href="#null" name="null">#</a>Null Elements</h2>
+
+<!-- TODO: Reorder this section to talk about nulls at the beginning. -->
 
 <p>Sometimes it’s useful to derive a new selection from the current selection while retaining the existing grouping. An example of this is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a>, which appends a new element to each selected element. For example, if the document has four sections, and we select them all:
 
@@ -1328,6 +1311,8 @@ tree(
 <p>The above examples assume an exact 1:1 match between data and elements. But what happens when there’s no matching element for a given datum, or no matching datum for a given element?
 
 <h2><a href="#enter-update-exit" name="enter-update-exit">#</a>Enter, Update and Exit</h2>
+
+<!-- TODO: Reorder the example so that nulls aren’t coincidentally at the end. -->
 
 <p>When joining elements to data by key, there are three possible logical outcomes:<ul>
 

@@ -765,9 +765,9 @@ tree(
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>At last we are ready to put two and two together, joining data and elements in holy matrimony. The first step is to identify which data should be assigned to which element. This is done by computing a key for each data and element. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
+<p>The first step to the data join is identifying which datum should be assigned to which element. This is done by computing a key for each data and element. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
 
-<p>The simplest possible way of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
+<p>The simplest method of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
 
 <pre><code>function key(d, i) {
   return i;
@@ -801,7 +801,7 @@ tree(
 
 </script>
 
-<p>The resulting selection now has elements bound to data!
+<p>The resulting selection now has elements bound to data:
 
 <script>
 
@@ -820,7 +820,9 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient. The solution is to specify a key function as the second argument to selection.data which returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>letter</code> property, your key function can return the associated letter:
+<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient; instead, specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>letter</code> property, your key function can return the associated letter:
+
+<aside>The key function is called for each old element and each new data: ten times in this example. The previously-bound data is used to compute old keys, while the new data is used to compute new keys.</aside>
 
 <pre><code>function key(d) {
   return d.letter;
@@ -937,7 +939,7 @@ tree(
 
 <aside>You can read more about key functions in my previous tutorial on <a href="../constancy/">object constancy</a>.</aside>
 
-<p>Yet there’s an important case the above examples don’t consider. What happens when there’s no matching element for a given datum, or no matching datum for a given element?
+<p>The above examples assume an exact 1:1 match between data and elements. But what happens when there’s no matching element for a given datum, or no matching datum for a given element?
 
 <h2><a href="#enter-update-exit" name="enter-update-exit">#</a>Enter, Update and Exit</h2>
 
@@ -949,7 +951,7 @@ tree(
 
 </ul>
 
-<p>These are the three selections returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">selection.exit</a>, respectively. To illustrate, imagine you were showing a bar chart of the first five letters of the alphabet, and you wanted to transition to the five major vowels. You could use a key function to maintain association of letters to bars across the transition, resulting in the following data join:
+<p>These are the three selections returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">selection.exit</a>, respectively. To illustrate, imagine you had a bar chart of the first five letters of the alphabet, and you want to transition to the five major vowels. You could use a key function to maintain association of letters to bars across the transition, resulting in the following data join:
 
 <script>
 

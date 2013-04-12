@@ -248,7 +248,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
       })
       .on("click", function() {
         resetAll();
-        transition1();
+        animation();
       });
 
   end = d3.select(svg.appendChild(end.node().firstChild));
@@ -263,8 +263,8 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
   resetAll();
 
   function resetAll() {
-    start.call(reset).style("display", null);
-    end.call(reset).style("display", "none");
+    start.style("display", "none").call(reset);
+    end.style("display", null).call(reset);
     play.style("display", null);
   }
 
@@ -280,9 +280,14 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
         .attr("width", function(d) { return d.width; });
   }
 
-  function transition1() {
+  function animation() {
+    start.style("display", null).style("opacity", 0).transition().delay(150).duration(500).style("opacity", 1);
+    end.style("display", "none");
     play.style("display", "none");
+    setTimeout(transition1, 1250);
+  }
 
+  function transition1() {
     var t = start.transition()
         .duration(1000 + (startElements.length - 1) * 50)
         .each("end", transition2);
@@ -345,7 +350,7 @@ function treeAnimation(startRoot, startHeight, endRoot, endHeight) {
           .projection(function(d) { return [d.y, d.x]; }));
 
     end.transition()
-        .duration(5000)
+        .duration(2000)
         .each("end", resetAll);
   }
 }

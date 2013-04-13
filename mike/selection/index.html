@@ -996,7 +996,7 @@ tree(
 
 tree(
   {type: "element", name: "body₀", children: [
-    {type: "code data", name: "42"}
+    {type: "data", name: "42"}
   ]},
   24 * 1
 );
@@ -1013,7 +1013,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
       {type: "element", name: "body₀", children: [
-        {type: "code data", name: "42"}
+        {type: "data", name: "42"}
       ]}
     ]}
   ]},
@@ -1032,7 +1032,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
       {type: "element", name: "h1₀", children: [
-        {type: "code data", name: "42"}
+        {type: "data", name: "42"}
       ]}
     ]}
   ]},
@@ -1047,21 +1047,21 @@ tree(
 
 <p>Data in D3 can be any array of values. For example, an array of numbers:
 
-<pre><code>var data = [4, 5, 18, 23, 42];</code></pre>
+<pre><code>var numbers = [4, 5, 18, 23, 42];</code></pre>
 
 <p>Or an array of objects:
 
 <aside>One of <a href="http://alignedleft.com">Scott Murray</a>’s many tutorials covers <a href="http://alignedleft.com/tutorials/d3/data-types/">common types of data</a> in JavaScript.</aside>
 
-<pre><code>var data = [
-  {letter: "A", frequency: .08167},
-  {letter: "B", frequency: .01492},
-  {letter: "C", frequency: .02780},
-  {letter: "D", frequency: .04253},
-  {letter: "E", frequency: .12702},
-  {letter: "F", frequency: .02288},
-  {letter: "G", frequency: .02022},
-  {letter: "H", frequency: .06094},
+<pre><code>var letters = [
+  {name: "A", frequency: .08167},
+  {name: "B", frequency: .01492},
+  {name: "C", frequency: .02780},
+  {name: "D", frequency: .04253},
+  {name: "E", frequency: .12702},
+  {name: "F", frequency: .02288},
+  {name: "G", frequency: .02022},
+  {name: "H", frequency: .06094},
   …
 ];</code></pre>
 
@@ -1081,11 +1081,11 @@ tree(
 tree(
   null,
   {type: "array", name: "array", children: [
-    {type: "code data", name: "4"},
-    {type: "code data", name: "5"},
-    {type: "code data", name: "18"},
-    {type: "code data", name: "23"},
-    {type: "code data", name: "42"}
+    {type: "data", name: "4"},
+    {type: "data", name: "5"},
+    {type: "data", name: "18"},
+    {type: "data", name: "23"},
+    {type: "data", name: "42"}
   ]},
   24 * 5
 );
@@ -1102,28 +1102,28 @@ tree(
   null,
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
-      {type: "code data", name: "0"},
-      {type: "code data", name: "1"},
-      {type: "code data", name: "2"},
-      {type: "code data", name: "3"}
+      {type: "data", name: "0"},
+      {type: "data", name: "1"},
+      {type: "data", name: "2"},
+      {type: "data", name: "3"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "4"},
-      {type: "code data", name: "5"},
-      {type: "code data", name: "6"},
-      {type: "code data", name: "7"}
+      {type: "data", name: "4"},
+      {type: "data", name: "5"},
+      {type: "data", name: "6"},
+      {type: "data", name: "7"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "8"},
-      {type: "code data", name: "9"},
-      {type: "code data", name: "10"},
-      {type: "code data", name: "11"}
+      {type: "data", name: "8"},
+      {type: "data", name: "9"},
+      {type: "data", name: "10"},
+      {type: "data", name: "11"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "12"},
-      {type: "code data", name: "13"},
-      {type: "code data", name: "14"},
-      {type: "code data", name: "15"}
+      {type: "data", name: "12"},
+      {type: "data", name: "13"},
+      {type: "data", name: "14"},
+      {type: "data", name: "15"}
     ]}
   ]},
   24 * 16
@@ -1139,31 +1139,29 @@ tree(
 
 <p>The simplest method of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
 
-<pre><code>function key(d, i) {
-  return i;
-}</code></pre>
+<pre><code>var numbers = [4, 5, 18, 23, 42];</code></pre>
 
-<aside><a href="http://macwright.org/">Tom MacWright</a>’s “fun, difficult” <a href="http://macwright.org/presentations/dcjq/">introduction to D3</a> explains <a href="http://macwright.org/mistakes/#5010465" style="white-space:nowrap;">data joins</a> by way of a simple reimplementation.</aside>
+<aside>While most of the diagrams in this document refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses the word “element” generically to refer to any type of element.</aside>
 
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "0", join: 0}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "1", join: 0}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "2", join: 0}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "3", join: 0}]},
-      {type: "element", name: "p₄", children: [{type: "key", name: "4", join: 0}]}
+      {type: "element", name: "element₀", children: [{type: "key", name: "0", join: 0}]},
+      {type: "element", name: "element₁", children: [{type: "key", name: "1", join: 0}]},
+      {type: "element", name: "element₂", children: [{type: "key", name: "2", join: 0}]},
+      {type: "element", name: "element₃", children: [{type: "key", name: "3", join: 0}]},
+      {type: "element", name: "element₄", children: [{type: "key", name: "4", join: 0}]}
     ]}
   ]},
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
-      {type: "code data", name: "4", children: [{type: "key", name: "0"}]},
-      {type: "code data", name: "5", children: [{type: "key", name: "1"}]},
-      {type: "code data", name: "18", children: [{type: "key", name: "2"}]},
-      {type: "code data", name: "23", children: [{type: "key", name: "3"}]},
-      {type: "code data", name: "42", children: [{type: "key", name: "4"}]}
+      {type: "data", name: "4", children: [{type: "key", name: "0"}]},
+      {type: "data", name: "5", children: [{type: "key", name: "1"}]},
+      {type: "data", name: "18", children: [{type: "key", name: "2"}]},
+      {type: "data", name: "23", children: [{type: "key", name: "3"}]},
+      {type: "data", name: "42", children: [{type: "key", name: "4"}]}
     ]}
   ]},
   24 * 5
@@ -1173,16 +1171,20 @@ tree(
 
 <p>The resulting selection now has elements bound to data:
 
+<pre><code>d3.selectAll("div").data(numbers);</code></pre>
+
+<aside><a href="http://macwright.org/">Tom MacWright</a>’s “fun, difficult” <a href="http://macwright.org/presentations/dcjq/">introduction to D3</a> explains <a href="http://macwright.org/mistakes/#5010465" style="white-space:nowrap;">data joins</a> by way of a simple reimplementation.</aside>
+
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "code data", name: "4"}]},
-      {type: "element", name: "p₁", children: [{type: "code data", name: "5"}]},
-      {type: "element", name: "p₂", children: [{type: "code data", name: "18"}]},
-      {type: "element", name: "p₃", children: [{type: "code data", name: "23"}]},
-      {type: "element", name: "p₄", children: [{type: "code data", name: "42"}]}
+      {type: "element", name: "div₀", children: [{type: "data", name: "4"}]},
+      {type: "element", name: "div₁", children: [{type: "data", name: "5"}]},
+      {type: "element", name: "div₂", children: [{type: "data", name: "18"}]},
+      {type: "element", name: "div₃", children: [{type: "data", name: "23"}]},
+      {type: "element", name: "div₄", children: [{type: "data", name: "42"}]}
     ]}
   ]},
   24 * 5
@@ -1190,12 +1192,20 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient; instead, specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>letter</code> property, your key function can return the associated letter:
+<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient; instead, specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
 
 <aside>The key function is called for each old element and each new data: ten times in this example. The previously-bound data is used to compute old keys, while the new data is used to compute new keys.</aside>
 
-<pre><code>function key(d) {
-  return d.letter;
+<pre><code>var letters = [
+  {name: "A", frequency: .08167},
+  {name: "E", frequency: .12702},
+  {name: "I", frequency: .06973},
+  {name: "O", frequency: .07507},
+  {name: "U", frequency: .02758}
+];
+
+function name(d) {
+  return d.name;
 }</code></pre>
 
 <script>
@@ -1203,20 +1213,20 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "g₀", children: [{type: "key", name: "E", join: 1}]},
-      {type: "element", name: "g₁", children: [{type: "key", name: "A", join: -1}]},
-      {type: "element", name: "g₂", children: [{type: "key", name: "O", join: 1}]},
-      {type: "element", name: "g₃", children: [{type: "key", name: "I", join: -1}]},
-      {type: "element", name: "g₄", children: [{type: "key", name: "U", join: 0}]}
+      {type: "element", name: "element₀", children: [{type: "key", name: "E", join: 1}]},
+      {type: "element", name: "element₁", children: [{type: "key", name: "A", join: -1}]},
+      {type: "element", name: "element₂", children: [{type: "key", name: "O", join: 1}]},
+      {type: "element", name: "element₃", children: [{type: "key", name: "I", join: -1}]},
+      {type: "element", name: "element₄", children: [{type: "key", name: "U", join: 0}]}
     ]}
   ]},
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{letter: \"A\"}", children: [{type: "key", name: "A"}]},
-      {type: "code data", name: "{letter: \"E\"}", children: [{type: "key", name: "E"}]},
-      {type: "code data", name: "{letter: \"I\"}", children: [{type: "key", name: "I"}]},
-      {type: "code data", name: "{letter: \"O\"}", children: [{type: "key", name: "O"}]},
-      {type: "code data", name: "{letter: \"U\"}", children: [{type: "key", name: "U"}]}
+      {type: "code data", name: "{name: \"A\"}", children: [{type: "key", name: "A"}]},
+      {type: "code data", name: "{name: \"E\"}", children: [{type: "key", name: "E"}]},
+      {type: "code data", name: "{name: \"I\"}", children: [{type: "key", name: "I"}]},
+      {type: "code data", name: "{name: \"O\"}", children: [{type: "key", name: "O"}]},
+      {type: "code data", name: "{name: \"U\"}", children: [{type: "key", name: "U"}]}
     ]}
   ]},
   24 * 5
@@ -1228,16 +1238,18 @@ tree(
 
 <aside>Although the selection now matches the data, the elements are <i>not</i> automatically reordered in the DOM. For that you must call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-order">selection.order</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.</aside>
 
+<pre><code>d3.selectAll("div").data(letters, name);</code></pre>
+
 <script>
 
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "g₁", children: [{type: "code data", name: "{letter: \"A\"}"}]},
-      {type: "element", name: "g₀", children: [{type: "code data", name: "{letter: \"E\"}"}]},
-      {type: "element", name: "g₃", children: [{type: "code data", name: "{letter: \"I\"}"}]},
-      {type: "element", name: "g₂", children: [{type: "code data", name: "{letter: \"O\"}"}]},
-      {type: "element", name: "g₄", children: [{type: "code data", name: "{letter: \"U\"}"}]}
+      {type: "element", name: "div₁", children: [{type: "code data", name: "{name: \"A\"}"}]},
+      {type: "element", name: "div₀", children: [{type: "code data", name: "{name: \"E\"}"}]},
+      {type: "element", name: "div₃", children: [{type: "code data", name: "{name: \"I\"}"}]},
+      {type: "element", name: "div₂", children: [{type: "code data", name: "{name: \"O\"}"}]},
+      {type: "element", name: "div₄", children: [{type: "code data", name: "{name: \"U\"}"}]}
     ]}
   ]},
   24 * 5
@@ -1252,54 +1264,54 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₀", children: [{type: "key", name: "α", join: 1}]},
-      {type: "element", name: "p₁", children: [{type: "key", name: "β", join: 1}]},
-      {type: "element", name: "p₂", children: [{type: "key", name: "γ", join: 1}]},
-      {type: "element", name: "p₃", children: [{type: "key", name: "δ", join: -3}]}
+      {type: "element", name: "element₀", children: [{type: "key", name: "B", join: 1}]},
+      {type: "element", name: "element₁", children: [{type: "key", name: "C", join: 1}]},
+      {type: "element", name: "element₂", children: [{type: "key", name: "D", join: 1}]},
+      {type: "element", name: "element₃", children: [{type: "key", name: "A", join: -3}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₄", children: [{type: "key", name: "ε", join: 0}]},
-      {type: "element", name: "p₅", children: [{type: "key", name: "ζ", join: 0}]},
-      {type: "element", name: "p₆", children: [{type: "key", name: "η", join: 1}]},
-      {type: "element", name: "p₇", children: [{type: "key", name: "θ", join: -1}]}
+      {type: "element", name: "element₄", children: [{type: "key", name: "A", join: 0}]},
+      {type: "element", name: "element₅", children: [{type: "key", name: "B", join: 0}]},
+      {type: "element", name: "element₆", children: [{type: "key", name: "D", join: 1}]},
+      {type: "element", name: "element₇", children: [{type: "key", name: "C", join: -1}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₈", children: [{type: "key", name: "ι", join: 0}]},
-      {type: "element", name: "p₉", children: [{type: "key", name: "κ", join: +2}]},
-      {type: "element", name: "p₁₀", children: [{type: "key", name: "λ", join: 0}]},
-      {type: "element", name: "p₁₁", children: [{type: "key", name: "μ", join: -2}]}
+      {type: "element", name: "element₈", children: [{type: "key", name: "A", join: 0}]},
+      {type: "element", name: "element₉", children: [{type: "key", name: "D", join: +2}]},
+      {type: "element", name: "element₁₀", children: [{type: "key", name: "B", join: 0}]},
+      {type: "element", name: "element₁₁", children: [{type: "key", name: "C", join: -2}]}
     ]},
     {type: "array", name: "group₀", children: [
-      {type: "element", name: "p₁₂", children: [{type: "key", name: "ν", join: +2}]},
-      {type: "element", name: "p₁₃", children: [{type: "key", name: "ξ", join: +2}]},
-      {type: "element", name: "p₁₄", children: [{type: "key", name: "ο", join: -2}]},
-      {type: "element", name: "p₁₅", children: [{type: "key", name: "π", join: -2}]}
+      {type: "element", name: "element₁₂", children: [{type: "key", name: "C", join: +2}]},
+      {type: "element", name: "element₁₃", children: [{type: "key", name: "D", join: +2}]},
+      {type: "element", name: "element₁₄", children: [{type: "key", name: "A", join: -2}]},
+      {type: "element", name: "element₁₅", children: [{type: "key", name: "B", join: -2}]}
     ]}
   ]},
   {type: "function", name: "function", children: [
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{…}", children: [{type: "key", name: "δ"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "α"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "β"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "γ"}]}
+      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ε"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ζ"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "θ"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "η"}]}
+      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ι"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "μ"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "λ"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "κ"}]}
+      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ο"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "π"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ν"}]},
-      {type: "code data", name: "{…}", children: [{type: "key", name: "ξ"}]}
+      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
     ]}
   ]},
   24 * 16
@@ -1351,7 +1363,9 @@ tree(
 
 <p>Two of the previously-displayed letters (A and E) are vowels. These bars are therefore placed in the <b>update</b> selection, in order of the new data:
 
-<aside>The enter and update selections match the order of the new dataset. The exit selection, however, preserves the order of the old selection.</aside>
+<pre><code>var div = d3.selectAll("div").data(vowels, name);</code></pre>
+
+<aside>The enter and update selections match the order of the new dataset. New data replaces old data in the update selection.</aside>
 
 <script>
 
@@ -1390,6 +1404,10 @@ updateAnimation(
 
 <p>The other three displayed letters (B, C and D) are consonants, and thus have no corresponding data in the new dataset. These elements are therefore placed in the <b>exit</b> selection. Note that the exit selection preserves the order of the original selection, which is sometimes useful when animating prior to removal:
 
+<pre><code>div.exit();</code></pre>
+
+<aside>The exit selection preserves the order, indexes and data of the old selection.</aside>
+
 <script>
 
 exitAnimation(
@@ -1427,6 +1445,10 @@ exitAnimation(
 
 <p>Lastly, three of the vowels (Y, O and I) were not previously displayed, and thus have no corresponding element. These form the <b>enter</b> selection:
 
+<pre><code>div.enter();</code></pre>
+
+<aside>The placeholders in an enter selection are typically transient; the enter selection is replaced with a normal selection of elements when you call enter.append or enter.insert.</aside>
+
 <script>
 
 enterAnimation(
@@ -1461,8 +1483,6 @@ enterAnimation(
 );
 
 </script>
-
-<aside>An enter selection is typically transient; it is immediately replaced with a normal selection when you call enter.append or enter.insert.</aside>
 
 <p>While update and exit are normal selections, enter is a subclass of selection. This is necessary because it represents elements that <i>do not yet exist</i>. An enter selection contains placeholders rather than DOM elements; these placeholders are simply objects with a <code>__data__</code> property. The implementation of <a href="https://github.com/mbostock/d3/blob/master/src/selection/enter-select.js">enter.select</a> is then specialized such that nodes are inserted into the group’s parent, replacing the placeholder. This is why it is critical to call selectAll prior to a data join: it establishes the parent for entering elements.
 

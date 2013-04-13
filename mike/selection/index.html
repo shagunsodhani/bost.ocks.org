@@ -118,7 +118,7 @@
 </style>
 
 <header>
-  <aside>April 12, 2013</aside>
+  <aside>April 13, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </header>
 
@@ -1072,7 +1072,7 @@ tree(
   [12, 13, 14, 15]
 ];</code></pre>
 
-<p>For this document, we’ll mirror the visual representation of selections to represent data. Here’s a plain array of five numbers:
+<p>We can mirror the visual representation of selections to represent data. Here’s a plain array of five numbers:
 
 <script>
 
@@ -1090,7 +1090,7 @@ tree(
 
 </script>
 
-<p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant value. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped as well, by specifing a function that returns the appropriate array of data for a given group.
+<p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant value. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped by specifing a function that returns the appropriate array of data for a given group.
 
 <aside>Your data function is passed the data bound to the group’s parent node. Thus, it is common to express child data as a function of parent data. For nested arrays of data, like the <code>matrix</code> above, the identity function is frequently used.</aside>
 
@@ -1133,13 +1133,13 @@ tree(
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>The first step to the data join is identifying which datum should be assigned to which element. This is done by computing a key for each data and element. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
+<p>To join data to elements, we must first identify which datum should be assigned to which element. This is done by pairing keys. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
 
 <p>The simplest method of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
 
 <pre><code>var numbers = [4, 5, 18, 23, 42];</code></pre>
 
-<aside>While most of the diagrams in this document refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses the word “element” generically to refer to any type of element.</aside>
+<aside>While most of the diagrams in this document refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses “element” generically to refer to any type of element.</aside>
 
 <script>
 
@@ -1171,7 +1171,7 @@ tree(
 
 <pre><code>d3.selectAll("div").data(numbers);</code></pre>
 
-<aside><a href="http://macwright.org/">Tom MacWright</a>’s “fun, difficult” <a href="http://macwright.org/presentations/dcjq/">introduction to D3</a> explains <a href="http://macwright.org/mistakes/#5010465" style="white-space:nowrap;">data joins</a> by way of a simple reimplementation.</aside>
+<aside><a href="http://macwright.org/">Tom MacWright</a>’s “fun, difficult” <a href="http://macwright.org/presentations/dcjq/">introduction to D3</a> explains data joins by way of a simple <a href="http://macwright.org/mistakes/#5010465" style="white-space:nowrap;">reimplementation</a>.</aside>
 
 <script>
 
@@ -1190,7 +1190,7 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order. However, this is not always the case! To rebind data while maintainining <a href="../constancy/">object constancy</a>, joining by index is insufficient; instead, specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
+<p>Joining by index is convenient if your data and elements are in the same order. However, when orders differ, joining by index is insufficient! In this case, you can specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
 
 <aside>The key function is called for each old element and each new data: ten times in this example. The previously-bound data is used to compute old keys, while the new data is used to compute new keys.</aside>
 
@@ -1232,7 +1232,7 @@ tree(
 
 </script>
 
-<p>Again, the resulting selection has elements bound to data. The elements have also been reordered within the selection to match the bound data:
+<p>Again, the selected elements are now bound to data. The elements have also been reordered within the selection to match the data:
 
 <aside>Although the selection now matches the data, the elements are <i>not</i> automatically reordered in the DOM. For that you must call <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-order">selection.order</a> or <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.</aside>
 
@@ -1255,7 +1255,7 @@ tree(
 
 </script>
 
-<p>This process can be quite complicated for large grouped selections, but is simplified somewhat because each group is joined independently. Thus, you only need to worry about unique keys within a group, not across the entire selection.
+<p>This process can be quite complicated for large grouped selections, but is simplified somewhat because <b>each group is joined independently</b>. Thus, you only need to worry about unique keys within a group, not across the entire selection.
 
 <script>
 
@@ -1511,7 +1511,7 @@ tree(
 
 <h3 style="margin-top:8em;">Further Reading</h3>
 
-<p>I hope you found this post informative. If you found parts unclear or confusing, or if you have followup questions or other feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. If you want to continue learning about selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">browsing D3’s source</a> is an invigorating way to test your understanding. Here are several excellent talks and tutorials by others:
+<p>I hope you found this post informative; if you did, or you found parts unclear or confusing, or you have followup questions or other feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. To continue learning selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">reading D3’s source</a> is a rigorous way to test your understanding. Here are several excellent talks and tutorials by others:
 
 <ul>
   <li><a href="http://alignedleft.com/tutorials/d3/binding-data/">Binding Data</a> by Scott Murray
@@ -1520,7 +1520,7 @@ tree(
 </ul>
 
 <footer>
-  <aside>April 12, 2013</aside>
+  <aside>April 13, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
 

@@ -110,7 +110,7 @@ var svg = d3.select("body").append("svg")
 
 dispatch.on("ready.0", function(uk) {
   var subunit = svg.selectAll(".subunit")
-      .data(topojson.object(uk, uk.objects.subunits).geometries)
+      .data(topojson.feature(uk, uk.objects.subunits).features)
     .enter().append("g")
       .attr("class", function(d) { return "subunit " + d.id; });
 
@@ -133,18 +133,18 @@ dispatch.on("ready.0", function(uk) {
       .attr("class", "subunit-boundary IRL");
 
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.places))
+      .datum(topojson.feature(uk, uk.objects.places))
       .attr("d", path)
       .attr("class", "place");
 
   svg.selectAll(".place-label")
-      .data(topojson.object(uk, uk.objects.places).geometries)
+      .data(topojson.feature(uk, uk.objects.places).features)
     .enter().append("text")
       .attr("class", "place-label")
-      .attr("transform", function(d) { return "translate(" + projection(d.coordinates) + ")"; })
-      .attr("x", function(d) { return d.coordinates[0] > -1 ? 6 : -6; })
+      .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+      .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
       .attr("dy", ".35em")
-      .style("text-anchor", function(d) { return d.coordinates[0] > -1 ? "start" : "end"; })
+      .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; })
       .text(function(d) { return d.properties.name; });
 });
 
@@ -243,7 +243,7 @@ which topojson</code></pre>
 &lt;/style&gt;
 &lt;body&gt;
 &lt;script src="http://d3js.org/d3.v3.min.js">&lt;/script&gt;
-&lt;script src="http://d3js.org/topojson.v0.min.js"&gt;&lt;/script&gt;
+&lt;script src="http://d3js.org/topojson.v1.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
 
 /* JavaScript goes here. */
@@ -304,7 +304,7 @@ var svg = d3.select("body").append("svg")
 
 <pre><code>d3.json("uk.json", function(error, uk) {
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.subunits))
+      .datum(topojson.feature(uk, uk.objects.subunits))
       .attr("d", d3.geo.path().projection(d3.geo.mercator()));
 });</code></pre>
 
@@ -325,7 +325,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.2", function(uk) {
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.subunits))
+      .datum(topojson.feature(uk, uk.objects.subunits))
       .attr("d", d3.geo.path().projection(d3.geo.mercator()));
 });
 
@@ -339,7 +339,7 @@ dispatch.on("ready.2", function(uk) {
 
 <p>Recall from earlier the two closely-related JSON geographic data formats: GeoJSON and TopoJSON. While our data can be stored more efficiently in TopoJSON, we must convert <i>back</i> to GeoJSON for display. Breaking this step out to make it explicit:
 
-<pre><code>var subunits = topojson.object(uk, uk.objects.subunits);</code></pre>
+<pre><code>var subunits = topojson.feature(uk, uk.objects.subunits);</code></pre>
 
 <p>Similarly, we can extract the definition of the projection to make the code clearer:
 
@@ -394,7 +394,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.3", function(uk) {
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.subunits))
+      .datum(topojson.feature(uk, uk.objects.subunits))
       .attr("d", path);
 });
 
@@ -406,10 +406,10 @@ dispatch.on("ready.3", function(uk) {
 
 <p>As I mentioned earlier, a benefit of SVG is that we can style with CSS: we can color constituent countries by style rules that assign the <a href="http://www.w3.org/TR/SVG/painting.html#FillProperty">fill property</a>. However, we first need to give each country its own path element, rather than sharing one. Without distinct path elements, we have no way to assign distinct colors.
 
-<p>Within the <code>uk.json</code> TopoJSON file, the Admin-0 map subunits are represented as a <a href="http://geojson.org/geojson-spec.html#geometry-collection">geometry collection</a>. By pulling out the <code>geometries</code> array, we can compute a <a href="/mike/join/">data join</a> and create a path element for each geometry object:
+<p>Within the <code>uk.json</code> TopoJSON file, the Admin-0 map subunits are represented as a <a href="http://geojson.org/geojson-spec.html#feature-collection-objects">feature collection</a>. By pulling out the <code>features</code> array, we can compute a <a href="/mike/join/">data join</a> and create a path element for each feature:
 
 <pre><code>svg.selectAll(".subunit")
-    .data(topojson.object(uk, uk.objects.subunits).geometries)
+    .data(topojson.feature(uk, uk.objects.subunits).features)
   .enter().append("path")
     .attr("class", function(d) { return "subunit " + d.id; })
     .attr("d", path);</code></pre>
@@ -449,7 +449,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.4", function(uk) {
   var subunit = svg.selectAll(".subunit")
-      .data(topojson.object(uk, uk.objects.subunits).geometries)
+      .data(topojson.feature(uk, uk.objects.subunits).features)
     .enter().append("g")
       .attr("class", function(d) { return "subunit " + d.id; });
 
@@ -521,7 +521,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.5", function(uk) {
   var subunit = svg.selectAll(".subunit")
-      .data(topojson.object(uk, uk.objects.subunits).geometries)
+      .data(topojson.feature(uk, uk.objects.subunits).features)
     .enter().append("g")
       .attr("class", function(d) { return "subunit " + d.id; });
 
@@ -545,28 +545,28 @@ dispatch.on("ready.5", function(uk) {
 
 <h2><a href="#displaying-places" name="displaying-places">#</a>Displaying Places</h2>
 
-<p>As with the country polygons, the populated places are a geometry collection, so we can again convert from TopoJSON to GeoJSON and use d3.geo.path to render:
+<p>As with the country polygons, the populated places are a feature collection, so we can again convert from TopoJSON to GeoJSON and use d3.geo.path to render:
 
 <pre><code>svg.append("path")
-    .datum(topojson.object(uk, uk.objects.places))
+    .datum(topojson.feature(uk, uk.objects.places))
     .attr("d", path)
     .attr("class", "place");</code></pre>
 
 <p>This will draw a small circle for each city. We can adjust the radius by setting <a href="https://github.com/mbostock/d3/wiki/Geo-Paths#wiki-pointRadius">path.pointRadius</a>, and assign styles via CSS. But we <i>also</i> want labels, so we need a data join to create text elements. By computing the <code>transform</code> property by projecting the place’s coordinates, we translate the labels into the desired position:
 
 <pre><code>svg.selectAll(".place-label")
-    .data(topojson.object(uk, uk.objects.places).geometries)
+    .data(topojson.feature(uk, uk.objects.places).features)
   .enter().append("text")
     .attr("class", "place-label")
-    .attr("transform", function(d) { return "translate(" + projection(d.coordinates) + ")"; })
+    .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
     .attr("dy", ".35em")
     .text(function(d) { return d.properties.name; });</code></pre>
 
 <p>Labeling a map well can be challenging, especially if you want to position labels automatically. We’ve mostly ignored the problem for our simple map, though it helps that we earlier filtered labels by <code>SCALERANK</code>. A convenient trick is to use right-aligned labels on the left side of the map, and left-aligned labels on the right side of the map, here using 1°W as the threshold:
 
 <pre><code>svg.selectAll(".place-label")
-    .attr("x", function(d) { return d.coordinates[0] > -1 ? 6 : -6; })
-    .style("text-anchor", function(d) { return d.coordinates[0] > -1 ? "start" : "end"; });</code></pre>
+    .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
+    .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });</code></pre>
 
 <p>As you can see below, this works reasonably well, though there remain a few overlapping labels (<i>e.g.</i>, Nottingham, Coventry). If you’re so inclined, you can fix these by special-casing alternate alignment, or you could simply remove the offending labels. You could even try <a href="https://github.com/migurski/Dymo">simulated annealing</a> or <a href="http://bl.ocks.org/1377729">force-directed layout</a>, but I’ll leave <a href="http://en.wikipedia.org/wiki/Automatic_label_placement">automatic label placement</a> for another day!
 
@@ -596,7 +596,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.6", function(uk) {
   var subunit = svg.selectAll(".subunit")
-      .data(topojson.object(uk, uk.objects.subunits).geometries)
+      .data(topojson.feature(uk, uk.objects.subunits).features)
     .enter().append("g")
       .attr("class", function(d) { return "subunit " + d.id; });
 
@@ -614,18 +614,18 @@ dispatch.on("ready.6", function(uk) {
       .attr("class", "subunit-boundary IRL");
 
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.places))
+      .datum(topojson.feature(uk, uk.objects.places))
       .attr("d", path)
       .attr("class", "place");
 
   svg.selectAll(".place-label")
-      .data(topojson.object(uk, uk.objects.places).geometries)
+      .data(topojson.feature(uk, uk.objects.places).features)
     .enter().append("text")
       .attr("class", "place-label")
-      .attr("transform", function(d) { return "translate(" + projection(d.coordinates) + ")"; })
-      .attr("x", function(d) { return d.coordinates[0] > -1 ? 6 : -6; })
+      .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+      .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
       .attr("dy", ".35em")
-      .style("text-anchor", function(d) { return d.coordinates[0] > -1 ? "start" : "end"; })
+      .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; })
       .text(function(d) { return d.properties.name; });
 });
 
@@ -638,7 +638,7 @@ dispatch.on("ready.6", function(uk) {
 <p>Our map is missing a critical component: we haven’t labeled the countries! We could have used Natural Earth’s <a href="http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_label_points.zip">Admin-0 label points</a>, but we can just as easily compute country label points using the <a href="https://github.com/mbostock/d3/wiki/Geo-Paths#wiki-centroid">projected centroid</a>:
 
 <pre><code>svg.selectAll(".subunit-label")
-    .data(topojson.object(uk, uk.objects.subunits).geometries)
+    .data(topojson.feature(uk, uk.objects.subunits).features)
   .enter().append("text")
     .attr("class", function(d) { return "subunit-label " + d.id; })
     .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
@@ -684,7 +684,7 @@ var svg = d3.select("body").append("a")
 
 dispatch.on("ready.7", function(uk) {
   var subunit = svg.selectAll(".subunit")
-      .data(topojson.object(uk, uk.objects.subunits).geometries)
+      .data(topojson.feature(uk, uk.objects.subunits).features)
     .enter().append("g")
       .attr("class", function(d) { return "subunit " + d.id; });
 
@@ -708,18 +708,18 @@ dispatch.on("ready.7", function(uk) {
       .attr("class", "subunit-boundary IRL");
 
   svg.append("path")
-      .datum(topojson.object(uk, uk.objects.places))
+      .datum(topojson.feature(uk, uk.objects.places))
       .attr("d", path)
       .attr("class", "place");
 
   svg.selectAll(".place-label")
-      .data(topojson.object(uk, uk.objects.places).geometries)
+      .data(topojson.feature(uk, uk.objects.places).features)
     .enter().append("text")
       .attr("class", "place-label")
-      .attr("transform", function(d) { return "translate(" + projection(d.coordinates) + ")"; })
-      .attr("x", function(d) { return d.coordinates[0] > -1 ? 6 : -6; })
+      .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+      .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
       .attr("dy", ".35em")
-      .style("text-anchor", function(d) { return d.coordinates[0] > -1 ? "start" : "end"; })
+      .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; })
       .text(function(d) { return d.properties.name; });
 });
 
@@ -737,7 +737,7 @@ dispatch.on("ready.7", function(uk) {
 </footer>
 
 <script src="../highlight.min.js"></script>
-<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
 <script>
 
 d3.json("uk.json", function(error, uk) {

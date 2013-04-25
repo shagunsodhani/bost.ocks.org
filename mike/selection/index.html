@@ -352,7 +352,7 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
 
   end = d3.select(start.node().appendChild(end.node().firstChild));
   left.selectAll(".element").each(function() { this.parentNode.appendChild(this); }); // mask keys
-  right.selectAll(".data").each(function() { this.parentNode.appendChild(this); }); // mask keys
+  right.selectAll(".datum").each(function() { this.parentNode.appendChild(this); }); // mask keys
   start.node().appendChild(left.node());
   start.node().appendChild(right.node());
 
@@ -408,7 +408,7 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
     left.style("display", "none").call(reset);
     right.style("display", "none").call(reset);
     right.selectAll(".key").classed("joined", function(d) { return d.joined; });
-    right.selectAll(".data").classed("joined", function(d) { return d.children[0].joined; });
+    right.selectAll(".datum").classed("joined", function(d) { return d.children[0].joined; });
     right.selectAll(".to-key").classed("joined", function(d) { return d.target.joined; });
     end.call(reset);
   }
@@ -444,7 +444,7 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
 
     end.style("display", null);
 
-    end.selectAll(".data,.to-data")
+    end.selectAll(".datum,.to-datum")
         .style("display", "none");
 
     end.selectAll(".element,.null")
@@ -514,7 +514,7 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
           .projection(function(d) { return [d.y, d.x]; }));
 
     left.selectAll(".to-key")
-        .attr("class", "from-element to-data");
+        .attr("class", "from-element to-datum");
 
     right.selectAll(".to-key").transition()
         .duration(500)
@@ -527,7 +527,7 @@ function updateAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
         .duration(500)
         .attr("transform", function(d, i) { return "translate(" + ((d.depth - 1) * step + offset) + "," + d.x + ")"; });
 
-    right.selectAll(".data").transition()
+    right.selectAll(".datum").transition()
         .duration(500)
         .attr("transform", function(d, i) { return "translate(" + ((d.depth - 2) * step + offset) + "," + d.x + ")"; });
 
@@ -651,7 +651,7 @@ function enterAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
     left.style("display", "none").call(reset);
     right.style("display", "none").call(reset);
     right.selectAll(".key").classed("joined", function(d) { return d.joined; });
-    right.selectAll(".data").classed("joined", function(d) { return d.children[0].joined; });
+    right.selectAll(".datum").classed("joined", function(d) { return d.children[0].joined; });
     right.selectAll(".to-key").classed("joined", function(d) { return d.target.joined; });
     end.call(reset);
   }
@@ -667,7 +667,7 @@ function enterAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
   function transition1() {
     end.style("display", null);
 
-    end.selectAll(".element,.data,.to-data")
+    end.selectAll(".element,.datum,.to-datum")
         .style("stroke-opacity", 0)
         .style("fill-opacity", 0);
 
@@ -675,7 +675,7 @@ function enterAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
         .style("stroke-opacity", 0)
         .style("fill-opacity", 0);
 
-    right.selectAll(".array,.to-array,.function,.to-function,.to-data,.joined")
+    right.selectAll(".array,.to-array,.data,.to-function,.to-datum,.joined")
         .style("stroke-opacity", 0)
         .style("fill-opacity", 0);
 
@@ -689,7 +689,7 @@ function enterAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
         .duration(500)
         .attr("transform", function(d, i) { return "translate(" + ((d.depth - 2) * step + offset) + "," + d.x + ")"; });
 
-    right.selectAll(".data:not(.joined)").transition()
+    right.selectAll(".datum:not(.joined)").transition()
         .duration(500)
         .attr("transform", function(d, i) { return "translate(" + ((d.depth - 2) * step + offset) + "," + d.x + ")"; });
 
@@ -707,7 +707,7 @@ function enterAnimation(leftRoot, rightRoot, endRoot, outerHeight) {
     right.selectAll(".to-key:not(.joined)")
         .style("stroke-opacity", 0);
 
-    end.selectAll(".element,.data,.to-data")
+    end.selectAll(".element,.datum,.to-datum")
         .style("stroke-opacity", 1)
         .style("fill-opacity", 1);
 
@@ -1011,9 +1011,9 @@ tree(
 
 <p>Data is bound to elements one of several ways:<ul>
 
-  <li>Inherited from a parent via append, insert, or select.
-  <li>Assigned to individual elements via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-datum">selection.datum</a>.
   <li>Joined to groups of elements via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>.
+  <li>Assigned to individual elements via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-datum">selection.datum</a>.
+  <li>Inherited from a parent via append, insert, or select.
 
 </ul>
 
@@ -1170,8 +1170,6 @@ tree(
 
 <pre><code>var numbers = [4, 5, 18, 23, 42];</code></pre>
 
-<aside>While most of the diagrams in this article refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses “element” generically to refer to any type of element.</aside>
-
 <script>
 
 tree(
@@ -1223,8 +1221,6 @@ tree(
 
 <p>Joining by index is convenient if your data and elements are in the same order. However, when orders differ, joining by index is insufficient! In this case, you can specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
 
-<aside>The key function is called for each old element and each new data: ten times in this example. The previously-bound data is used to compute old keys, while the new data is used to compute new keys.</aside>
-
 <pre><code>var letters = [
   {name: "A", frequency: .08167},
   {name: "E", frequency: .12702},
@@ -1236,6 +1232,8 @@ tree(
 function name(d) {
   return d.name;
 }</code></pre>
+
+<aside>The key function is called for each old element and each new data: ten times in this example. The previously-bound data is used to compute old keys, while the new data is used to compute new keys.</aside>
 
 <script>
 

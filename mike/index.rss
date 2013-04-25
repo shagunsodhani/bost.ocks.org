@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>08 Apr 21:00 GMT</pubDate>
-    <lastBuildDate>09 Apr 08:00 GMT</lastBuildDate>
+    <pubDate>25 Apr 14:00 GMT</pubDate>
+    <lastBuildDate>25 Apr 14:00 GMT</lastBuildDate>
+    <item>
+      <title>N.F.L. Draft: How Good Are Teams at Picking the Best?</title>
+      <link>http://www.nytimes.com/interactive/2013/04/25/sports/football/picking-the-best-in-the-nfl-draft.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/04/25/sports/football/picking-the-best-in-the-nfl-draft.html"><img src="http://bost.ocks.org/mike/nfl-draft.png" width="720" height="80"></a>]]></description>
+      <pubDate>25 Apr 14:00 GMT</pubDate>
+    </item>
     <item>
       <title>China Still Dominates, but Some Manufacturers Look Elsewhere</title>
       <link>http://www.nytimes.com/interactive/2013/04/08/business/global/asia-map.html</link>

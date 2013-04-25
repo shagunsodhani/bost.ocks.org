@@ -120,8 +120,6 @@
   –Arthur C. Clarke
 </blockquote>
 
-<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, hoping to provide an informative yet quick introduction to D3’s core concept—just enough to get started. This post takes a more comprehensive approach; rather than saying how to <i>use</i> selections, I will instead explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
-
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -730,6 +728,42 @@ function fadeIn(selection, delay) {
 
 </script>
 
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of selections, hoping to provide a quick yet informative introduction to <a href="http://d3js.org">D3</a>’s core concept—just enough to get started. This article instead takes a more comprehensive approach; rather than saying how to <i>use</i> <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, I will explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
+
+<p>The structure of this article may at first seem arbitrary. As I describe the internal workings of selections, I will not simultaneously explain the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first, before explaining how they work in tandem. By the time you read to the end, the intent of the design, as well as its function, should be clear.
+
+<p>D3 is a visualization library, so this article incorporates visual explanations to accompany the text. In subsequent diagrams, the left side of the diagram will show the structure of selections, while the right side will show the structure of data:
+
+<svg width="740" height="120" style="margin:1em -10px;">
+  <g transform="translate(10,10)">
+    <rect fill="#eee" stroke="#ccc" stroke-dasharray="2,2" width="355" height="100"/>
+    <rect fill="#eee" stroke="#ccc" stroke-dasharray="2,2" x="365" width="355" height="100"/>
+    <rect fill="#a1d99b" fill-opacity=".8" stroke="#71a76c" stroke-dasharray="2,2" y="10" x="300" width="120" height="80"/>
+    <text x="178" text-anchor="middle" y="50" dy=".35em">selections will go here</text>
+    <text x="360" text-anchor="middle" y="50" dy=".35em">joiny bits will go here</text>
+    <text x="543" text-anchor="middle" y="50" dy=".35em">data will go here</text>
+  </g>
+</svg>
+
+<p>Rounded rectangles such as <span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="node" width="55" height="22"><g transform="translate(1,1)" class="datum"><rect rx="6" ry="6" width="53" height="20"/><text x="26" y="10" dy=".35em" text-anchor="middle">thing</text></g></svg></span> indicate JavaScript objects of various types, ranging from literal objects (<code>{foo: 16}</code>), primitive values (<code>"hello"</code>), arrays of numbers (<code>[1, 2, 3]</code>) or even HTML elements pulled from the DOM. Certain special object types are colored, including <span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="node" width="55" height="22"><g transform="translate(1,1)" class="selection"><rect rx="6" ry="6" width="53" height="20"/><text x="26" y="10" dy=".35em" text-anchor="middle">selection</text></g></svg></span>, <span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="node" width="55" height="22"><g transform="translate(1,1)" class="array"><rect rx="6" ry="6" width="53" height="20"/><text x="26" y="10" dy=".35em" text-anchor="middle">array</text></g></svg></span>, and <span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="node" width="55" height="22"><g transform="translate(1,1)" class="element"><rect rx="6" ry="6" width="53" height="20"/><text x="26" y="10" dy=".35em" text-anchor="middle">element</text></g></svg></span>. References from one object to another are indicated with connecting lines (<span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="link" width="55" height="22"><line x1="1" x2="54" y1="11" y2="11"/></svg></span>). For example, a single-element array containing the number 42 looks like:
+
+<pre><code>var array = [42];</code></pre>
+
+<script>
+
+tree(
+  {type: "array", name: "array", children: [
+    {type: "datum", name: "42"}
+  ]},
+  24 * 1
+);
+
+</script>
+
+<p>Wherever possible, the code that generates the given selection appears immediately above the diagram. Opening your browser’s JavaScript console and creating selections interactively is a great way to test your understanding of the text!
+
+<p>Let’s begin.
+
 <h2><a href="#subclass" name="subclass">#</a>A Subclass of Array</h2>
 
 <aside>JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <a href="http://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array/">prototype chain injection</a>.</aside>
@@ -1130,7 +1164,7 @@ tree(
 
 <pre><code>var numbers = [4, 5, 18, 23, 42];</code></pre>
 
-<aside>While most of the diagrams in this document refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses “element” generically to refer to any type of element.</aside>
+<aside>While most of the diagrams in this article refer to specific types of elements, such as <code>td</code> and <code>div</code>, this diagram uses “element” generically to refer to any type of element.</aside>
 
 <script>
 
@@ -1502,7 +1536,7 @@ tree(
 
 <h3 style="margin-top:8em;">Further Reading</h3>
 
-<p>I hope you found this post informative; if you did, or you found parts unclear or confusing, or you have followup questions or other feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. To continue learning selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">reading D3’s source</a> is a rigorous way to test your understanding. Here are several excellent talks and tutorials by others:
+<p>I hope you found this article informative; if you did, or you found parts unclear or confusing, or you have followup questions or other feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. To continue learning selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">reading D3’s source</a> is a rigorous way to test your understanding. Here are several excellent talks and tutorials by others:
 
 <ul>
   <li><a href="http://alignedleft.com/tutorials/d3/binding-data/">Binding Data</a> by Scott Murray

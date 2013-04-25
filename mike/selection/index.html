@@ -46,15 +46,15 @@
   fill: #636363;
 }
 
-.node .function rect {
-  stroke: #3182bd;
-}
-
 .node .selection rect {
   stroke: #e6550d;
 }
 
 .node .data rect {
+  stroke: #3182bd;
+}
+
+.node .datum rect {
   fill: #d9d9d9;
   stroke: none;
 }
@@ -987,7 +987,7 @@ tree(
 
 tree(
   {type: "element", name: "body", children: [
-    {type: "data", name: "42"}
+    {type: "datum", name: "42"}
   ]},
   24 * 1
 );
@@ -1004,7 +1004,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
       {type: "element", name: "body", children: [
-        {type: "data", name: "42"}
+        {type: "datum", name: "42"}
       ]}
     ]}
   ]},
@@ -1023,7 +1023,7 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
       {type: "element", name: "h1", children: [
-        {type: "data", name: "42"}
+        {type: "datum", name: "42"}
       ]}
     ]}
   ]},
@@ -1070,11 +1070,11 @@ tree(
 tree(
   null,
   {type: "array", name: "array", children: [
-    {type: "data", name: "4"},
-    {type: "data", name: "5"},
-    {type: "data", name: "18"},
-    {type: "data", name: "23"},
-    {type: "data", name: "42"}
+    {type: "datum", name: "4"},
+    {type: "datum", name: "5"},
+    {type: "datum", name: "18"},
+    {type: "datum", name: "23"},
+    {type: "datum", name: "42"}
   ]},
   24 * 5
 );
@@ -1089,30 +1089,30 @@ tree(
 
 tree(
   null,
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "0"},
-      {type: "data", name: "1"},
-      {type: "data", name: "2"},
-      {type: "data", name: "3"}
+      {type: "datum", name: "0"},
+      {type: "datum", name: "1"},
+      {type: "datum", name: "2"},
+      {type: "datum", name: "3"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "4"},
-      {type: "data", name: "5"},
-      {type: "data", name: "6"},
-      {type: "data", name: "7"}
+      {type: "datum", name: "4"},
+      {type: "datum", name: "5"},
+      {type: "datum", name: "6"},
+      {type: "datum", name: "7"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "8"},
-      {type: "data", name: "9"},
-      {type: "data", name: "10"},
-      {type: "data", name: "11"}
+      {type: "datum", name: "8"},
+      {type: "datum", name: "9"},
+      {type: "datum", name: "10"},
+      {type: "datum", name: "11"}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "12"},
-      {type: "data", name: "13"},
-      {type: "data", name: "14"},
-      {type: "data", name: "15"}
+      {type: "datum", name: "12"},
+      {type: "datum", name: "13"},
+      {type: "datum", name: "14"},
+      {type: "datum", name: "15"}
     ]}
   ]},
   24 * 16
@@ -1144,13 +1144,13 @@ tree(
       {type: "element", name: "element", children: [{type: "key", name: "4", join: 0}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "4", children: [{type: "key", name: "0"}]},
-      {type: "data", name: "5", children: [{type: "key", name: "1"}]},
-      {type: "data", name: "18", children: [{type: "key", name: "2"}]},
-      {type: "data", name: "23", children: [{type: "key", name: "3"}]},
-      {type: "data", name: "42", children: [{type: "key", name: "4"}]}
+      {type: "datum", name: "4", children: [{type: "key", name: "0"}]},
+      {type: "datum", name: "5", children: [{type: "key", name: "1"}]},
+      {type: "datum", name: "18", children: [{type: "key", name: "2"}]},
+      {type: "datum", name: "23", children: [{type: "key", name: "3"}]},
+      {type: "datum", name: "42", children: [{type: "key", name: "4"}]}
     ]}
   ]},
   24 * 5
@@ -1169,11 +1169,11 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
-      {type: "element", name: "div", children: [{type: "data", name: "4"}]},
-      {type: "element", name: "div", children: [{type: "data", name: "5"}]},
-      {type: "element", name: "div", children: [{type: "data", name: "18"}]},
-      {type: "element", name: "div", children: [{type: "data", name: "23"}]},
-      {type: "element", name: "div", children: [{type: "data", name: "42"}]}
+      {type: "element", name: "div", children: [{type: "datum", name: "4"}]},
+      {type: "element", name: "div", children: [{type: "datum", name: "5"}]},
+      {type: "element", name: "div", children: [{type: "datum", name: "18"}]},
+      {type: "element", name: "div", children: [{type: "datum", name: "23"}]},
+      {type: "element", name: "div", children: [{type: "datum", name: "42"}]}
     ]}
   ]},
   24 * 5
@@ -1209,13 +1209,13 @@ tree(
       {type: "element", name: "element", children: [{type: "key", name: "U", join: 0}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "code data", name: "{name: \"A\"}", children: [{type: "key", name: "A"}]},
-      {type: "code data", name: "{name: \"E\"}", children: [{type: "key", name: "E"}]},
-      {type: "code data", name: "{name: \"I\"}", children: [{type: "key", name: "I"}]},
-      {type: "code data", name: "{name: \"O\"}", children: [{type: "key", name: "O"}]},
-      {type: "code data", name: "{name: \"U\"}", children: [{type: "key", name: "U"}]}
+      {type: "code datum", name: "{name: \"A\"}", children: [{type: "key", name: "A"}]},
+      {type: "code datum", name: "{name: \"E\"}", children: [{type: "key", name: "E"}]},
+      {type: "code datum", name: "{name: \"I\"}", children: [{type: "key", name: "I"}]},
+      {type: "code datum", name: "{name: \"O\"}", children: [{type: "key", name: "O"}]},
+      {type: "code datum", name: "{name: \"U\"}", children: [{type: "key", name: "U"}]}
     ]}
   ]},
   24 * 5
@@ -1234,11 +1234,11 @@ tree(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
-      {type: "element", name: "div", children: [{type: "code data", name: "{name: \"A\"}"}]},
-      {type: "element", name: "div", children: [{type: "code data", name: "{name: \"E\"}"}]},
-      {type: "element", name: "div", children: [{type: "code data", name: "{name: \"I\"}"}]},
-      {type: "element", name: "div", children: [{type: "code data", name: "{name: \"O\"}"}]},
-      {type: "element", name: "div", children: [{type: "code data", name: "{name: \"U\"}"}]}
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"A\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"E\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"I\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"O\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"U\"}"}]}
     ]}
   ]},
   24 * 5
@@ -1277,30 +1277,30 @@ tree(
       {type: "element", name: "element", children: [{type: "key", name: "B", join: -2}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
-      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
-      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "datum", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "datum", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
-      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
-      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "datum", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "datum", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
-      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
-      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "datum", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "datum", name: "D", children: [{type: "key", name: "D"}]}
     ]},
     {type: "array", name: "array", children: [
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "B", children: [{type: "key", name: "B"}]},
-      {type: "data", name: "C", children: [{type: "key", name: "C"}]},
-      {type: "data", name: "D", children: [{type: "key", name: "D"}]}
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "B", children: [{type: "key", name: "B"}]},
+      {type: "datum", name: "C", children: [{type: "key", name: "C"}]},
+      {type: "datum", name: "D", children: [{type: "key", name: "D"}]}
     ]}
   ]},
   24 * 16
@@ -1336,13 +1336,13 @@ tree(
       {type: "element", name: "element", children: [{type: "key", name: "E", join: -3}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "Y", children: [{type: "key", name: "Y"}]},
-      {type: "data", name: "E", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "O", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "I", children: [{type: "key", name: "I"}]}
+      {type: "datum", name: "Y", children: [{type: "key", name: "Y"}]},
+      {type: "datum", name: "E", children: [{type: "key", name: "E"}]},
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "O", children: [{type: "key", name: "O"}]},
+      {type: "datum", name: "I", children: [{type: "key", name: "I"}]}
     ]}
   ]},
   24 * 5
@@ -1368,20 +1368,20 @@ updateAnimation(
       {type: "element", name: "element", children: [{type: "key", name: "E", join: -3}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "Y", children: [{type: "key", name: "Y"}]},
-      {type: "data", name: "E", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "O", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "I", children: [{type: "key", name: "I"}]}
+      {type: "datum", name: "Y", children: [{type: "key", name: "Y"}]},
+      {type: "datum", name: "E", children: [{type: "key", name: "E"}]},
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "O", children: [{type: "key", name: "O"}]},
+      {type: "datum", name: "I", children: [{type: "key", name: "I"}]}
     ]}
   ]},
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
       {type: "null", name: "null"},
-      {type: "element", name: "element", children: [{type: "data", name: "E"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "A"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "E"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "A"}]},
       {type: "null", name: "null"},
       {type: "null", name: "null"}
     ]}
@@ -1409,21 +1409,21 @@ exitAnimation(
       {type: "element", name: "element", children: [{type: "key", name: "E", join: -3}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "Y", children: [{type: "key", name: "Y"}]},
-      {type: "data", name: "E", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "O", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "I", children: [{type: "key", name: "I"}]}
+      {type: "datum", name: "Y", children: [{type: "key", name: "Y"}]},
+      {type: "datum", name: "E", children: [{type: "key", name: "E"}]},
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "O", children: [{type: "key", name: "O"}]},
+      {type: "datum", name: "I", children: [{type: "key", name: "I"}]}
     ]}
   ]},
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
       {type: "null", name: "null"},
-      {type: "element", name: "element", children: [{type: "data", name: "B"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "C"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "D"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "B"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "C"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "D"}]},
       {type: "null", name: "null"}
     ]}
   ]},
@@ -1450,22 +1450,22 @@ enterAnimation(
       {type: "element", name: "element", children: [{type: "key", name: "E", join: -3}]}
     ]}
   ]},
-  {type: "function", name: "function", children: [
+  {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
-      {type: "data", name: "Y", children: [{type: "key", name: "Y"}]},
-      {type: "data", name: "E", children: [{type: "key", name: "E"}]},
-      {type: "data", name: "A", children: [{type: "key", name: "A"}]},
-      {type: "data", name: "O", children: [{type: "key", name: "O"}]},
-      {type: "data", name: "I", children: [{type: "key", name: "I"}]}
+      {type: "datum", name: "Y", children: [{type: "key", name: "Y"}]},
+      {type: "datum", name: "E", children: [{type: "key", name: "E"}]},
+      {type: "datum", name: "A", children: [{type: "key", name: "A"}]},
+      {type: "datum", name: "O", children: [{type: "key", name: "O"}]},
+      {type: "datum", name: "I", children: [{type: "key", name: "I"}]}
     ]}
   ]},
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
-      {type: "element", name: "placeholder", children: [{type: "data", name: "Y"}]},
+      {type: "element", name: "placeholder", children: [{type: "datum", name: "Y"}]},
       {type: "null", name: "null"},
       {type: "null", name: "null"},
-      {type: "element", name: "placeholder", children: [{type: "data", name: "O"}]},
-      {type: "element", name: "placeholder", children: [{type: "data", name: "I"}]}
+      {type: "element", name: "placeholder", children: [{type: "datum", name: "O"}]},
+      {type: "element", name: "placeholder", children: [{type: "datum", name: "I"}]}
     ]}
   ]},
   24 * 5
@@ -1486,11 +1486,11 @@ enterAnimation(
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "data", name: "A"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "E"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "I"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "O"}]},
-      {type: "element", name: "element", children: [{type: "data", name: "U"}]}
+      {type: "element", name: "element", children: [{type: "datum", name: "A"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "E"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "I"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "O"}]},
+      {type: "element", name: "element", children: [{type: "datum", name: "U"}]}
     ]}
   ]},
   24 * 5

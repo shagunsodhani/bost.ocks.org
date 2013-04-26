@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>25 Apr 14:00 GMT</pubDate>
-    <lastBuildDate>25 Apr 14:00 GMT</lastBuildDate>
+    <pubDate>26 Apr 17:00 GMT</pubDate>
+    <lastBuildDate>26 Apr 17:00 GMT</lastBuildDate>
+    <item>
+      <title>How Selections Work</title>
+      <link>http://bost.ocks.org/mike/selection/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/selection/"><img src="http://bost.ocks.org/mike/selection.png" width="720" height="80"></a>]]></description>
+      <pubDate>26 Apr 17:00 GMT</pubDate>
+    </item>
     <item>
       <title>N.F.L. Draft: How Good Are Teams at Picking the Best?</title>
       <link>http://www.nytimes.com/interactive/2013/04/25/sports/football/picking-the-best-in-the-nfl-draft.html</link>

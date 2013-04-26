@@ -745,9 +745,9 @@ function fadeIn(selection, delay) {
 
 </script>
 
-<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of selections, hoping to provide a quick yet informative introduction to <a href="http://d3js.org">D3</a>’s core concept—just enough to get started. This article instead takes a more comprehensive approach; rather than saying how to <i>use</i> <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, I will explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
+<p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="http://d3js.org">D3</a>’s selections, providing only enough detail to get started. This article takes a more comprehensive approach; rather than saying how to <i>use</i> <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, I will explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
 
-<p>The structure of this article may at first seem arbitrary. As I describe the internal workings of selections, I will not simultaneously explain the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first, before explaining how they work in tandem. By the time you read to the end, the intent of the design, as well as its function, should be clear.
+<p>The structure of this article may at first seem arbitrary. It describes the internal workings of selections, but not simultaneously the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first before explaining how everything works in tandem. By the time you read to the end, the intent of the design as well as its function should be clear.
 
 <p>D3 is a visualization library, so this article incorporates visual explanations to accompany the text. In subsequent diagrams, the left side of the diagram will show the structure of selections, while the right side will show the structure of data:
 
@@ -785,15 +785,13 @@ tree(
 
 <aside>JavaScript doesn’t yet support array subclasses directly, so arrays are subclassed through <a href="http://perfectionkills.com/how-ecmascript-5-still-does-not-allow-to-subclass-an-array/">prototype chain injection</a>.</aside>
 
-<p>You were probably told that selections are arrays of DOM elements. This is false. For one, selections are a <i>subclass</i> of array; this subclass provides methods to manipulate selected elements, such as setting <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>. Selections inherit native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often use native methods as D3 provides convenient alternatives, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. (A few native methods are overridden to adapt their behavior to selections, namely <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.)
+<p>You were probably told that selections are arrays of DOM elements. False. For one, selections are a <i>subclass</i> of array; this subclass provides methods to manipulate selected elements, such as setting <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attributes</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">styles</a>. Selections inherit native array methods as well, such as <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.forEach</a> and <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach">array.map</a>. However, you won’t often use native methods as D3 provides convenient alternatives, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-each">selection.each</a>. (A few native methods are overridden to adapt their behavior to selections, namely <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-filter">selection.filter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-sort">selection.sort</a>.)
 
 <h2><a href="#group" name="group">#</a>Grouping Elements</h2>
 
 <p>The other reason selections aren’t literally arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a> returns a selection with one group containing the selected element:
 
-<aside>This is why you’ll sometimes see <code>selection[0][0]</code> to refer to the first node, although for reasons that will soon be apparent it’s more robust to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.</aside>
-
-<pre><code>d3.select("body");</code></pre>
+<pre><code>var selection = d3.select("body");</code></pre>
 
 <script>
 
@@ -808,11 +806,13 @@ tree(
 
 </script>
 
+<p>In the JavaScript console, you can inspect the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. Although you can access nodes in a selection directly this way, for reasons that will soon be apparent it’s easier to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
+
 <p>Likewise, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with one group and any number of elements:
 
-<aside>While the selection is a subclass of array, groups are plain arrays.</aside>
-
 <pre><code>d3.selectAll("h2");</code></pre>
+
+<aside>While the selection is a subclass of array, groups are plain arrays.</aside>
 
 <script>
 
@@ -956,13 +956,13 @@ selectAllAnimation(
 
 <p>Each group has a <code>parentNode</code> property which stores the shared parent of all the group’s elements. The parent node is set when the group is created. Thus, if you call <code>d3.selectAll("tr")&#8203;.selectAll("td")</code>, the returned selection contains groups of td elements, whose parents are tr elements. For selections returned by d3.select and d3.selectAll, the parent element is the <a href="https://developer.mozilla.org/en-US/docs/DOM/document.documentElement">document element</a>.
 
-<p>Most of the time, you can ignore that selections are grouped. When you use a function to define a selection.attr or selection.style, the function is called for each element; the main difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index.
+<p>Most of the time, you can safely ignore that selections are grouped. When you use a function to define a selection.attr or selection.style, the function is called for each element; the main difference with grouping is that the second argument to your function (<code>i</code>) is the within-group index rather than the within-selection index.
 
 <!-- The killer feature for groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, which allows you to define data per-group (rather than for the entire selection), and thus more easily create hierarchical DOM elements from hierarchical data. We’ll revisit this topic when we get to data joins. -->
 
 <h2><a href="#non-grouping" name="non-grouping">#</a>Non-Grouping Operations</h2>
 
-<p>It’s only selectAll that has special behavior regarding grouping; <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">select</a>, in contrast, preserves the existing grouping because there is exactly one element in the new selection for each element in the old selection. This also means that select propagates data from parent to child, whereas selectAll does not (and so you use a data-join)!
+<p>Only selectAll has special behavior regarding grouping; <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-select">select</a> preserves the existing grouping. The select method differs because there is exactly one element in the new selection for each element in the old selection. Thus, select also propagates data from parent to child, whereas selectAll does not (hence the need for a data-join)!
 
 <p>The <a href="https://github.com/mbostock/d3/blob/master/src/selection/append.js">append</a> and <a href="https://github.com/mbostock/d3/blob/master/src/selection/insert.js">insert</a> methods are wrappers on top of select, so they also preserve grouping and propagate data. For example, given a document with four sections:
 
@@ -1004,11 +1004,13 @@ tree(
 
 </script>
 
+<p>Note that the <code>parentNode</code> for this selection is still the document element because selection.selectAll has not been called to regroup the selection.
+
 <h2><a href="#null" name="null">#</a>Null Elements</h2>
 
 <p>Groups can contain nulls to indicate missing elements. Nulls are ignored for most operations; for example, D3 skips null elements when applying styles and attributes.
 
-<p>One source of null elements is when selection.select cannot find a matching element for the given selector. The select method must preserve the grouping structure, so it fills the missing slots with null. For example, if only the last two sections have asides:
+<p>Null elements can occur when selection.select cannot find a matching element for the given selector. The select method must preserve the grouping structure, so it fills the missing slots with null. For example, if only the last two sections have asides:
 
 <pre><code>d3.selectAll("section").select("aside");</code></pre>
 
@@ -1030,13 +1032,13 @@ tree(
 
 </script>
 
-<p>You can usually ignore null elements, as well, but note that they preserve the grouped structure of a selection and its within-group index.
+<p>As with grouping, you can usually ignore null elements, but note their use in preserving the grouped structure of a selection and its within-group index.
 
 <!-- <p>Null elements are critical when handling the result of a data join, which splits a selection into three parts: <i>enter</i>, <i>update</i> and <i>exit</i>. These three selections share the original selection’s structure, with null elements in-between. -->
 
 <h2><a href="#data" name="data">#</a>Bound to Data</h2>
 
-<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is assigned to the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Selections are therefore transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is assigned to the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Data is therefore persistent while selections can be considered transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
 
 <aside>To verify that data is a property of elements, see <a href="https://github.com/mbostock/d3/blob/master/src/selection/datum.js">selection.datum</a>’s implementation.</aside>
 
@@ -1048,7 +1050,7 @@ tree(
 
 </ul>
 
-<p>There’s no reason to set the <code>__data__</code> property directly when you can use selection.datum, but doing so illustrates how data binding is implemented:
+<p>While there is no reason to set the <code>__data__</code> property directly when you can use selection.datum, doing so illustrates how data binding is implemented:
 
 <aside>You might also find this knowledge useful when inspecting selections in your browser’s developer tools; <code>$0.__data__</code> shows the data bound to the inspected element.</aside>
 
@@ -1103,7 +1105,7 @@ tree(
 
 </script>
 
-<p>And that brings us to the last method of binding data: the mysterious join! But before we can achieve enlightenment, we first need to answer a more existential question.
+<p>And that brings us to the last method of binding data: the mysterious join! But before we can achieve enlightenment, we must answer a more existential question.
 
 <h2><a href="#data" name="data">#</a>What is Data?</h2>
 
@@ -1154,7 +1156,7 @@ tree(
 
 <p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant value. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped by specifing a function that returns the appropriate array of data for a given group.
 
-<aside>Your data function is passed the data bound to the group’s parent node. Thus, it is common to express child data as a function of parent data. For nested arrays of data, like the <code>matrix</code> above, the identity function is frequently used.</aside>
+<aside>When joining, your data function is passed the datum bound to the group’s <code>parentNode</code> (<code>d</code>) and the group’s index (<code>i</code>), and must return an array. Thus, you typically express data as a function of parent data.</aside>
 
 <script>
 
@@ -1195,7 +1197,7 @@ tree(
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
-<p>To join data to elements, we must first identify which datum should be assigned to which element. This is done by pairing keys. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are the same, the datum is assigned to that element.
+<p>To join data to elements, we must know which datum should be assigned to which element. This is done by pairing keys. A <i>key</i> is simply an identifying string, such as a name; when the key for a datum and an element are equal, the datum is assigned to that element.
 
 <p>The simplest method of assigning keys is by index: the first datum and the first element have the key “0”, the second datum and element have the key “1”, and so on. Joining an array of numbers to a matching array of paragraph elements therefore looks like this, with keys shown in green:
 
@@ -1250,7 +1252,7 @@ tree(
 
 </script>
 
-<p>Joining by index is convenient if your data and elements are in the same order. However, when orders differ, joining by index is insufficient! In this case, you can specify a key function as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
+<p>Joining by index is convenient if your data and elements are in the same order. However, when orders differ, joining by index is insufficient! In this case, you can specify a <a href="../constancy/#key-functions">key function</a> as the second argument to selection.data. The key function returns the key for a given datum or element. For example, if your data is an array of objects, each with a <code>name</code> property, your key function can return the associated name:
 
 <pre><code>var letters = [
   {name: "A", frequency: .08167},
@@ -1542,7 +1544,7 @@ enterAnimation(
 
 </script>
 
-<p>While update and exit are normal selections, enter is a subclass of selection. This is necessary because it represents elements that <i>do not yet exist</i>. An enter selection contains placeholders rather than DOM elements; these placeholders are simply objects with a <code>__data__</code> property. The implementation of <a href="https://github.com/mbostock/d3/blob/master/src/selection/enter-select.js">enter.select</a> is then specialized such that nodes are inserted into the group’s parent, replacing the placeholder. This is why it is critical to call selectAll prior to a data join: it establishes the parent for entering elements.
+<p>While update and exit are normal selections, enter is a subclass of selection. This is necessary because it represents elements that <i>do not yet exist</i>. An enter selection contains placeholders rather than DOM elements; these placeholders are simply objects with a <code>__data__</code> property. The implementation of <a href="https://github.com/mbostock/d3/blob/master/src/selection/enter-select.js">enter.select</a> is then specialized such that nodes are inserted into the group’s parent, replacing the placeholder. This is why it is critical to call selection.selectAll prior to a data join: it establishes the parent node for entering elements.
 
 <h2><a href="#enter-update" name="enter-update">#</a>Merging Enter & Update</h2>
 

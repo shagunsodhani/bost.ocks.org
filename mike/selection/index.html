@@ -1585,7 +1585,7 @@ enterAnimation(
 
 <h2><a href="#enter-update" name="enter-update">#</a>Merging Enter & Update</h2>
 
-<p>The <a href="http://bl.ocks.org/mbostock/3808218">general update pattern</a> with a data join appends entering element and removes exiting elements, while modifying dynamic attributes, styles and other properties of updating elements. Often, there’s overlap between properties of updating and entering elements.
+<p>The <a href="http://bl.ocks.org/mbostock/3808218">general update pattern</a> with a data join appends entering elements and removes exiting elements, while modifying dynamic attributes, styles and other properties of updating elements. Often, there’s overlap between properties of updating and entering elements.
 
 <p>To reduce duplicate code, enter.append has a convenient side-effect: it replaces null elements in the update selection with the newly-created elements from the enter selection. Thus, after enter.append, the update selection is modified to contain both entering and updating elements. The update selection subsequently contains all currently-displayed elements:
 

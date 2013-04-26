@@ -106,6 +106,14 @@
   cursor: pointer;
 }
 
+code span {
+  -webkit-transition: background 250ms linear;
+  -moz-transition: background 250ms linear;
+  -ms-transition: background 250ms linear;
+  -o-transition: background 250ms linear;
+  transition: background 250ms linear;
+}
+
 </style>
 
 <header>
@@ -227,6 +235,7 @@ function reset(svg) {
 
 function selectAllAnimation(startRoot, startHeight, endRoot, endHeight) {
   var end = tree(endRoot, endHeight).remove(),
+      event = d3.dispatch("start", "middle", "end", "reset"),
       height = +end.attr("height"),
       start = tree(startRoot, startHeight).attr("height", height),
       svg = start.node(),
@@ -267,10 +276,13 @@ function selectAllAnimation(startRoot, startHeight, endRoot, endHeight) {
 
   resetAll();
 
+  return event;
+
   function resetAll() {
     start.style("display", "none").call(reset);
     end.style("display", null).call(reset);
     play.style("display", null);
+    event.reset();
   }
 
   function animation() {
@@ -278,6 +290,7 @@ function selectAllAnimation(startRoot, startHeight, endRoot, endHeight) {
     end.style("display", "none");
     play.style("display", "none");
     setTimeout(transition1, 1250);
+    event.start();
   }
 
   function transition1() {
@@ -297,6 +310,8 @@ function selectAllAnimation(startRoot, startHeight, endRoot, endHeight) {
         .attr("class", "array")
       .select("rect")
         .attr("width", function(d, i) { return endGroups[i].width; });
+
+    event.middle();
   }
 
   function transition2() {
@@ -310,6 +325,8 @@ function selectAllAnimation(startRoot, startHeight, endRoot, endHeight) {
     end.transition()
         .duration(500)
         .each("end", transition3);
+
+    event.end();
   }
 
   function transition3() {
@@ -815,11 +832,9 @@ tree(
 
 <p>Selections returned by d3.select and d3.selectAll have exactly one group. The only way you to obtain a selection with multiple groups is <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-selectAll">selection.selectAll</a>. For example, if you select all table rows and then select the rows’ cells, you’ll get a group of sibling cells for each row:
 
-<pre><code>d3.selectAll("tr")<span id="select-all-1">.selectAll("td")</span>;</code></pre>
+<pre><code>d3.<span id="select-all-1-1">selectAll("tr")</span>.<span id="select-all-1-2">selectAll("td")</span>;</code></pre>
 
 <aside>Although this selection’s groups all have four elements, in general a selection’s groups can have different numbers of elements. Some groups might even be empty!</aside>
-
-<!-- TODO Highlight the relevant part of the code during the animation. -->
 
 <script>
 
@@ -860,13 +875,21 @@ selectAllAnimation(
     ]}
   ]},
   24 * 16
-);
+).on("start", function() {
+  d3.select("#select-all-1-1").style("background", "#ff0");
+}).on("middle", function() {
+  d3.select("#select-all-1-1").style("background", null);
+}).on("end", function() {
+  d3.select("#select-all-1-2").style("background", "#ff0");
+}).on("reset", function() {
+  d3.selectAll("#select-all-1-1,#select-all-1-2").style("background", null);
+});
 
 </script>
 
 <p>With selectAll, <b>every element in the old selection becomes a group in the new selection</b>; each group contains an old element’s matching descendant elements. So, if each table cell contained a <a href="https://developer.mozilla.org/en-US/docs/HTML/Element/span">span</a> element, and you called selectAll a third time, you’d get a selection with sixteen groups:
 
-<pre><code>d3.selectAll("tr").selectAll("td").selectAll("span");</code></pre>
+<pre><code>d3.selectAll("tr").<span id="select-all-2-1">selectAll("td")</span>.<span id="select-all-2-2">selectAll("span")</span>;</code></pre>
 
 <script>
 
@@ -917,7 +940,15 @@ selectAllAnimation(
     {type: "array", name: "group", children: [{type: "element", name: "span"}]}
   ]},
   24 * 16
-);
+).on("start", function() {
+  d3.select("#select-all-2-1").style("background", "#ff0");
+}).on("middle", function() {
+  d3.select("#select-all-2-1").style("background", null);
+}).on("end", function() {
+  d3.select("#select-all-2-2").style("background", "#ff0");
+}).on("reset", function() {
+  d3.selectAll("#select-all-2-1,#select-all-2-2").style("background", null);
+});
 
 </script>
 

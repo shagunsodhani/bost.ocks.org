@@ -135,6 +135,35 @@ code span {
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
+var numbers = [4, 5, 18, 23, 42];
+
+var letters = [
+  {name: "A", frequency: .08167},
+  {name: "B", frequency: .01492},
+  {name: "C", frequency: .02780},
+  {name: "D", frequency: .04253},
+  {name: "E", frequency: .12702}
+];
+
+var vowels = [
+  {name: "A", frequency: .08167},
+  {name: "E", frequency: .12702},
+  {name: "I", frequency: .06973},
+  {name: "O", frequency: .07507},
+  {name: "U", frequency: .02758}
+];
+
+var matrix = [
+  [ 0,  1,  2,  3],
+  [ 4,  5,  6,  7],
+  [ 8,  9, 10, 11],
+  [12, 13, 14, 15]
+];
+
+function name(d) {
+  return d.name;
+}
+
 var margin = {top: 0, right: 40, bottom: 0, left: 40},
     width = 720,
     step = 100;
@@ -1128,9 +1157,7 @@ tree(
   {name: "B", frequency: .01492},
   {name: "C", frequency: .02780},
   {name: "D", frequency: .04253},
-  {name: "E", frequency: .12702},
-  {name: "F", frequency: .02288},
-  {name: "G", frequency: .02022}
+  {name: "E", frequency: .12702}
 ];</code></pre>
 
 <p>Even an array of arrays:
@@ -1266,10 +1293,10 @@ tree(
 
 <pre><code>var letters = [
   {name: "A", frequency: .08167},
-  {name: "E", frequency: .12702},
-  {name: "I", frequency: .06973},
-  {name: "O", frequency: .07507},
-  {name: "U", frequency: .02758}
+  {name: "B", frequency: .01492},
+  {name: "C", frequency: .02780},
+  {name: "D", frequency: .04253},
+  {name: "E", frequency: .12702}
 ];
 
 function name(d) {
@@ -1283,20 +1310,20 @@ function name(d) {
 tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
-      {type: "element", name: "element", children: [{type: "key", name: "E", join: 1}]},
+      {type: "element", name: "element", children: [{type: "key", name: "B", join: 1}]},
       {type: "element", name: "element", children: [{type: "key", name: "A", join: -1}]},
-      {type: "element", name: "element", children: [{type: "key", name: "O", join: 1}]},
-      {type: "element", name: "element", children: [{type: "key", name: "I", join: -1}]},
-      {type: "element", name: "element", children: [{type: "key", name: "U", join: 0}]}
+      {type: "element", name: "element", children: [{type: "key", name: "D", join: 1}]},
+      {type: "element", name: "element", children: [{type: "key", name: "C", join: -1}]},
+      {type: "element", name: "element", children: [{type: "key", name: "E", join: 0}]}
     ]}
   ]},
   {type: "data", name: "data", children: [
     {type: "array", name: "array", children: [
       {type: "code datum", name: "{name: \"A\"}", children: [{type: "key", name: "A"}]},
-      {type: "code datum", name: "{name: \"E\"}", children: [{type: "key", name: "E"}]},
-      {type: "code datum", name: "{name: \"I\"}", children: [{type: "key", name: "I"}]},
-      {type: "code datum", name: "{name: \"O\"}", children: [{type: "key", name: "O"}]},
-      {type: "code datum", name: "{name: \"U\"}", children: [{type: "key", name: "U"}]}
+      {type: "code datum", name: "{name: \"B\"}", children: [{type: "key", name: "B"}]},
+      {type: "code datum", name: "{name: \"C\"}", children: [{type: "key", name: "C"}]},
+      {type: "code datum", name: "{name: \"D\"}", children: [{type: "key", name: "D"}]},
+      {type: "code datum", name: "{name: \"E\"}", children: [{type: "key", name: "E"}]}
     ]}
   ]},
   24 * 5
@@ -1316,10 +1343,10 @@ tree(
   {type: "selection", name: "selection", children: [
     {type: "array", name: "group", children: [
       {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"A\"}"}]},
-      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"E\"}"}]},
-      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"I\"}"}]},
-      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"O\"}"}]},
-      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"U\"}"}]}
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"B\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"C\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"D\"}"}]},
+      {type: "element", name: "div", children: [{type: "code datum", name: "{name: \"E\"}"}]}
     ]}
   ]},
   24 * 5
@@ -1403,7 +1430,7 @@ tree(
 
 </ul>
 
-<p>These are the three selections returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">selection.exit</a>, respectively. To illustrate, imagine you had a bar chart of the first five letters of the alphabet (ABCDE), and you want to transition to your five favorite vowels (YEAOI). You could use a key function to maintain association of letters to bars across the transition, resulting in the following data join:
+<p>These are the three selections returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">selection.exit</a>, respectively. To illustrate, imagine you had a bar chart of the first five letters of the alphabet (ABCDE), and you want to transition to your five favorite vowels (YEAOI). You can use a key function to maintain association of letters to bars across the transition, resulting in the following data join:
 
 <script>
 
@@ -1581,9 +1608,13 @@ tree(
 
 <p>With the selection once again consistent with the document, the life-cycle of the data join is complete.
 
-<h3 style="margin-top:8em;">Further Reading</h3>
+<h3 style="margin-top:8em;">Acknowledgements</h3>
 
-<p>I hope you found this article informative; if you did, or you found parts unclear or confusing, or you have followup questions or other feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. To continue learning selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">reading D3’s source</a> is a rigorous way to test your understanding. Here are several excellent talks and tutorials by others:
+<p>Thank you to Anna Powell-Smith, Scott Murray, Nelson Minar, Tom Carden, Shan Carter, Tom MacWright and John Firebaugh for reviewing and providing feedback to improve this article.
+
+<h3>Further Reading</h3>
+
+<p>If you found this article informative, if you found parts unclear or confusing, or if you have followup questions or feedback, please let me know via <a href="https://twitter.com/mbostock">Twitter</a> or <a href="https://news.ycombinator.com">Hacker News</a>. To continue learning about selections, <a href="https://github.com/mbostock/d3/tree/master/src/selection/">reading D3’s source</a> is a rigorous way to test your understanding. And here are several excellent talks and tutorials by others:
 
 <ul>
   <li><a href="http://alignedleft.com/tutorials/d3/binding-data/">Binding Data</a> by Scott Murray
@@ -1624,12 +1655,20 @@ tree(
   </tr>
 </table>
 
-<div style="position:absolute;top:-1000px;">
+<footer style="position:absolute;top:-1000px;">
   <section></section>
   <section></section>
   <section><aside>Hello!</aside></section>
   <section><aside>There!</aside></section>
-</div>
+</footer>
+
+<footer style="position:absolute;top:-1000px;">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</footer>
 
 <script src="../highlight.min.js"></script>
 <script>

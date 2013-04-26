@@ -1073,7 +1073,7 @@ tree(
 
 <h2><a href="#data" name="data">#</a>Bound to Data</h2>
 
-<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data a selection, the data is stored in the DOM rather than in the selection: data is assigned to the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Data is therefore persistent while selections can be considered transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
+<p>Perhaps surprisingly, data is <i>not</i> a property of the selection, but a property of its elements. This means that when you bind data to a selection, the data is stored in the DOM rather than in the selection: data is assigned to the <code>__data__</code> property of each element. If an element lacks this property, the associated datum is undefined. Data is therefore persistent while selections can be considered transient: you can reselect elements from the DOM and they will retain whatever data was previously bound to them.
 
 <aside>To verify that data is a property of elements, see <a href="https://github.com/mbostock/d3/blob/master/src/selection/datum.js">selection.datum</a>’s implementation.</aside>
 

@@ -82,6 +82,10 @@
   stroke-linecap: round;
 }
 
+.link .from-data {
+  stroke: #3182bd;
+}
+
 .play circle {
   fill: #fff;
   stroke: #000;
@@ -808,7 +812,7 @@ tree(
 
 <aside>In Chrome, you can open the console with the keyboard shortcut <span style="font-family:'Lucida Grande';">⌥⌘J</span>.</aside>
 
-<p>In the JavaScript console, try running this command and inspecting the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. While accessing a node directly is supported by D3’s API, for reasons that will soon be apparent it more common to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
+<p>In the <a href="https://developers.google.com/chrome-developer-tools/docs/console#opening_the_console">JavaScript console</a>, try running this command and inspecting the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. While accessing a node directly is supported by D3’s API, for reasons that will soon be apparent it more common to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
 
 <p>Likewise, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with one group and any number of elements:
 
@@ -1156,9 +1160,11 @@ tree(
 
 </script>
 
-<p>Like other selection methods, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> accepts a function as a well as a constant value. This function is called once per group, returning the array of data for each group. Thus, just as selections are <a href="#group">grouped</a>, data can be grouped by specifing a function that returns the appropriate array of data for a given group.
+<p>Just as selection.style takes either a constant string to define a uniform style property (<i>e.g.</i>, <code>"red"</code>) for every selected element, or a function to compute a dynamic style per-element (<code>function(d) { return d.color; }</code>), <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> can accept a either a constant value or a function.
 
-<aside>When joining, your data function is passed the datum bound to the group’s <code>parentNode</code> (<code>d</code>) and the group’s index (<code>i</code>), and must return an array. Thus, you typically express data as a function of parent data.</aside>
+<p>However, unlike the other selection methods, <b>selection.data defines data per-group rather than per-element</b>: data is expressed as an array of values for the group, or a function that returns such an array. Thus, a <a href="#group">grouped</a> selection has correspondingly grouped data!
+
+<aside>Since there are four groups in the selection, this data function is invoked four times and returns four arrays (once per invocation). Each returned array here also happens to contain four values, but returned arrays may vary in length depending on data.</aside>
 
 <script>
 
@@ -1195,7 +1201,9 @@ tree(
 
 </script>
 
-<p>For selections with only a single group, you can pass the corresponding single array to selection.data directly. You only need a function when binding data to selections with multiple groups.
+<p>The blue lines in the diagram indicate that the <span style="display:inline-block;position:relative;width:55px;"><svg style="position:absolute;top:-17px;" class="node" width="55" height="22"><g transform="translate(1,1)" class="data"><rect rx="6" ry="6" width="53" height="20"/><text x="26" y="10" dy=".35em" text-anchor="middle">data</text></g></svg></span> function <i>returns</i> the linked array. Your data function is passed the datum of the group’s <code>parentNode</code> (<code>d</code>) and the group’s index (<code>i</code>), and returns whatever array of data you want to join to that group. Thus, data is typically expressed as a function of parent data, facilitating the creation of hierarchical DOM elements from hierarchical data.
+
+<p>For selections with only a single group, you can pass the corresponding single array to selection.data directly; you only need a function when binding different data to different groups.
 
 <h2><a href="#key" name="key">#</a>The Key to Enlightenment</h2>
 
@@ -1624,3 +1632,8 @@ tree(
 </div>
 
 <script src="../highlight.min.js"></script>
+<script>
+
+console.warn("Hooray, you opened the JavaScript console. Have fun!");
+
+</script>

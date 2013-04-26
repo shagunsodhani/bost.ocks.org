@@ -747,7 +747,7 @@ function fadeIn(selection, delay) {
 
 <p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="http://d3js.org">D3</a>’s selections, providing only enough detail to get started. This article takes a more comprehensive approach; rather than saying how to <i>use</i> <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, I will explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
 
-<p>The structure of this article may at first seem arbitrary. It describes the internal workings of selections but not simultaneously the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first before explaining how everything works in tandem. By the time you read to the end, the intent of the design as well as its function should be clear.
+<p>The structure of this article may at first seem arbitrary. It describes the internal workings of selections rather than the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first before explaining how everything works in tandem. By the time you read to the end, the intent of the design as well as its function should be clear.
 
 <p>D3 is a visualization library, so this article incorporates visual explanations to accompany the text. In subsequent diagrams, the left side of the diagram will show the structure of selections, while the right side will show the structure of data:
 
@@ -789,7 +789,7 @@ tree(
 
 <h2><a href="#group" name="group">#</a>Grouping Elements</h2>
 
-<p>The other reason selections aren’t literally arrays of elements is that they are actually <i>arrays of arrays</i> of elements. A selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a> returns a selection with one group containing the selected element:
+<p>Another reason selections aren’t literally arrays of elements is that they are <i>arrays of arrays</i> of elements: a selection is an array of groups, and each group is an array of elements. For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_select">d3.select</a> returns a selection with one group containing the selected element:
 
 <pre><code>var selection = d3.select("body");</code></pre>
 
@@ -806,7 +806,9 @@ tree(
 
 </script>
 
-<p>In the JavaScript console, you can inspect the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. Although you can access nodes in a selection directly this way, for reasons that will soon be apparent it’s easier to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
+<aside>In Chrome, you can open the console with the keyboard shortcut <span style="font-family:'Lucida Grande';">⌥⌘J</span>.</aside>
+
+<p>In the JavaScript console, try running this command and inspecting the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. Although you can access nodes in a selection directly this way, for reasons that will soon be apparent it’s easier to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
 
 <p>Likewise, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with one group and any number of elements:
 

@@ -778,6 +778,8 @@ function fadeIn(selection, delay) {
 
 </script>
 
+<aside><a href="http://ja.d3js.info/mike/selection/">日本語</a></aside>
+
 <p>In the past I have <a href="../d3/workshop/">presented</a> <a href="../join/">simplified</a> <a href="http://mbostock.github.io/d3/tutorial/circle.html">descriptions</a> of <a href="http://d3js.org">D3</a>’s selections, providing only enough detail to get started. This article takes a more comprehensive approach; rather than saying how to <i>use</i> <a href="https://github.com/mbostock/d3/wiki/Selections">selections</a>, I will explain how selections are <i>implemented</i>. This may take longer to read, but it should dispel any magic and help you master data-driven documents.
 
 <p>The structure of this article may at first seem arbitrary. It describes the internal workings of selections rather than the design motivations, so you may wonder why such mechanisms are needed. This is simply because it is easier to lay all the pieces out first before explaining how everything works in tandem. By the time you read to the end, the intent of the design as well as its function should be clear.

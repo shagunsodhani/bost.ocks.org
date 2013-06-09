@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>For Example</title>
+<style>
+
+@import url(../style.css?20130411);
+
+.slide {
+  margin: 2em 0 2em 0;
+}
+
+.slide iframe {
+  background: #fff;
+  border: solid 1px #ddd;
+}
+
+</style>
+
+<header>
+  <aside>June 9, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>For Example</h1>
+
+<p class="slide"><a href="http://bl.ocks.org/mbostock" target="_blank"><img src="montage.png" width="960" height="512"></a>
+
+<aside>This is a rough transcript of my talk on June 6, 2013 at <a href="http://eyeofestival.com/">Eyeo</a>. Words and examples have been adapted a bit for the web so may differ slightly from the talk.</aside>
+
+<p>I am a big fan of examples. Not a surprise, right? If you follow me on <a href="https://twitter.com/mbostock">Twitter</a>, or my projects over the last few years (or asked D3 questions on Stack Overflow), you’ve likely seen some of my example visualizations, maps and explanations.
+
+<p>I use examples so often that I created <a href="http://bl.ocks.org">bl.ocks.org</a> to make it easier for me to share them. It lets you quickly post code and share examples with a short URL. Your code is displayed below; it’s view source by default. And it’s backed by <a href="https://gist.github.com">GitHub Gist</a>, so examples have a git repository for version control, and are forkable, cloneable and commentable.
+
+<p>I initially conceived this talk as an excuse to show all my examples. But with more than 600, I’d have only 4.5 seconds per slide. A bit overwhelming. So instead I’ve picked a few favorites that I hope you’ll enjoy. You should find this talk entertaining, even if it fails to be insightful.
+
+<p>This talk does have a point, though. Examples are lightweight and informal; they can often be made in a few minutes; they lack the ceremony of polished graphics or official tools. Yet examples are a powerful medium of communication that is capable of expressing big ideas with immediate impact. And Eyeo is a unique opportunity for me to talk directly to all of you that are doing amazing things with code, data and visualization. So, if I can accomplish one thing here, it should be to get you to <b>share more examples</b>. In short, to share my love of examples with you.
+
+<h2><a href="#1" name="1">#</a>The Flawed Example</h2>
+
+<p>So let’s start with an example, shall we? (Note: an example of an example, or meta-example.) This is one of my favorites, but it’s also flawed in a way that is representative, making it a good candidate for dissection.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/3795544" target="_blank">bl.ocks.org/3795544</a></aside>
+
+<p>I created this to demonstrate a new feature in D3 3.0. <a href="https://github.com/mbostock/d3/wiki/3.0">This release</a> included major improvements to our geographic projection system led by the brilliant <a href="http://jasondavies.com">Jason Davies</a>.
+
+<p>One challenge in map projection is that input geometry—coast lines, country borders and such—are defined as polygons. When polygons are flattened from the sphere to the screen, the edges may become curves due to distortion in the projection. And the fact that edges are not straight lines to begin with: spherical polygon edges are great arcs. The left shows what happens if you represent the equator as a polyline with a point every 90°. When projected point-by-point, the line appears broken because five points are not enough to produce a smooth curve.
+
+<p>The conventional fix is to use more points. The middle diagram shows a point every 4° of longitude. This is obviously better. But if you look closely, you can still see artifacts on the vertical lines where the distortion is so severe that even 4° is not enough! And you can see many points along the horizontal lines where there is little distortion; these points do not improve quality, but slow down rendering. So uniform resampling is inefficient and doesn’t guarantee great results.
+
+<p>Our solution is on the right. We detect places of high curvature and introduce additional points just in those places. This gives beautiful results even in areas of high distortion, and performs well because we only add points where they are needed.
+
+<p>Now, I said this example was flawed. If I weren’t now explaining it, you could easily be scratching your head, wondering what you were looking at. Not every viewer will be sufficiently familiar with map projections to understand the problem or the proposed solution. So obviously the first step in any example is to <b>know your audience</b> and <b>communicate in a way that is accessible</b> to them.
+
+<p>So what are we looking at?
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731578/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5731578" target="_blank">bl.ocks.org/5731578</a></aside>
+
+<p>The gray lines of constant latitude and longitude, called parallels and meridians, form a spherical grid called a <i>graticule</i>. The red parallel bisecting this spherical grid at 0° latitude is the equator.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731632/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5731632" target="_blank">bl.ocks.org/5731632</a></aside>
+
+<p>Then we took the sphere and flattened it down to the plane with our map projection. Specifically, the equirectangular or <i>plate carrée</i> projection, which is the simplest type of projection there is. Longitude runs along the <i>x</i>-axis and latitude along the <i>y</i>-axis.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731693/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5731693" target="_blank">bl.ocks.org/5731693</a></aside>
+
+<p>In the normal aspect of the equirectangular projection—that is, without any rotation—the equator is a straight line. But now we rotate the sphere counterclockwise by almost 90° along one axis, while rotating the display clockwise by 90° so that the poles remain vertically aligned. This type of rotation is called the <i>transverse aspect</i>.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731808/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5731808" target="_blank">bl.ocks.org/5731808</a></aside>
+
+<p>The transverse aspect of the equirectangular projection has another special name: the Cassini projection. There’s not much use for this projection today, as it has been largely replaced by the transverse Mercator for low-distortion maps of narrow regions. I used the Cassini projection in this example only because it bends the equator and is easy to fit thrice side-by-side.
+
+<p><a href="http://en.wikipedia.org/wiki/César-François_Cassini_de_Thury">César-François Cassini de Thury</a> was a French cartographer and astronmer, and the grandson of Giovanni Domenico Cassini, who first observed Saturn’s moons and the division in Saturn’s rings. This isn’t relevant to understanding the example, but I’m mentioning it anyway because the history of cartography is fascinating, and map projections are so numerous and beautiful. It’s difficult to imagine individuals inventing projections with pen and paper in a time before computers, when graticules were essential to drawing cartographic boundaries accurately by hand.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5699934/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5699934" target="_blank">bl.ocks.org/5699934</a></aside>
+
+<p>With the above explanation, you can now see what adaptive resampling does. But how does it work?
+
+<p>The algorithm recursively subdivides the input polygon. Each adjacent pair of points forms a great arc segment. The algorithm computes the midpoint of this great arc and projects it; these midpoints are shown in black. Then it measures the perpendicular distance from the midpoint to the straight line between the two arc endpoints; these distances are shown as black lines, and provide an estimate of curvature.
+
+<p>If the perpendicular distance is large, then the edge has high curvature and it’s beneficial to resample. On the other hand if the area is small, then the projected line is approximately straight, so resampling can terminate. Hence the term “adaptive”: only resample where needed.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731979/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5731979" target="_blank">bl.ocks.org/5731979</a></aside>
+
+<p>One of the nice properties of this algorithm is that the curvature estimation is scale-dependent. So as you zoom in, or increase the display size, the perpendicular distances change as the curves change and the algorithm adjusts automatically.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5732029/" width="960" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5732029" target="_blank">bl.ocks.org/5732029</a></aside>
+
+<p>In essence, the resampling algorithm is the reverse of Douglas–Peucker <a href="/mike/simplify/">line simplification</a>. Rather than remove detail, it preserves detail that would be lost when projected.
+
+<p>With all that additional context, let’s take a second look.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/3795544" target="_blank">bl.ocks.org/3795544</a></aside>
+
+<p>If you are wondering, the graticules in all three views are rendered with adaptive resampling. This is why all three graticule look good! Remember the graticule is itself a polygon: everything is a polygon! This is done automatically as part of D3’s projection pipeline, but you can customize the accuracy of resampling (a trade-off between quality and speed) using <a href="https://github.com/mbostock/d3/wiki/Geo-Projections#wiki-precision">projection.precision</a>.
+
+<p>I think that’s a cool algorithm. It’s neat, right? Particularly the symmetry with line simplification. But I was so excited to tell you how cool the algorithm was, I forgot to explain <b>why it matters</b>. The example illustrates <i>what</i> the feature does, but not <i>why</i> the feature exists. So the example only resonates for viewers that understand the feature’s utility, which is likely only the feature’s author. If you want your example to speak to people other than yourself, you have to remember the why.
+
+<p>We can address this flaw by instead showing concrete applications that the feature enables. Preferably, applications that are representative of real-world needs.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735623/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5735623" target="_blank">bl.ocks.org/5735623</a></aside>
+
+<p>Here is Van der Grinten’s world projection. On the left is without adaptive resampling, and on the right is with. The adaptive resampling removes polygonal artifacts that are visible in Antarctica. These artifacts are caused by a cut in the Antarctica polygon along the date line, or <i>antimeridian</i>. The antimeridian cut extends from the coast of Antarctica at -180° longitude, to the south pole and then back to +180° longitude. With no intermediate points, you get a straight line when projected, which looks bad. But if we resample, we get the nice curve that we expect.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735626/2f3fae890eb73ddca22e2fd8eb7c83036c6e5408/" width="960" height="420" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5735626" target="_blank">bl.ocks.org/5735626</a></aside>
+
+<p>The Larrivée projection also exhibits this problem. It’s ugly unless you resample!
+
+<p>Now a reasonable objection is that these are obscure historical projections, and that I picked them to exaggerate the problem. Perhaps other, more common projections do not suffer from these polygonal artifacts. And this is partly true.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735647/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5735647" target="_blank">bl.ocks.org/5735647</a></aside>
+
+<p>But it is common enough! And one of the worst cases is the Albers equal-area conic projection, a map projection that is frequently used in visualization because it preserves proportionality of areas. Here the distortion is large enough to intersect land masses, causing fill inversion; a visual catastrophe.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735649/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5735649" target="_blank">bl.ocks.org/5735649</a></aside>
+
+<p>With conic projections like Albers, we need many many points of resampling because the curve of Antarctica’s antimeridian cut extends all the way from the left edge to the right edge of the graph. But adaptive resampling is scale-dependent, and so compensates for the length of this curve automatically by adding the necessary points to achieve the desired rendering accuracy.
+
+<p>By showing examples that demonstrate real-world applications of a feature, rather than just proving the existence of the feature, we make a stronger argument. We make it easier for the viewer to imagine incorporating this abstract idea into their own work.
+
+<p>On the other hand, there is a risk when we only show a few sample applications. If they are not representative, then the viewer might speculate alternative solutions. The examples are evidence, not proof; we have to pick strong evidence to make a strong case. A seemingly-reasonable alternatives is the conventional solution: why not just add more detail to Antarctica?
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5735770/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5735770" target="_blank">bl.ocks.org/5735770</a></aside>
+
+<p>Cartographically speaking, Antarctica is special for two reasons: it crosses the antimeridian and it encompasses a pole. However, these special qualifications are only present in the normal aspect. If you rotate the sphere along longitude and latitude, suddenly any land mass can present this same challenge! [Try this now by touching the above map.] Thus if we ignore the problem of antimeridian cutting, then as soon as we rotate the globe then polygons can cross from one side to the other, causing these horrible artifacts. If you ever wondered why the normal aspect is so entrenched in cartography, it’s not just cultural imperialism—it’s a tricky math problem!
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3788999/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/3788999" target="_blank">bl.ocks.org/3788999</a></aside>
+
+<p>D3 instead cuts the antimeridian <i>after</i> rotation. So D3 doesn’t require precut (or presampled) input. It just works! More generally, D3 treats polygons and lines as first-class primitives during geographic projection, avoiding point-based artifacts.
+
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/4481520/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/4481520" target="_blank">bl.ocks.org/4481520</a></aside>
+
+<p>I’ll end this sequence with one of my favorite unusual projections. Allen Philbrick’s interrupted sinu-Mollweide uses the sinusoidal projection for the southern hemisphere and the Mollweide projection for the northern hemisphere. Both hemispheres are interrupted—that is, cut into lobes, reducing distortion on land masses at the expense of the oceans.
+
+<p>I’m not aware of a practical modern use for this projection. But I like that I <i>could</i> use it, if I so desired, or design a specialized interrupted projection of my own. It’s critical to surface the assumptions intrinsic to your tools and data, and the resulting restrictions in expressivity. Attacking those assumptions can dramatically increase your creative freedom.
+
+<p>To sum up: examples are about demonstrating the potential value of ideas. Unlike a published graphic, you don’t have to capture immediate value. You merely present an idea that has potential, in a way that is accessible to your audience. Of course visual tests and explanations are great too. But remember that your goal is to inspire your viewer: <b>make sure the leap from abstract idea to concrete value is a short one</b>.
+
+<h2><a href="#2" name="2">#</a>Everyone is a Toolmaker</h2>
+
+<p>I hope I haven’t been speaking in a way that only relates to those of you that consider yourself toolmakers, library authors, framework builders, and the like. But if I am, maybe that’s okay; I believe we are all toolmakers, if only for ourselves. You don’t have to be on GitHub to identify tedious tasks and design solutions that makes your process easier, more productive, or more fun. Building tools is the sign of a rational mind.
+
+<p>Broadly speaking, I consider examples an <b>extension of working knowledge</b>: a place to take a small idea I’ve learned during my work, and isolate it; an apothecary capturing some precious essence in a glass jar. Build enough examples and you have a wide repetoire of ideas to apply in any situation.
+
+<p>Best of all, these ideas are inherently composable and customizable, not wrapped in a heavy blanket of abstraction. There is an important role for abstraction, but designing abstractions is difficult. Examples, on the other hand, are easy and flexible. You can dispose of them if you think of something better later. Even if you desire a formal abstraction, a good set of examples are essential for designing it effectively.
+
+<p>To illustrate my process, here now are some examples from my work at <i>The New York Times</i>.
+
+<p class="slide"><a href="http://www.nytimes.com/interactive/2013/02/20/movies/among-the-oscar-contenders-a-host-of-connections.html" target="_blank"><img style="border:solid 1px #ddd;" src="oscar-network-crop.png" width="960" height="300"></a>
+
+<aside><a href="http://www.nytimes.com/interactive/2013/02/20/movies/among-the-oscar-contenders-a-host-of-connections.html">Among the Oscar Contenders, a Host of Connections</a> by Mike Bostock, Shan Carter, Alicia DeSantis and Josh Keller</aside>
+
+<p>This was a network graphic for the Oscars. It shows the current nominees for the six major awards: four acting awards, best director and best movie. The intent of the graphic was to show the deeply-interconnected nature of the Hollywood A-list, and how success concentrates at the top of the food chain. Just the Spielberg–Kennedy duo, who worked on at least 70 films with Oscar nominations!
+
+<p class="slide"><img style="border:solid 1px #ddd;" src="oscar-network-editor-crop.png" width="960" height="300">
+
+<p>The final layout was static, but we initialized the positions using D3’s force layout. We then hand-tweaked the layout to make the curved edges easier to follow (and prettier). This is a luxury we have working with static datasets: we can incorporate manual edits to improve the output of automated layouts. The above image is a screenshot of the internal editor we built for this graphic; after repositioning nodes and labels, or adjusting Bézier control points, you can save the coordinates down to a file that drives the static graphic.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4566102/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/4566102" target="_blank">bl.ocks.org/4566102</a></aside>
+
+<p>While we did not open-source our editor (it’s specialized to the graphic), I created a sequence of examples on how to roll your own. Starting with <a href="http://bl.ocks.org/mbostock/4560481">brushing</a>, then <a href="http://bl.ocks.org/mbostock/4557698">dragging</a>, this series demonstrates how to build a custom layout editor for node-link diagrams.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4600693/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/4600693" target="_blank">bl.ocks.org/4600693</a></aside>
+
+<p>But we wanted curved links, and my previous force layouts used straight ones. Applying a trick I learned from <a href="http://onecm.com/">Ryan Alexander</a>, you can create curved links with a dummy node between each pair of linked nodes. The dummy node serves as a control point for a cubic Bézier; an invisible node, but participating in the force simulation, with repelling charge and momentum. And this small change brings lovely, swoopy links.
+
+<p>It’s not a revolution in data visualization, certainly, but now there’s an example you can use for beautiful soft links—particularly useful if you want to hand-tweak those curves later.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5649592/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5649592" target="_blank">bl.ocks.org/5649592</a></aside>
+
+<p>Another technique we used in the Oscar graphic was to animate black lines emanating from the highlighted person or film on mouseover. The network is complicated, so a little animation helps to emphasize the part of the network under the mouse. Also, like the curved links, it’s fun! <b>I’m not opposed to joy as long as it doesn’t detract from the readability of the graphic.</b> Even better if it helps!
+
+<p>But there is no API designed to do this, either in SVG or canvas. The obvious solution is a difficult one, to cut the basis spline at any length along the path using <a href="http://en.wikipedia.org/wiki/De_Casteljau's_algorithm">de Casteljau’s algorithm</a>. Instead, I hacked SVG’s <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty">stroke-dasharray property</a>: instead of using it for static dots or dashes, I animated it to create a single dash along the entire length of the line. This repurposes the API to do something surely unintended, but it works great!
+
+<p class="slide"><a href="http://www.nytimes.com/interactive/2012/09/06/us/politics/convention-word-counts.html" target="_blank"><img style="border:solid 1px #ddd;" src="national-conventions.png" width="960" height="300"></a>
+
+<aside><a href="http://www.nytimes.com/interactive/2012/09/06/us/politics/convention-word-counts.html">At the National Conventions, the Words They Used</a> by Mike Bostock, Shan Carter and Matthew Ericson</aside>
+
+<p>During the national political conventions, we made these word bubbles to compare the speeches of Republicans and Democrats. The graphic is backed by the full transcripts, so you can click on any bubble to read the words in context; this adds a tremendous amount of meaning and addresses a common shortcoming of text visualization, where words are often presented out of context. You can even add new bubbles to the diagram. (Try “Applause” for a laugh.)
+
+<p>Each bubble is sized by the count of occurrences of that word or phrase. But, more interestingly, the bubbles are positioned horizontally according to their partisan bias. So Democrats on the left mentioned "bin Laden" and "Middle class" more often than the Republicans, who favored terms like "unemployment" and "job creators".
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3422480/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/3422480" target="_blank">bl.ocks.org/3422480</a></aside>
+
+<p>We also split the circles to reinforce this bias, showing the relative proportion of Democrat and Republican mentions. Splitting circles into two proportional halves is surprisingly nontrivial: there’s no closed form solution. Instead you use numeric integration to approximate the answer. It’s the same problem of filling a cylindrical container with water (shown above). For a given <i>k</i>, the fraction of the unit cylinder being filled, you compute the height <i>h</i> of the water’s surface.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3231307/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/3231307" target="_blank">bl.ocks.org/3231307</a></aside>
+
+<p>And of course word bubbles require collision detection to prevent the bubbles from overlapping. You’ve probably seen this before so I won’t belabor you with an explanation of the algorithm, except to point out that one of the challenges is to detect collisions efficiently. Checking every pair of circles is far too slow. This example uses a <a href="http://bl.ocks.org/mbostock/4343214">quadtree</a> to optimize intersection checks, so it’s fast. And you can just copy-and-paste the relevant code into yours if you need it.
+
+<p class="slide"><a href="http://www.nytimes.com/interactive/2013/04/08/business/global/asia-map.html" target="_blank"><img style="border:solid 1px #ddd;" src="asia-cartogram.png" width="960" height="300"></a>
+
+<aside><a href="http://www.nytimes.com/interactive/2013/04/08/business/global/asia-map.html">China Still Dominates, but Some Manufacturers Look Elsewhere</a> by Mike Bostock and Keith Bradsher</aside>
+
+<p>One last graphic before we move on. This is a hexagonal cartogram that compares the GDP of countries in Asia. (<a href="http://www.ralphstraumann.ch/">Ralph Straumann</a> kindly provided technical guidance for this project.) Each hexagon represents $2.7 billion dollars in annual GDP. Color encodes rate of growth, so you can see how large, mature economies like Japan and South Korea are slowing down. China, of course, is both huge and growing rapidly.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5249328/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5249328" target="_blank">bl.ocks.org/5249328</a></aside>
+
+<p>One challenge this graphic presented was taking a set of hexagons assigned to a given country and computing the polygon that encompasses these hexagons. If I draw a bunch of red hexagons, how do I compute the outline? Again, not a truly hard problem, but not a trivial one either. You need an algorithm that can detect which sides of the hexagons are the exterior, and stitch those into a polygon. And detect holes! Fortunately, I had written a similar meshing algorithm for TopoJSON, <a href="https://github.com/mbostock/topojson/wiki/API-Reference#wiki-mesh">topojson.mesh</a>, so I simply repurposed it here.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4573883/cef8acacfbb1cb8e3f3fa42c6698cca7fd8c37cc/" width="960" height="200" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/4573883" target="_blank">bl.ocks.org/4573883</a></aside>
+
+<p>Another reusable component from this graphic was this color key, which was modeled after Ford Fessenden’s map, <a href="http://www.nytimes.com/interactive/2012/08/16/nyregion/new-york-police-stop-and-frisk-use-of-force-map.html">“In Some Parts of the City, a Common Police Practice”</a>. I love this key because it redundantly encodes the data value—the percentage of stops that involved force—with position as well as color. The full range of the key goes from 0 to 100%, and the thresholds are positioned according to their value.
+
+<p>Very often designers use arbitrary breaks in color encodings to improve contrast; so, having a key like this is essential to rapid understanding. You can see whether the colors are regularly or irregularly spaced. D3 doesn’t provide a color key component, so this is a convenient example to show how to make one.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5144735/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5737662/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5144735" target="_blank">bl.ocks.org/5144735</a> & <a href="http://bl.ocks.org/mbostock/5737662" target="_blank">bl.ocks.org/5737662</a></aside>
+
+<p>You’ve now seen a variety of examples derived from published graphics. Some of the examples were useful, some just for fun. That’s fine. Not every example can be a winner. Examples are lightweight and informal. Just look for hidden gems of inspiration in your work, little things that might be repurposed. If you can think of ways to generalize it, then great! But don’t generalize prematurely. There should be a low bar to sharing.
+
+<p>Even if you decide not to publicly share your example, it’s useful to build a collection of simple patterns that you can employ in future work, while the ideas are still fresh in your mind.
+
+<h2><a href="#3" name="3">#</a>Everything is an Example</h2>
+
+<p>In this last section, I’ll show a sequence of examples done by multiple authors to convey how the rapid transmission of ideas enables creativity.
+
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5616813/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/5616813" target="_blank">bl.ocks.org/5616813</a></aside>
+
+<p><a href="http://mike.teczno.com/">Mike Migurski</a> has been doing some great work making OpenStreetMap vector data more easily accessible. He started, I’m not sure when, ages ago, making parts of the OSM database available as convenient <a href="http://metro.teczno.com/">metro extracts</a> for large cities, so that you don’t have to download the multi-gigabyte whole-planet file. Now he’s made a further leap forward by making the OpenStreetMap data accessible <a href="http://openstreetmap.us/~migurski/vector-datasource/">in tile format</a>, so that you can easily request vector data for any slice of the world, not limited to major cities. The adoption of vector tiles is exciting because it enables dynamic cartography in the browser—you have tremendous flexibility in how you display the data.
+
+<p class="slide"><a href="https://github.com/NelsonMinar/vector-river-map" target="_blank"><img src="nelson-rivers.png" style="border:solid 1px #ddd;" width="960" height="300"></a>
+
+<aside><a href="http://www.flickr.com/photos/nelsonminar/8747607969/">Map of American Rivers</a> by Nelson Minar</aside>
+
+<p><a href="http://www.somebits.com/">Nelson Minar</a> follows Mike’s work and wrote <a href="https://github.com/NelsonMinar/vector-river-map">a tutorial</a> for building vector tiles from <a href="http://www.horizon-systems.com/nhdplus/">NHDPlus</a>, a massive dataset of all the rivers, streams, canals and waterways in the United States. Partly as a test that he was processing the data correctly, and partly inspired by Ben Fry’s <a href="http://fathom.info/allstreets">“All Streets”</a>, Nelson created this map of the entire U.S.
+
+<p>I saw this, and thought it was beautiful, and since it was such a large dataset, a fun challenge to recreate. And naturally I had to fix that Mercator projection. So I followed Nelson’s tutorial and created my own version using the Albers projection.
+
+<p class="slide"><a href="https://github.com/mbostock/us-rivers" target="_blank"><img src="mbostock-rivers.png" style="border:solid 1px #ddd;" width="960" height="600"></a>
+
+<p class="slide"><a href="https://github.com/mbostock/us-rivers" target="_blank"><img src="mbostock-rivers-crop.png" style="border:solid 1px #ddd;" width="960" height="540"></a>
+
+<aside><a href="https://github.com/mbostock/us-rivers">U.S. Rivers</a></aside>
+
+<p>The detail in this dataset is staggeringly beautiful. It’s almost an inverse topographic map: instead of hill shading you have lines of varying thickness in the different basins. The vertical striations of the Appalachians are easily readable in this crop.
+
+<p>But remember this started with vector tiles. And the vector tiles are in the Mercator projection. It’s much harder to take Mercator tiles and reproject them to a different projection, because you don’t know which tiles are visible.
+
+<p class="slide"><a href="http://www.jasondavies.com/maps/tile/" target="_blank"><img src="reproject-tiles.png" style="border:solid 1px #ddd;" width="960" height="300"></a>
+
+<aside><a href="http://www.jasondavies.com/maps/tile/">Automatic Projection Tiles</a> by Jason Davies</aside>
+
+<p>Hard problems like this are <a href="http://www.jasondavies.com/">Jason Davies</a>’ bread and butter. Jason saw the above examples and set out to determine which tiles would be visible in an arbitrary projection. He then created the above visual demonstration of his algorithm. The red tiles are the ones that are visible, and as you zoom in and out, you can see it recalculate the set of needed tiles instantly.
+
+<p class="slide"><a href="http://www.jasondavies.com/maps/raster/" target="_blank"><img src="reproject-albers.png" style="border:solid 1px #ddd;" width="960" height="300"></a>
+
+<aside><a href="http://www.jasondavies.com/maps/raster/">Reprojected Raster Tiles</a> by Jason Davies</aside>
+
+<p>Naturally Jason didn’t stop there. He combined his new algorithm with an earlier example of <a href="http://bl.ocks.org/mbostock/4329423">raster reprojection</a>, and reprojected raster terrain tiles from MapBox!
+
+<p class="slide"><a href="http://www.jasondavies.com/maps/raster/satellite/" target="_blank"><img src="reproject-satellite.png" style="border:solid 1px #ddd;" width="960" height="300"></a>
+
+<aside><a href="http://www.jasondavies.com/maps/raster/satellite/">Satellite Raster</a> by Jason Davies</aside>
+
+<p>The amazing thing is that this works with any projection—it just recursively traverses the tile quadtree and does intersection checks with the viewport. So it’s fast and flexible! To demonstrate this flexibility, Jason created the above beautiful view of the Eastern seaboard from four hundred miles above the Earth using D3’s satellite projection. (See also his <a href="http://www.jasondavies.com/maps/raster/mollweide/">“Mollweide Watercolour”</a> and <a href="http://www.jasondavies.com/maps/raster/goode/">“Interrupted Goode Raster”</a> examples.)
+
+<p>Taken collectively, these examples are so impressive because they demonstrate how to adapt existing tile data sources (which are all in Mercator) to any map projection. We have the convenience of tiles without the tyranny of Mercator. These are truly exciting times for web cartography. And I believe this advancement was at least partly fostered by rapidly sharing ideas through little examples. Just planting a seed and watching it grow.
+
+<p>Well, here we are at the end. I hope you enjoyed the tour. I endeavored to present a wide gamut—to illustrate the variety of roles that examples can serve, whether visual explanation, demonstration of capabilities, or idea conveniently packaged for reuse. Above all, I hope that you <b>look for little gems in your work that you can share with others</b>. I can’t wait to see what you come up with.
+
+<p>Thank you!
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var iframe = d3.selectAll(".slide iframe[data-src]").datum(function() {
+  return {
+    visible: false,
+    src: this.getAttribute("data-src")
+  };
+});
+
+d3.select(window)
+    .on("scroll", scrolled)
+    .on("resize", scrolled);
+
+function scrolled() {
+  var height = window.innerHeight || document.documentElement.clientHeight;
+  iframe.filter(function(d) {
+    var visible0 = d.visible, box = this.getBoundingClientRect();
+    d.visible = !(box.bottom < 0 || box.top > height);
+    return visible0 !== d.visible;
+  }).attr("src", function(d) {
+    return d.visible ? d.src : null;
+  });
+}
+
+</script>
+
+<footer>
+  <aside>June 9, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

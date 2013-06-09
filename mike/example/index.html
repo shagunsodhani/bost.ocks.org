@@ -39,7 +39,7 @@
 
 <p>So let’s start with an example, shall we? (Note: an example of an example, or meta-example.) This is one of my favorites, but it’s also flawed in a way that is representative, making it a good candidate for dissection.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/ed18ab4d32f5deedb68b67d014dc2b4fba4d5044/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/3795544" target="_blank">bl.ocks.org/3795544</a></aside>
 
@@ -55,25 +55,25 @@
 
 <p>So what are we looking at?
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731578/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731578/a9970d6b8626278dc4f4f09eaa853cd5355e6797/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5731578" target="_blank">bl.ocks.org/5731578</a></aside>
 
 <p>The gray lines of constant latitude and longitude, called parallels and meridians, form a spherical grid called a <i>graticule</i>. The red parallel bisecting this spherical grid at 0° latitude is the equator.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731632/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731632/a2ed47c1938d757b51166a808a9938fab9397251/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5731632" target="_blank">bl.ocks.org/5731632</a></aside>
 
 <p>Then we took the sphere and flattened it down to the plane with our map projection. Specifically, the equirectangular or <i>plate carrée</i> projection, which is the simplest type of projection there is. Longitude runs along the <i>x</i>-axis and latitude along the <i>y</i>-axis.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731693/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731693/9b479917d0e90d1287dfc60e324d9e7ecb4f5cc2/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5731693" target="_blank">bl.ocks.org/5731693</a></aside>
 
 <p>In the normal aspect of the equirectangular projection—that is, without any rotation—the equator is a straight line. But now we rotate the sphere counterclockwise by almost 90° along one axis, while rotating the display clockwise by 90° so that the poles remain vertically aligned. This type of rotation is called the <i>transverse aspect</i>.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731808/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731808/231ab9581546d3a39ae04313d959e6b503b4c644/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5731808" target="_blank">bl.ocks.org/5731808</a></aside>
 
@@ -83,7 +83,7 @@
 
 <p>With the above explanation, you can now see what adaptive resampling does. But how does it work?
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5699934/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5699934/5c93eff4b73aea2187066de6a8899820aadfe98a/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5699934" target="_blank">bl.ocks.org/5699934</a></aside>
 
@@ -91,13 +91,13 @@
 
 <p>If the perpendicular distance is large, then the edge has high curvature and it’s beneficial to resample. On the other hand if the area is small, then the projected line is approximately straight, so resampling can terminate. Hence the term “adaptive”: only resample where needed.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731979/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5731979/e4df9c2101b7bcbe31ce4ccf4a8a079149d57fa7/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5731979" target="_blank">bl.ocks.org/5731979</a></aside>
 
 <p>One of the nice properties of this algorithm is that the curvature estimation is scale-dependent. So as you zoom in, or increase the display size, the perpendicular distances change as the curves change and the algorithm adjusts automatically.
 
-<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5732029/" width="960" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5732029/6b315ac6e0eaeb89475314bce5d0790e6227e2c6/" width="960" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5732029" target="_blank">bl.ocks.org/5732029</a></aside>
 
@@ -105,17 +105,17 @@
 
 <p>With all that additional context, let’s take a second look.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3795544/ed18ab4d32f5deedb68b67d014dc2b4fba4d5044/" width="960" height="580" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/3795544" target="_blank">bl.ocks.org/3795544</a></aside>
 
-<p>If you are wondering, the graticules in all three views are rendered with adaptive resampling. This is why all three graticule look good! Remember the graticule is itself a polygon: everything is a polygon! This is done automatically as part of D3’s projection pipeline, but you can customize the accuracy of resampling (a trade-off between quality and speed) using <a href="https://github.com/mbostock/d3/wiki/Geo-Projections#wiki-precision">projection.precision</a>.
+<p>If you are wondering, the graticules in all three views are rendered with adaptive resampling. This is why all three graticules look good! Remember the graticule is itself a polygon: everything is a polygon! This is done automatically as part of D3’s projection pipeline, but you can customize the accuracy of resampling (a trade-off between quality and speed) using <a href="https://github.com/mbostock/d3/wiki/Geo-Projections#wiki-precision">projection.precision</a>.
 
 <p>I think that’s a cool algorithm. It’s neat, right? Particularly the symmetry with line simplification. But I was so excited to tell you how cool the algorithm was, I forgot to explain <b>why it matters</b>. The example illustrates <i>what</i> the feature does, but not <i>why</i> the feature exists. So the example only resonates for viewers that understand the feature’s utility, which is likely only the feature’s author. If you want your example to speak to people other than yourself, you have to remember the why.
 
 <p>We can address this flaw by instead showing concrete applications that the feature enables. Preferably, applications that are representative of real-world needs.
 
-<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735623/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735623/f70f705e03f9fc01373823bc23184c2db3d03840/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5735623" target="_blank">bl.ocks.org/5735623</a></aside>
 
@@ -129,13 +129,13 @@
 
 <p>Now a reasonable objection is that these are obscure historical projections, and that I picked them to exaggerate the problem. Perhaps other, more common projections do not suffer from these polygonal artifacts. And this is partly true.
 
-<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735647/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735647/43eeb261dde67da7468dec4c2d7c75ba409fe94b/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5735647" target="_blank">bl.ocks.org/5735647</a></aside>
 
 <p>But it is common enough! And one of the worst cases is the Albers equal-area conic projection, a map projection that is frequently used in visualization because it preserves proportionality of areas. Here the distortion is large enough to intersect land masses, causing fill inversion; a visual catastrophe.
 
-<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735649/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/5735649/1188f3609e875ef5dee25d816f8d95261c75a16d/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5735649" target="_blank">bl.ocks.org/5735649</a></aside>
 
@@ -145,19 +145,19 @@
 
 <p>On the other hand, there is a risk when we only show a few sample applications. If they are not representative, then the viewer might speculate alternative solutions. The examples are evidence, not proof; we have to pick strong evidence to make a strong case. A seemingly-reasonable alternatives is the conventional solution: why not just add more detail to Antarctica?
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5735770/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5735770/bf81c39e1147dd5280960d73caa36542d8beada1/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5735770" target="_blank">bl.ocks.org/5735770</a></aside>
 
 <p>Cartographically speaking, Antarctica is special for two reasons: it crosses the antimeridian and it encompasses a pole. However, these special qualifications are only present in the normal aspect. If you rotate the sphere along longitude and latitude, suddenly any land mass can present this same challenge! [Try this now by touching the above map.] Thus if we ignore the problem of antimeridian cutting, then as soon as we rotate the globe then polygons can cross from one side to the other, causing these horrible artifacts. If you ever wondered why the normal aspect is so entrenched in cartography, it’s not just cultural imperialism—it’s a tricky math problem!
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3788999/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3788999/b5650f6495c4cd66ee51b991dfefdb602326ff1d/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/3788999" target="_blank">bl.ocks.org/3788999</a></aside>
 
 <p>D3 instead cuts the antimeridian <i>after</i> rotation. So D3 doesn’t require precut (or presampled) input. It just works because D3 treats polygons and lines as first-class primitives during geographic projection, avoiding point-based artifacts.
 
-<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/4481520/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe style="border:none;background:transparent;" data-src="http://bl.ocks.org/mbostock/raw/4481520/497137b4457e8a2d966103b55bebe115dcacc95f/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/4481520" target="_blank">bl.ocks.org/4481520</a></aside>
 
@@ -187,19 +187,19 @@
 
 <p>The final layout was static, but we initialized the positions using D3’s force layout. We then hand-tweaked the layout to make the curved edges easier to follow (and prettier). This is a luxury we have working with static datasets: we can incorporate manual edits to improve the output of automated layouts. The above image is a screenshot of the internal editor we built for this graphic; after repositioning nodes and labels, or adjusting Bézier control points, you can save the coordinates down to a file that drives the static graphic.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4566102/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4566102/9217717937faacbfbf14ce232f9ff16a0d5194c5/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/4566102" target="_blank">bl.ocks.org/4566102</a></aside>
 
 <p>While we did not open-source our editor (it’s specialized to the graphic), I created a sequence of examples on how to roll your own. Starting with <a href="http://bl.ocks.org/mbostock/4560481">brushing</a>, then <a href="http://bl.ocks.org/mbostock/4557698">dragging</a>, this series demonstrates how to build a custom layout editor for node-link diagrams.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4600693/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/4600693/23362a9c77846bef07578d1cd5b0d31af5f15a26/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/4600693" target="_blank">bl.ocks.org/4600693</a></aside>
 
 <p>We wanted curved links, and my previous force layouts used straight ones. Applying a trick I learned from <a href="http://onecm.com/">Ryan Alexander</a>, you can create curved links with a dummy node between each pair of linked nodes. The dummy node serves as a control point for a cubic Bézier; an invisible node, but participating in the force simulation, with repelling charge and momentum. And this small change brings lovely, swoopy links. It’s not a revolution in data visualization, certainly, but now there’s an example you can use for beautiful soft links—particularly useful if you want to hand-tweak those curves later.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5649592/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5649592/39802f86c3cdc5e4822787510cf3cb2dbf8873f0/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5649592" target="_blank">bl.ocks.org/5649592</a></aside>
 
@@ -215,13 +215,13 @@
 
 <p>Each bubble is sized by the count of occurrences of that word or phrase. But, more interestingly, the bubbles are positioned horizontally according to their partisan bias. So Democrats on the left mentioned "bin Laden" and "Middle class" more often than the Republicans, who favored terms like "unemployment" and "job creators".
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3422480/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3422480/e7748c0027443e35e65ada77f8577c76a961879a/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/3422480" target="_blank">bl.ocks.org/3422480</a></aside>
 
 <p>We also split the circles to reinforce this bias, showing the relative proportion of Democrat and Republican mentions. Splitting circles into two proportional halves is surprisingly nontrivial: there’s no closed-form solution. Instead you use numeric integration to approximate the answer. It’s the same problem as filling a cylindrical container with water (shown above). For a given <i>k</i>, the fraction of the unit cylinder being filled, you compute the height <i>h</i> of the water’s surface. In the rare event you also have this problem, you can use this example as a reference solution.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3231307/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3231307/2f611a0228126732ef3ec27369071ae71141a240/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/3231307" target="_blank">bl.ocks.org/3231307</a></aside>
 
@@ -233,7 +233,7 @@
 
 <p>One last graphic before we move on. This is a hexagonal cartogram that compares the GDP of countries in Asia. (<a href="http://www.ralphstraumann.ch/">Ralph Straumann</a> kindly provided technical guidance for this project.) Each hexagon represents $2.7 billion dollars in annual GDP. Color encodes rate of growth, so you can see how large, mature economies like Japan and South Korea are slowing down. China, of course, is both huge and growing rapidly.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5249328/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5249328/62ad508c07ba1f9114fecf8f0d33172ede66696e/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5249328" target="_blank">bl.ocks.org/5249328</a></aside>
 
@@ -247,9 +247,9 @@
 
 <p>Very often designers use arbitrary breaks in color encodings to improve contrast; so, having a key like this is essential to rapid understanding. You can see whether the colors are regularly or irregularly spaced. D3 doesn’t provide a color key component, so this is a convenient example to show how to make one.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5144735/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5144735/1a0b91a38e392a916d7ce6dd83ebb9cc825b5f6a/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5737662/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5737662/e23dc9fda91f2b091dc1057ad3129e30b5b6d329/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5144735" target="_blank">bl.ocks.org/5144735</a> & <a href="http://bl.ocks.org/mbostock/5737662" target="_blank">bl.ocks.org/5737662</a></aside>
 
@@ -261,7 +261,7 @@
 
 <p>In this last section, I’ll show a sequence of examples done by multiple authors to convey how the rapid transmission of ideas enables creativity.
 
-<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5616813/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5616813/add5925c5a3024728beb9150991a06da468ed245/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5616813" target="_blank">bl.ocks.org/5616813</a></aside>
 

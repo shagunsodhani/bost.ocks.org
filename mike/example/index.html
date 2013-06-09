@@ -175,7 +175,7 @@
 
 <p>Best of all, these ideas are inherently composable and customizable, not wrapped in a heavy blanket of abstraction. There is an important role for abstraction, but designing abstractions is difficult. Examples, on the other hand, are easy and flexible. You can dispose of them if you think of something better later. Even if you desire a formal abstraction, a good set of examples are essential for designing it effectively.
 
-<p>To illustrate my process, here now are some examples from my work at <i>The New York Times</i>.
+<p>To illustrate my process, here are some examples from my work at <i>The New York Times</i>.
 
 <p class="slide"><a href="http://www.nytimes.com/interactive/2013/02/20/movies/among-the-oscar-contenders-a-host-of-connections.html" target="_blank"><img style="border:solid 1px #ddd;" src="oscar-network-crop.png" width="960" height="300"></a>
 
@@ -197,15 +197,13 @@
 
 <aside><a href="http://bl.ocks.org/mbostock/4600693" target="_blank">bl.ocks.org/4600693</a></aside>
 
-<p>But we wanted curved links, and my previous force layouts used straight ones. Applying a trick I learned from <a href="http://onecm.com/">Ryan Alexander</a>, you can create curved links with a dummy node between each pair of linked nodes. The dummy node serves as a control point for a cubic Bézier; an invisible node, but participating in the force simulation, with repelling charge and momentum. And this small change brings lovely, swoopy links.
-
-<p>It’s not a revolution in data visualization, certainly, but now there’s an example you can use for beautiful soft links—particularly useful if you want to hand-tweak those curves later.
+<p>We wanted curved links, and my previous force layouts used straight ones. Applying a trick I learned from <a href="http://onecm.com/">Ryan Alexander</a>, you can create curved links with a dummy node between each pair of linked nodes. The dummy node serves as a control point for a cubic Bézier; an invisible node, but participating in the force simulation, with repelling charge and momentum. And this small change brings lovely, swoopy links. It’s not a revolution in data visualization, certainly, but now there’s an example you can use for beautiful soft links—particularly useful if you want to hand-tweak those curves later.
 
 <p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5649592/" width="960" height="530" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5649592" target="_blank">bl.ocks.org/5649592</a></aside>
 
-<p>Another technique we used in the Oscar graphic was to animate black lines emanating from the highlighted person or film on mouseover. The network is complicated, so a little animation helps to emphasize the part of the network under the mouse. Also, like the curved links, it’s fun! <b>I’m not opposed to joy as long as it doesn’t detract from the readability of the graphic.</b> Even better if it helps!
+<p>Another technique we used in the Oscar graphic was to animate black lines emanating from the highlighted person or film on mouseover. The network is complicated, so a little animation helps to draw your attention to the part of the network under the mouse. Also, like the curved links, it’s fun! <b>I’m not opposed to joy, as long as it doesn’t detract from readability.</b> Even better if it helps!
 
 <p>But there is no API designed to do this, either in SVG or canvas. The obvious solution is a difficult one, to cut the basis spline at any length along the path using <a href="http://en.wikipedia.org/wiki/De_Casteljau's_algorithm">de Casteljau’s algorithm</a>. Instead, I hacked SVG’s <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty">stroke-dasharray property</a>: instead of using it for static dots or dashes, I animated it to create a single dash along the entire length of the line. This repurposes the API to do something surely unintended, but it works great!
 
@@ -221,7 +219,7 @@
 
 <aside><a href="http://bl.ocks.org/mbostock/3422480" target="_blank">bl.ocks.org/3422480</a></aside>
 
-<p>We also split the circles to reinforce this bias, showing the relative proportion of Democrat and Republican mentions. Splitting circles into two proportional halves is surprisingly nontrivial: there’s no closed form solution. Instead you use numeric integration to approximate the answer. It’s the same problem of filling a cylindrical container with water (shown above). For a given <i>k</i>, the fraction of the unit cylinder being filled, you compute the height <i>h</i> of the water’s surface.
+<p>We also split the circles to reinforce this bias, showing the relative proportion of Democrat and Republican mentions. Splitting circles into two proportional halves is surprisingly nontrivial: there’s no closed-form solution. Instead you use numeric integration to approximate the answer. It’s the same problem as filling a cylindrical container with water (shown above). For a given <i>k</i>, the fraction of the unit cylinder being filled, you compute the height <i>h</i> of the water’s surface. In the rare event you also have this problem, you can use this example as a reference solution.
 
 <p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/3231307/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 

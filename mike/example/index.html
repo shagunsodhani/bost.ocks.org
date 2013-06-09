@@ -81,11 +81,11 @@
 
 <p><a href="http://en.wikipedia.org/wiki/César-François_Cassini_de_Thury">César-François Cassini de Thury</a> was a French cartographer and astronmer, and the grandson of Giovanni Domenico Cassini, who first observed Saturn’s moons and the division in Saturn’s rings. This isn’t relevant to understanding the example, but I’m mentioning it anyway because the history of cartography is fascinating, and map projections are so numerous and beautiful. It’s difficult to imagine individuals inventing projections with pen and paper in a time before computers, when graticules were essential to drawing cartographic boundaries accurately by hand.
 
+<p>With the above explanation, you can now see what adaptive resampling does. But how does it work?
+
 <p class="slide"><iframe data-src="http://bl.ocks.org/mbostock/raw/5699934/" width="960" height="500" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/5699934" target="_blank">bl.ocks.org/5699934</a></aside>
-
-<p>With the above explanation, you can now see what adaptive resampling does. But how does it work?
 
 <p>The algorithm recursively subdivides the input polygon. Each adjacent pair of points forms a great arc segment. The algorithm computes the midpoint of this great arc and projects it; these midpoints are shown in black. Then it measures the perpendicular distance from the midpoint to the straight line between the two arc endpoints; these distances are shown as black lines, and provide an estimate of curvature.
 

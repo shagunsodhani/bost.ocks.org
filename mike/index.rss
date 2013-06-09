@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>25 May 2013 21:00 GMT</pubDate>
-    <lastBuildDate>25 May 2013 21:00 GMT</lastBuildDate>
+    <pubDate>09 Jun 2013 11:00 GMT</pubDate>
+    <lastBuildDate>09 Jun 2013 11:00 GMT</lastBuildDate>
+    <item>
+      <title>For Example</title>
+      <link>http://bost.ocks.org/mike/example/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/example/"><img src="http://bost.ocks.org/mike/example.png" width="720" height="80"></a>]]></description>
+      <pubDate>09 Jun 2013 11:00 GMT</pubDate>
+    </item>
     <item>
       <title>Across U.S. Companies, Tax Rates Vary Greatly</title>
       <link>http://www.nytimes.com/interactive/2013/05/25/sunday-review/corporate-taxes.html</link>

@@ -30,7 +30,11 @@ rect.parent,
 }
 
 .grandparent rect {
-  fill: #fff;
+  fill: orange;
+}
+
+.grandparent:hover rect {
+  fill: #ee9700;
 }
 
 .children rect.parent,
@@ -42,8 +46,7 @@ rect.parent {
   pointer-events: all;
 }
 
-.children:hover rect.child,
-.grandparent:hover rect {
+.children:hover rect.child {
   fill: #aaa;
 }
 
@@ -58,7 +61,7 @@ rect.parent {
 
 <p id="chart">
 
-<aside>Click any cell to zoom in; click the topmost label to zoom out.</aside>
+<aside>Click any cell to zoom in, or the top orange label to zoom out.</aside>
 
 <p>Treemaps are a form of <a href="http://mbostock.github.com/d3/ex/treemap.html">space</a><a href="http://mbostock.github.com/d3/ex/pack.html">-filling</a> <a href="http://mbostock.github.com/d3/ex/sunburst.html">layout</a> where the area of each rectangle is proportional to its value. This example shows the size of files in a source tree.
 

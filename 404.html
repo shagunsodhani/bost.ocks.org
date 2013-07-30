@@ -5,13 +5,10 @@
 
 @import url(/mike/style.css?20120427);
 
-svg {
-  border: solid 1px #ccc;
-}
-
-rect {
-  fill: none;
-  pointer-events: all;
+iframe {
+  width: 960px;
+  height: 500px;
+  border: 1px solid #dedede;
 }
 
 </style>
@@ -23,96 +20,26 @@ rect {
 
 <h1>File Not Found</h1>
 
-<script src="http://d3js.org/d3.v2.js?2.9.1"></script>
-<script>
+<iframe src="http://bl.ocks.org/mbostock/raw/1893974/" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
-var radius = 32,
-    margin = {top: -radius, right: -radius, bottom: -radius, left: -radius},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+<p>Unfortunately, the page you were looking for does not appear to exist. Instead, here is a pleasing demonstration of <b><a href="http://bl.ocks.org/mbostock/1893974">Mitchell’s best-candidate</a></b> algorithm.
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.left + margin.right)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var quadtree = d3.geom.quadtree([], 0, 0, width, height),
-    findClosest = finder(quadtree, radius * 2);
-
-d3.timer(add(5, 2500, 50));
-
-// Add m new circles per tick, stopping when we have n circles.
-// When adding a circle, pick the best of k candidates.
-function add(m, n, k) {
-  return function() {
-    for (var j = 0; j < m && --n >= 0; ++j) {
-      var best = null;
-
-      // Create k candidates, picking the best (farthest away).
-      for (var i = 0; i < k; ++i) {
-        var candidate = {x: Math.random() * width, y: Math.random() * height};
-        findClosest(candidate);
-        if (!best || candidate.radius > best.radius) best = candidate;
-      }
-
-      best.radius = Math.min(radius, (Math.random() + 1) / 2 * best.radius);
-
-      quadtree.add(best);
-
-      svg.append("circle")
-          .attr("cx", best.x)
-          .attr("cy", best.y)
-          .style("fill-opacity", (Math.random() + .5) / 2)
-        .transition()
-          .attr("r", best.radius);
-    }
-    return !n;
-  };
-}
-
-// Find the closest circle to the candidate, searching at most r away.
-function finder(quadtree, r) {
-  return function(candidate) {
-    var rx1 = candidate.x - r,
-        rx2 = candidate.x + r,
-        ry1 = candidate.y - r,
-        ry2 = candidate.y + r;
-
-    candidate.radius = Infinity;
-
-    quadtree.visit(function(quad, x1, y1, x2, y2) {
-      if (quad.point) {
-        var dx = candidate.x - quad.point.x,
-            dy = candidate.y - quad.point.y,
-            radius = Math.max(0, Math.sqrt(dx * dx + dy * dy) - quad.point.radius);
-        if (radius < candidate.radius) candidate.radius = radius;
-      }
-      return x1 > rx2 || x2 < rx1 || y1 > ry2 || y2 < ry1;
-    });
-  };
-}
-
-</script>
-
-<p>Unfortunately, the page you were looking for does not appear to exist. Instead, here is a pleasing demonstration of <b>Mitchell’s best-candidate</b> algorithm.
-
-<p>The best-candidate algorithm generates a new random sample by creating <i>k</i> candidate samples and picking the one farthest from previous samples. The algorithm approximates <a href="http://www.cs.virginia.edu/~gfx/pubs/antimony/">Poisson-disc sampling</a>, producing a more natural appearance (better blue noise spectral characteristics) than uniform random sampling. This has a variety of useful applications in computer graphics, such as reducing <a href="http://en.wikipedia.org/wiki/Moiré_pattern">Moiré patterns</a> in supersampling raytracers.
+<p>The best-candidate algorithm generates a new random sample by creating <i>k</i> candidate samples and picking the one with the highest score: the one farthest from previous samples. The algorithm approximates <a href="http://www.cs.virginia.edu/~gfx/pubs/antimony/">Poisson-disc sampling</a>, producing a more natural appearance (better blue noise spectral characteristics) than uniform random sampling. This has a variety of useful applications in computer graphics, such as reducing <a href="http://en.wikipedia.org/wiki/Moiré_pattern">Moiré patterns</a> in supersampling raytracers.
 
 <p>In pseudo-code:
 
 <pre><code>function bestCandidate(k) {
-  var bestDistance = -1,
+  var bestScore = 0,
       bestCandidate;
 
   // Generate k random candidates.
   for (var i = 0; i < k; ++i) {
-    var c = [Math.random() * width, Math.random() * height];
+    var c = randomCandidate();
 
-    // Determine if the current candidate is the best.
-    var d = distance(c);
-    if (d > bestDistance) {
-      bestDistance = d;
+    // Determine if the current candidate is the new best.
+    var s = score(c);
+    if (s > bestScore) {
+      bestScore = s;
       bestCandidate = c;
     }
   }
@@ -120,11 +47,12 @@ function finder(quadtree, r) {
   return bestCandidate;
 }</code></pre>
 
-<p>This implementation depends on an external function <code>distance</code> which computes the minimum distance between the new candidate <code>c</code> and all previous samples. The naïve implementation is expensive, since it iterates over all previous samples for each new sample! Fortunately, data structures such as <a href="http://en.wikipedia.org/wiki/Quadtree">quadtrees</a> can accelerate these tests by skipping samples that are far away.
+<p>This implementation depends on an external function <code>score</code> which computes the minimum distance between the new candidate <code>c</code> and all previous samples. The naïve implementation is expensive, since it iterates over all previous samples for each new sample! Fortunately, data structures such as <a href="https://github.com/mbostock/d3/wiki/Quadtree-Geom">quadtrees</a> can accelerate these tests by skipping samples that are far away.
 
 <footer>
   <aside>April 28, 2012</aside>
   <a href="/mike/">Mike Bostock</a>
 </footer>
 
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="/mike/highlight.min.js"></script>

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>09 Jun 2013 11:00 GMT</pubDate>
-    <lastBuildDate>09 Jun 2013 11:00 GMT</lastBuildDate>
+    <pubDate>02 Aug 2013 13:30 GMT</pubDate>
+    <lastBuildDate>02 Aug 2013 13:30 GMT</lastBuildDate>
+    <item>
+      <title>For Yankees, Little Bang for Their Buck</title>
+      <link>http://www.nytimes.com/interactive/2013/08/02/sports/baseball/bang-for-your-buck.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/08/02/sports/baseball/bang-for-your-buck.html"><img src="http://bost.ocks.org/mike/bang-for-your-buck.png" width="720" height="80"></a>]]></description>
+      <pubDate>02 Aug 2013 13:30 GMT</pubDate>
+    </item>
     <item>
       <title>For Example</title>
       <link>http://bost.ocks.org/mike/example/</link>

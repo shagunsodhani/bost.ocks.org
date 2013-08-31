@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+path {
+  vector-effect: non-scaling-stroke;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="topology.js"></script>
+<script>
+
+var projection = d3.geo.albers()
+    .rotate([120, 0])
+    .center([0.7, 37.3])
+    .parallels([34, 40.5])
+    .scale(6500)
+    .translate([0, 0]);
+
+var zoom = d3.behavior.zoom()
+    .on("zoom", zoomed);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", innerWidth)
+    .attr("height", innerHeight);
+
+var gg = svg.append("g")
+    .attr("transform", "translate(" + innerWidth / 2 + "," + innerHeight / 2 + ")")
+    .call(zoom);
+
+var rect = gg.append("rect")
+    .attr("x", -innerWidth / 2)
+    .attr("y", -innerHeight / 2)
+    .attr("width", innerWidth)
+    .attr("height", innerHeight)
+    .style("fill", "none")
+    .style("pointer-events", "all");
+
+var g = gg.append("g");
+
+var path = d3.geo.path()
+    .projection(projection)
+    .pointRadius(3.5);
+
+d3.select(window)
+    .on("resize", resized);
+
+d3.json("ca-states.json", function(error, states) {
+d3.json("ca-counties.json", function(error, counties) {
+  var events = [],
+      eventIndex = -1,
+      running = true,
+      topo = topology({states: states, counties: counties}, function(e) { events.push(e); });
+
+  g.append("path")
+      .datum(topojson.mesh(topo))
+      .attr("d", path)
+      .style("fill", "none")
+      .style("stroke", "#000")
+      .style("stroke-linejoin", "round");
+
+  d3.timer(function() {
+    if (eventIndex >= 0) revert(events[eventIndex]);
+    if (eventIndex < events.length - 1) apply(events[++eventIndex]);
+    return !running;
+  });
+
+  d3.select(window).on("keydown", function() {
+    if (running) running = false;
+    if (d3.event.altKey || d3.event.metaKey) return;
+    switch (d3.event.keyCode) {
+      case 39: { // right arrow
+        if (eventIndex < events.length) {
+          if (eventIndex >= 0) revert(events[eventIndex]);
+          if (++eventIndex < events.length) apply(events[eventIndex]);
+        }
+        d3.event.preventDefault();
+        break;
+      }
+      case 37: { // left arrow
+        if (eventIndex >= 0) {
+          if (eventIndex < events.length) revert(events[eventIndex]);
+          if (--eventIndex >= 0) apply(events[eventIndex]);
+        }
+        break;
+      }
+    }
+  });
+
+  window.focus();
+
+  function apply(event) {
+    switch (event.type) {
+      case "linearize:line":
+      case "linearize:ring": {
+        event.selection = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "magenta")
+            .style("stroke-linejoin", "round");
+        break;
+      }
+      case "join:line":
+      case "join:ring": {
+        event.selection = g.append("circle")
+            .datum(event.coordinates)
+            .attr("transform", "translate(" + projection(event.coordinates) + ")")
+            .attr("r", 4.5 / zoom.scale())
+            .style("fill", "black");
+        break;
+      }
+      case "cut:line":
+      case "cut:ring": {
+        var before = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates[0]})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "blue")
+            .style("stroke-linejoin", "round");
+        var after = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates[1]})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "red")
+            .style("stroke-linejoin", "round");
+        event.selection = d3.selectAll([before.node(), after.node()]);
+        break;
+      }
+      case "cut:rotate": {
+        var ring = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "magenta")
+            .style("stroke-linejoin", "round");
+        var circle = g.append("circle")
+            .datum(event.coordinates)
+            .attr("transform", "translate(" + projection(event.coordinates[0]) + ")")
+            .attr("r", 4.5 / zoom.scale())
+            .style("fill", "black");
+        event.selection = d3.selectAll([ring.node(), circle.node()]);
+        break;
+      }
+      case "dedup:newline":
+      case "dedup:newring": {
+        event.selection = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "magenta")
+            .style("stroke-linejoin", "round");
+        break;
+      }
+      case "dedup:oldline":
+      case "dedup:oldring": {
+        event.selection = g.append("path")
+            .datum({type: "LineString", coordinates: event.coordinates})
+            .attr("d", path)
+            .style("fill", "none")
+            .style("stroke-width", 2)
+            .style("stroke", "yellow")
+            .style("stroke-linejoin", "round");
+        break;
+      }
+    }
+  }
+
+  function revert(event) {
+    if (event.selection) {
+      event.selection.transition().duration(500).style("opacity", 0).remove();
+      event.selection = null;
+    }
+  }
+});
+});
+
+function zoomed() {
+  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  g.selectAll("circle").attr("r", 4.5 / d3.event.scale);
+}
+
+function resized() {
+  svg.attr("width", innerWidth).attr("height", innerHeight);
+  rect.attr("x", -innerWidth / 2).attr("y", -innerHeight / 2).attr("width", innerWidth).attr("height", innerHeight);
+  gg.attr("transform", "translate(" + innerWidth / 2 + "," + innerHeight / 2 + ")");
+}
+
+</script>

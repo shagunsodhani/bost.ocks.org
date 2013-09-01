@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font: 15px/21px sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+path {
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.instructions {
+  position: absolute;
+  width: 320px;
+  right: 40px;
+  top: 40px;
+  text-shadow: 0 1px 0 #fff;
+}
+
+</style>
+<body>
+<div class="instructions">
+This is a work-in-progress visual debugger for <a href="https://github.com/mbostock/topojson">TopoJSON</a>’s <a href="https://github.com/mbostock/topojson/pull/103">new topology constructor</a>. The topology is constructed in several steps:
+
+<p>First, all the lines and rings in the input geometry are identified in pink.
+
+<p>Second, arc intersections are found in yellow. (The intersecting arcs can be seen in blue and red if you zoom in.)
+
+<p>Third, rings are rotated and cut so that each arc can represented be uniquely. The red arc is the segment after the cut, and the blue arc is the segment before; rotated rings are in pink.
+
+<p>Lastly, the arcs are deduped so that each unique arc is only represented once. The first time an arc is seen, it is shown in pink, while duplicate arcs are shown in yellow.
+
+<p style="color:#777;">Pressing a key will interrupt the animation. Use the arrow keys to step forwards and backwards through the construction process. In the console, <code>current</code> refers to the current step.
+</div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="topology.js"></script>
+<script>
+
+var projection = d3.geo.albers()
+    .rotate([120, 0])
+    .center([0.7, 37.3])
+    .parallels([34, 40.5])
+    .scale(6500)
+    .translate([0, 0]);
+
+var zoom = d3.behavior.zoom()
+    .on("zoom", zoomed);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", innerWidth)
+    .attr("height", innerHeight);
+
+var loading = svg.append("text")
+    .attr("x", "50%")
+    .attr("y", "50%")
+    .attr("dy", ".35em")
+    .style("text-anchor", "middle")
+    .text("Loading 3MB of GeoJSON, please wait…");
+
+var gg = svg.append("g")
+    .attr("transform", "translate(" + innerWidth / 2 + "," + innerHeight / 2 + ")")
+    .call(zoom);
+
+var rect = gg.append("rect")
+    .attr("x", -innerWidth / 2)
+    .attr("y", -innerHeight / 2)
+    .attr("width", innerWidth)
+    .attr("height", innerHeight)
+    .style("fill", "none")
+    .style("pointer-events", "all");
+
+var g = gg.append("g");
+
+var path = d3.geo.path()
+    .projection(projection)
+    .pointRadius(3.5);
+
+d3.select(window)
+    .on("resize", resized);
+
+queue()
+    .defer(d3.json, "ca-states.json")
+    .defer(d3.json, "ca-counties.json")
+    .await(ready);
+
+function ready(error, states, counties) {
+  loading.remove();
+  loading = null;
+
+  var events = [],
+      eventIndex = -1,
+      running = true,
+      topo = topology({states: states, counties: counties}, 1e6, function(e) { events.push(e); });
+
+  g.append("path")
+      .datum(topojson.feature(topo, topo.objects.states))
+      .attr("d", path)
+      .style("fill", "#eee");
+
+  g.append("path")
+      .datum(topojson.mesh(topo))
+      .attr("d", path)
+      .style("fill", "none")
+      .style("stroke", "#000");
+
+  d3.timer(function() {
+    if (eventIndex >= 0) revert(events[eventIndex]);
+    if (eventIndex < events.length - 1) apply(events[++eventIndex]);
+    return !running;
+  });
+
+  d3.select(window).on("keydown", function() {
+    if (running) running = false;
+    if (d3.event.altKey || d3.event.metaKey) return;
+    switch (d3.event.keyCode) {
+      case 39: { // right arrow
+        if (eventIndex < events.length) {
+          if (eventIndex >= 0) revert(events[eventIndex]);
+          if (++eventIndex < events.length) apply(events[eventIndex]);
+        }
+        d3.event.preventDefault();
+        break;
+      }
+      case 37: { // left arrow
+        if (eventIndex >= 0) {
+          if (eventIndex < events.length) revert(events[eventIndex]);
+          if (--eventIndex >= 0) apply(events[eventIndex]);
+        }
+        break;
+      }
+    }
+  });
+
+  window.focus();
+
+  function apply(event) {
+    window.current = event;
+    switch (event.type) {
+      case "linearize:line":
+      case "linearize:ring": {
+        event.selection = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates.map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "magenta");
+        break;
+      }
+      case "join:end": {
+        event.selection = g.append("circle")
+            .attr("transform", "translate(" + projection(transform(event.coordinates)) + ")")
+            .attr("r", 4.5 / zoom.scale())
+            .style("fill", "yellow");
+        break;
+      }
+      case "join:middle": {
+        var before = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates[0].map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke", "blue")
+            .style("stroke-opacity", .5);
+        var after = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates[1].map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke", "red")
+            .style("stroke-opacity", .5);
+        var circle = g.append("circle")
+            .attr("transform", "translate(" + projection(transform(event.coordinates[0][1])) + ")")
+            .attr("r", 4.5 / zoom.scale())
+            .style("fill", "yellow");
+        event.selection = d3.selectAll([before.node(), after.node(), circle.node()]);
+        break;
+      }
+      case "cut:line":
+      case "cut:ring": {
+        var before = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates[0].map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "blue");
+        var after = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates[1].map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "red");
+        event.selection = d3.selectAll([before.node(), after.node()]);
+        break;
+      }
+      case "cut:rotate": {
+        var ring = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates.map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "magenta");
+        var circle = g.append("circle")
+            .attr("transform", "translate(" + projection(transform(event.coordinates[0])) + ")")
+            .attr("r", 4.5 / zoom.scale())
+            .style("fill", "black");
+        event.selection = d3.selectAll([ring.node(), circle.node()]);
+        break;
+      }
+      case "dedup:newline":
+      case "dedup:newring": {
+        event.selection = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates.map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "magenta");
+        break;
+      }
+      case "dedup:oldline":
+      case "dedup:oldring": {
+        event.selection = g.append("path")
+            .attr("d", path({type: "LineString", coordinates: event.coordinates.map(transform)}))
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke-opacity", .5)
+            .style("stroke", "yellow");
+        break;
+      }
+    }
+  }
+
+  function transform(point) {
+    return [
+      point[0] * topo.transform.scale[0] + topo.transform.translate[0],
+      point[1] * topo.transform.scale[1] + topo.transform.translate[1]
+    ];
+  }
+
+  function revert(event) {
+    if (event.selection) {
+      event.selection.transition().duration(500).style("opacity", 0).remove();
+      event.selection = null;
+    }
+  }
+}
+
+function zoomed() {
+  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  g.selectAll("circle").attr("r", 4.5 / d3.event.scale);
+}
+
+function resized() {
+  svg.attr("width", innerWidth).attr("height", innerHeight);
+  rect.attr("x", -innerWidth / 2).attr("y", -innerHeight / 2).attr("width", innerWidth).attr("height", innerHeight);
+  gg.attr("transform", "translate(" + innerWidth / 2 + "," + innerHeight / 2 + ")");
+}
+
+</script>

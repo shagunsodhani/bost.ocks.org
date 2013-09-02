@@ -25,7 +25,7 @@ iframe {
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
-<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it encodes shared edges, such as the border between California and Nevada. The main benefit of the topology is that it improves <a href="http://www.jasondavies.com/maps/simplify/">shape simplification</a> by avoiding artifacts caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
+<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it encodes shared edges, such as the border between California and Nevada. The main benefit of a topology is that it improves <a href="http://www.jasondavies.com/maps/simplify/">shape simplification</a> by avoiding artifacts caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
 
 <p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON encoding in another language.
 
@@ -59,11 +59,13 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <h2><a href="#join" name="join">#</a>2. Join</h2>
 
-<p>The next step is to identify junctions: intersection points where two or more lines (or rings) meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
+<p>The next step is to identify junctions: shared points where two or more lines (or rings) intersect. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
 
 <p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6409154" target="_blank">bl.ocks.org/6409154</a></aside>
+
+<p>(Note: if two line segments intersect, but don’t share a point, this intersection is ignored. The topology only cares how points are connected, and whether they are distinct, not their positions.)
 
 <p>Junctions are irrespective to order. So, given two lines <i>ABC</i> and <i>CBA</i>, then <i>B</i> is not a junction — unless there is some other line that intersects <i>B</i>. For the purposes of topology construction, we also consider the start and end point of every line to be a junction. This simplifies the code slightly, and has no detrimental effect because it is not necessary to cut a line at a given junction if the line already terminates at that junction.
 
@@ -113,9 +115,9 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <h2><a href="#further-reading" name="further-reading">#</a>Further Reading</h2>
 
-<p>The implementation described in this article is in a <a href="https://github.com/mbostock/topojson/pull/103">pull request</a> and is planned for the next release of TopoJSON, 1.4.0; it differs substantially from the old implementation. (After this rewrite, I’m amazed the old implementation worked at all, though I’m glad there’s a respectable test suite.) There are a few tasks left to implement that take advantage of the new topology constructor, but I expect the release will happen in the next week or two.
+<p>The implementation described in this article is in <a href="https://github.com/mbostock/topojson/pull/103">a pull request</a> and is planned for the next release of TopoJSON, 1.4.0. (It differs substantially from the old implementation; after this rewrite, I’m amazed the old implementation worked at all, though I’m glad there’s a respectable test suite!) There are a few tasks left to implement that take advantage of the new topology constructor, but I expect the release will happen in the next week or two.
 
-<p>An issue of particular importance to topology inference is messy inputs. For example, if you have two points [-122.416712304917, 37.783305712306] and [-122.416712304916, 37.783305712306], then in regards to the topology they are as distinct at San Francisco and New York. The TopoJSON reference implementation eliminates many of these errors by quantizing inputs: rounding them to lower precision. Quantization gives excellent results when constructing topologies from multiple layers, such as county, state and nation borders. However, overly-quantized inputs can introduce many arc self-intersection, which results in a complicated (big, slow) topology. So user control over quantization, and perhaps more heuristics, are needed for dealing with “real-world” inputs.
+<p>An issue of particular importance to topology inference is messy inputs. For example, if you have two points [-122.416712304917, 37.783305712306] and [-122.416712304916, 37.783305712306], then in regards to the topology they are as distinct as San Francisco and New York. The TopoJSON reference implementation eliminates many of these errors by quantizing inputs, rounding them to lower precision. Quantization gives excellent results when constructing topologies from multiple layers, such as county, state and nation borders. However, overly-quantized inputs can introduce excessive arc self-intersection, resulting in a big topology. So user control over quantization, and perhaps more heuristics, are still needed for dealing with “real-world” inputs. Or we could all start using topological formats…
 
 <p>If you have questions or comments, please find <a href="http://twitter.com/mbostock">me on Twitter</a>.
 

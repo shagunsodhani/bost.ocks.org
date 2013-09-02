@@ -43,6 +43,8 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>The minimum information needed to infer the topology is the set of all lines and rings extracted from the input geometry. This extraction simplifies the downstream logic; for example, the topology doesn’t care whether two polygons are represented as two Polygon geometries or one MultiPolygon geometry, as both are simply two rings.
 
+<aside>For definitions of these geometry types, see the <a href="http://geojson.org/geojson-spec.html">GeoJSON specification</a>.</aside>
+
 <p>Extracting lines and rings is a straightforward decomposition of the input geometries: a LineString is converted to one line, a MultiLineString is converted to zero or more lines, a Polygon is converted to one or more rings, and so on. The algorithm must also record which lines and rings are associated with which input geometries, so that the geometry can be recomposed from the final topology when the conversion is complete.
 
 <p>This animation demonstrates extraction on U.S. state borders:
@@ -79,7 +81,9 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <h2><a href="#cut" name="cut">#</a>3. Cut or Rotate</h2>
 
-<p>…
+<p>With all junctions identified, the next step is to cut the lines and rings so that they terminate at the junctions. For example, if <i>B</i> is a junction, then the line <i>ABC</i> is split into two lines <i>AB</i> and <i>BC</i>, while the line <i>ABD</i> is split into <i>AB</i> and <i>BD</i>. Splitting lines at junctions guarantees that all shared point sequences (like <i>AB</i> and <i>AB</i>) will correctly be deduped in the <a href="#dedup">final step</a>, and can be performed by simply iterating over the lines and rings while querying the set of previously-computed junctions.
+
+<p>For the first junction encountered on a ring, we can rotate the ring so that it starts on the junction, eliminating a cut and reducing the number of arcs in the generated topology. For example, given the ring <i>ABCA</i>, if <i>B</i> is a junction, then we can rotate the ring to the equivalent sequence <i>BCAB</i>. This produces a smaller topology than cutting the ring into <i>AB</i> and <i>BCA</i>. This treatment could be applied as well to closed lines, but since the start and end point of a closed line may be meaningful — say, <a href="http://en.wikipedia.org/wiki/Timeline_of_Magellan's_circumnavigation">Magellan’s circumnavigation of the globe</a> — it’s safer to restrict this optimization to rings.
 
 <h2><a href="#dedup" name="dedup">#</a>4. Dedup</h2>
 

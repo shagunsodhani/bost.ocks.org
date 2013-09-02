@@ -25,9 +25,11 @@ iframe {
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
-<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it encodes shared edges, such as the border between California and Nevada. The main benefit of a topology is that it improves <a href="http://www.jasondavies.com/maps/simplify/">shape simplification</a> by avoiding artifacts caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
+<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> geospatial data format. In contrast to a geometry, where each shape is encoded with separate (and often redundant) arrays of coordinates, a topology encodes sequences of coordinates in line fragments called <i>arcs</i> that can be shared. For example, the border between California and Nevada is an arc that is shared by both polygons. The various arcs of the U.S. state borders are shown above.
 
-<p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON encoding in another language.
+<p>The main benefit of a topology is that it improves <a href="http://www.jasondavies.com/maps/simplify/">shape simplification</a> by avoiding artifacts that would be caused by simplifying shapes independently. It also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
+
+<p>Yet because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">non-topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON encoding in another language.
 
 <p>The algorithm has four steps:
 
@@ -38,7 +40,7 @@ iframe {
 <li><a href="#dedup">dedup</a> - consolidate duplicate arcs.
 </ol>
 
-<p>Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along in the code.
+<p>Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along.
 
 <h2><a href="#extract" name="extract">#</a>1. Extract</h2>
 

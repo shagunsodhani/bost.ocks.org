@@ -21,13 +21,13 @@ iframe {
 
 <h1>How To Infer Topology</h1>
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992/6edb424f82d0dcd0e6400e3cde4a057309a322e2/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
-<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it tracks shared edges, such as the border between California and Nevada. The main benefit of the topology is that it improves <a href="../simplify/">shape simplification</a> by avoiding <a href="http://www.jasondavies.com/maps/simplify/">artifacts</a> caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
+<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it encodes shared edges, such as the border between California and Nevada. The main benefit of the topology is that it improves <a href="http://www.jasondavies.com/maps/simplify/">shape simplification</a> by avoiding artifacts caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
 
-<p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON conversion in <a href="http://sgillies.net/blog/1159/topojson-with-python/">another</a> <a href="https://github.com/calvinmetcalf/topojson.py">language</a>.
+<p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON encoding in another language.
 
 <p>The algorithm has four steps:<ol>
 
@@ -49,19 +49,19 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>This animation demonstrates extraction on U.S. state borders:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6408735/b885b26c44fe4911f6a7fdbdadc31ac23dd3ab9b/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408735/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6408735" target="_blank">bl.ocks.org/6408735</a></aside>
 
-<p>(Rings are colored randomly for visual separation.) The order of rings is arbitrary, though note that rings for each state are extracted together, since a state is typically represented as a MultiPolygon.
+<p>The order of rings is arbitrary, though note that rings for each state are extracted in sequence, since a state with multiple polygons in this example is represented as a MultiPolygon.
 
-<p>Why differentiate between lines and rings? For topologies, rings are a special form of closed lines that can be rotated: the start of the ring can be changed to any point along the ring without violating the geometry. This special property can be used in <a href="#cut">step three</a> to reduce the number of arcs that need to be split, optimizing the topology.
+<p>Why differentiate between lines and rings? For topologies, rings are a special form of closed lines that can be rotated: the start of the ring can be changed to any point along the ring without affecting the geometry. This special property can be used <a href="#cut">later</a> to reduce the number of arcs that need to be cut, optimizing the topology.
 
 <h2><a href="#join" name="join">#</a>2. Join</h2>
 
-<p>The next step is to identify junctions: intersection points where two or more lines or rings meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
+<p>The next step is to identify junctions: intersection points where two or more lines (or rings) meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/cd1fd329b2add21f623a68cf8a1d3b16be054b44/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6409154" target="_blank">bl.ocks.org/6409154</a></aside>
 
@@ -69,11 +69,11 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>The junctions for the U.S. state borders can be seen here as black dots:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6408918/e440132e3db9a0fa53e2d09ad83447aba4fd99fb/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408918/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6408918" target="_blank">bl.ocks.org/6408918</a></aside>
 
-<p>As you expect, the border intersection points in the interior of the contiguous United States are correctly identified as junctions. You can also see a few additional junctions on the coasts, such as on the Gulf of Mexico and Puget Sound. These junctions are caused by coastal features that are too small to see in the current map, such as adjacent islands that share a single point. Independent rings, such as the Hawaiian islands, have no junctions; this is because rings can be freely rotated without changing the geometry.
+<p>As you expect, the border intersections in the contiguous United States are correctly identified. You can see a few additional junctions on the coasts, such as on the Gulf of Mexico and Puget Sound. These junctions are caused by coastal features that are too small to see in the current map, such as adjacent islands that share a single point. Independent rings, such as the Hawaiian islands, have no junctions; as before, this is because rings can be freely rotated.
 
 <aside>A <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to record neighbors. However, note that the hashtable can be as large as the input geometry! <a href="http://en.wikipedia.org/wiki/Linear_probing">Linear probing</a> provides a noticeable performance improvement over array buckets.</aside>
 
@@ -81,23 +81,45 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <h2><a href="#cut" name="cut">#</a>3. Cut or Rotate</h2>
 
-<p>With all junctions identified, the next step is to cut the lines and rings so that they terminate at the junctions. For example, if <i>B</i> is a junction, then the line <i>ABC</i> is split into two lines <i>AB</i> and <i>BC</i>, while the line <i>ABD</i> is split into <i>AB</i> and <i>BD</i>. Splitting lines at junctions guarantees that all shared point sequences (like <i>AB</i> and <i>AB</i>) will correctly be deduped in the <a href="#dedup">final step</a>, and can be performed by simply iterating over the lines and rings while querying the set of previously-computed junctions.
+<p>With all junctions identified, the next step is to cut the lines and rings so that they terminate at the junctions. For example, if <i>B</i> is a junction, then the line <i>ABC</i> is split into two lines <i>AB</i> and <i>BC</i>, while the line <i>ABD</i> is split into <i>AB</i> and <i>BD</i>. Splitting lines at junctions guarantees that all shared point sequences (like <i>AB</i> and <i>AB</i>) will be correctly <a href="#dedup">deduped</a>, and can be performed by simply iterating over the lines and rings while querying the set of previously-computed junctions.
 
-<p>For the first junction encountered on a ring, we can rotate the ring so that it starts on the junction, eliminating a cut and reducing the number of arcs in the generated topology. For example, given the ring <i>ABCA</i>, if <i>B</i> is a junction, then we can rotate the ring to the equivalent sequence <i>BCAB</i>. This produces a smaller topology than cutting the ring into <i>AB</i> and <i>BCA</i>. This treatment could be applied as well to closed lines, but since the start and end point of a closed line may be meaningful — say, <a href="http://en.wikipedia.org/wiki/Timeline_of_Magellan's_circumnavigation">Magellan’s circumnavigation of the globe</a> — it’s safer to restrict this optimization to rings.
+<p>This animation demonstrates cutting on U.S. state borders:
+
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6409668/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/6409668" target="_blank">bl.ocks.org/6409668</a></aside>
+
+<p>Red indicates the section of the ring (or line) before the cut, while the blue indicates the section after the cut. The blue part gets successively smaller as the ring is cut at each junction.
+
+<p>For the first junction encountered on a ring, we can rotate the ring so that it starts on the junction, eliminating a cut and reducing the number of arcs in the generated topology. For example, given the ring <i>ABCA</i>, if <i>B</i> is a junction, then we can rotate the ring to the equivalent sequence <i>BCAB</i>. This produces a smaller topology than cutting the ring into <i>AB</i> and <i>BCA</i>. This treatment could be applied as well to closed lines, but since the start and end point of a closed line may be meaningful — say, <a href="http://en.wikipedia.org/wiki/Timeline_of_Magellan's_circumnavigation">Magellan’s circumnavigation of the globe</a> — it’s safer to restrict this optimization to rings. Ring rotation is not shown explicitly in the above animation, but notice that the first red cut on the ring always occurs on a junction, not at the ring’s original start point.
 
 <h2><a href="#dedup" name="dedup">#</a>4. Dedup</h2>
 
-<p>…
+<p>With the lines and rings cut into arcs, the last step is to deduplicate arcs so that each shared sequence of points is encoded only once in the final topology. Again, this requires iterating over the arcs that comprise each line or ring, and comparing the current arc to the arcs that were visited previously. If the current arc is different from all previously-visited arcs, it is assigned a new unique identifier (0, 1, 2… <i>etc.</i>). However if it is the same, it is given the identifier from the identical previous arc, and thus deduplicated.
 
-<h2><a href="#quantization" name="quantization">#</a>Quantization</h2>
+<p>This animation demonstrates deduplicating cut arcs on U.S. state borders:
 
-<p>…
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6409844/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/6409844" target="_blank">bl.ocks.org/6409844</a></aside>
+
+<p>The first time an arc is seen, it flashes red. If it is revisited (and thus duplicated), it flashes blue.
+
+<aside>A <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to index arcs, so as to reduce the number of pairwise arc-equality comparisons. You could either compute a hash code for each arc, or index arcs by endpoint.</aside>
+
+<p>Detecting whether two arcs are the same is mostly a matter of iterating over the points in the arc and seeing whether they are equal, similar to string comparison. However, since arcs can be reversed, it’s necessary to perform a backwards traversal if the forwards traversal fails.
+
+<p>Comparing rings is further complicated in that two rings may be rotated but still equivalent. This is resolved by picking a consistent rotation-invariant starting point on both rings before traversing, such as the point with the minimum <i>x</i>-coordinate, or the minimum <i>y</i>-coordinate if there are multiple points at the minimum <i>y</i>-coordinate.
+
+<h2><a href="#further-reading" name="further-reading">#</a>Further Reading</h2>
+
+<p>The implementation described in this article is in a <a href="https://github.com/mbostock/topojson/pull/103">pull request</a> and is planned for the next release of TopoJSON, 1.4.0; it differs substantially from the old implementation. (After this rewrite, I’m amazed the old implementation worked at all, though I’m glad there’s a respectable test suite.) There are a few tasks left to implement that take advantage of the new topology constructor, but I expect the release will happen in the next week or two.
+
+<p>An issue of particular importance to topology inference is messy inputs. For example, if you have two points [-122.416712304917, 37.783305712306] and [-122.416712304916, 37.783305712306], then in regards to the topology they are as distinct at San Francisco and New York. The TopoJSON reference implementation eliminates many of these errors by quantizing inputs: rounding them to lower precision. Quantization gives excellent results when constructing topologies from multiple layers, such as county, state and nation borders. However, overly-quantized inputs can introduce many arc self-intersection, which results in a complicated (big, slow) topology. So user control over quantization, and perhaps more heuristics, are needed for dealing with “real-world” inputs.
+
+<p>If you have questions or comments, please find <a href="http://twitter.com/mbostock">me on Twitter</a>.
 
 <footer>
   <aside>September 1, 2013</aside>
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
-
-<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
-<!-- <script src="http://d3js.org/topojson.v1.min.js"></script> -->
-<!-- <script src="../highlight.min.js"></script> -->

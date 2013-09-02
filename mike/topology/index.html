@@ -21,7 +21,7 @@ iframe {
 
 <h1>How To Infer Topology</h1>
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992/da86d227016038ab114307ff24afdb2c8c133eaf/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
@@ -43,19 +43,37 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>The minimum information needed to infer the topology is the set of all lines and rings extracted from the input geometry. This extraction simplifies the downstream logic; for example, the topology doesn’t care whether two polygons are represented as two Polygon geometries or one MultiPolygon geometry, as both are simply two rings.
 
-<p>Extracting lines and rings is a straightforward decomposition of the input geometries. For example, a LineString is converted to one line, a MultiLineString is converted to zero or more lines, and a Polygon is converted to one or more rings. The algorithm must also record which lines and rings are associated with which input geometries, so that the geometry can be recomposed from the final topology when the conversion is complete.
+<p>Extracting lines and rings is a straightforward decomposition of the input geometries: a LineString is converted to one line, a MultiLineString is converted to zero or more lines, a Polygon is converted to one or more rings, and so on. The algorithm must also record which lines and rings are associated with which input geometries, so that the geometry can be recomposed from the final topology when the conversion is complete.
 
-<p>This animation demonstrates the linearization of
+<p>This animation demonstrates extraction on U.S. state borders:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408735/a949568833a3317a576e9d4a6614ea9c07757ec6/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
-<aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
+<aside><a href="http://bl.ocks.org/mbostock/6408735" target="_blank">bl.ocks.org/6408735</a></aside>
 
-<p>Why differentiate between lines and rings? For topologies, rings are a special form of closed lines that can be rotated: the start and end point can be changed to any point along the ring without violating the geometry. This special property can be used in <a href="#cut">step three</a> to reduce the number of arcs that need to be split, optimizing the topology.
+<p>(Rings are colored randomly for visual separation.) The order of rings is arbitrary, though note that rings for each state are extracted together, since a state is typically represented as a MultiPolygon.
+
+<p>Why differentiate between lines and rings? For topologies, rings are a special form of closed lines that can be rotated: the start of the ring can be changed to any point along the ring without violating the geometry. This special property can be used in <a href="#cut">step three</a> to reduce the number of arcs that need to be split, optimizing the topology.
 
 <h2><a href="#join" name="join">#</a>2. Join</h2>
 
-<p><b>junction</b> <i>n.</i> A place where two things join or meet, especially a place where two roads or railway routes come together and one terminates.
+<p>The next step is to identify junctions: intersection points where two or more lines or rings meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction point. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
+
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/e27ea71cca597fe11bc64639fff294d62c5aeedf/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/6409154" target="_blank">bl.ocks.org/6409154</a></aside>
+
+<p>Junctions are irrespective to order. So, given the two lines <i>ABC</i> and <i>CBA</i>, then <i>B</i> is not a junction — unless there is some other line that intersects <i>B</i>. For the purposes of topology construction, we also consider the start and end point of every line to be a junction. This simplifies the code slightly, and because it is not necessary to cut a line at a given junction if the line already terminates at that junction, has no detrimental effect.
+
+<p>The junctions for the U.S. state borders are shown here as black dots:
+
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408918/9ffeb819065709b170f38fd1eeb6b45c30477804/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+
+<aside><a href="http://bl.ocks.org/mbostock/6408918" target="_blank">bl.ocks.org/6408918</a></aside>
+
+<p>As you expect, the border intersection points in the interior of the contiguous United States are correctly identified as junctions. However, you can also see a number of additional junction points on the coasts, particularly around Texas and Louisiana in the Gulf of Mexico. These junctions are caused by coastal features that are too small to see in the current map.
+
+<p>One complication in junction-finding is self-intersection: a line or ring can intersect with itself.
 
 <h2><a href="#cut" name="cut">#</a>3. Cut or Rotate</h2>
 

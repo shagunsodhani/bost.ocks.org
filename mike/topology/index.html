@@ -29,15 +29,16 @@ iframe {
 
 <p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON encoding in another language.
 
-<p>The algorithm has four steps:<ol>
+<p>The algorithm has four steps:
 
+<ol>
 <li><a href="#extract">extract</a> - decompose shapes into lines and rings.
 <li><a href="#join">join</a> - identify junctions (intersection points).
 <li><a href="#cut">cut</a> - split or rotate arcs to terminate at junctions.
 <li><a href="#dedup">dedup</a> - consolidate duplicate arcs.
 </ol>
 
-Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along in the code.
+<p>Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along in the code.
 
 <h2><a href="#extract" name="extract">#</a>1. Extract</h2>
 

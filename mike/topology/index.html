@@ -25,13 +25,13 @@ iframe {
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
-<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it tracks shared edges such as the border between California and Nevada. The main benefit of the topology is that it improves <a href="../simplify/">shape simplification</a> by avoiding artifacts caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
+<p>As its name implies, <a href="https://github.com/mbostock/topojson">TopoJSON</a> is a <i>topological</i> data format: rather than represent each shape discretely, it tracks shared edges, such as the border between California and Nevada. The main benefit of the topology is that it improves <a href="../simplify/">shape simplification</a> by avoiding <a href="http://www.jasondavies.com/maps/simplify/">artifacts</a> caused by simplifying shapes independently. But it also enables applications like <a href="http://bl.ocks.org/mbostock/4180634">map coloring</a> and <a href="http://bl.ocks.org/mbostock/5707610">selective meshing</a>, and makes the format more compact by removing redundant coordinates.
 
-<p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for its own sake and  partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON conversion in another language.
+<p>Because most geospatial data formats (other than <a href="http://indiemaps.com/blog/2009/02/e00parser-an-actionscript-3-parser-for-the-arcinfo-export-topological-gis-format/">E00</a>) are <a href="http://www.esri.com/news/arcuser/0401/topo.html">not topological</a>, you must typically create TopoJSON by <b>inferring the topology from geometry</b>. This article documents my implementation, partly for general interest and partly to help you debug conversion problems when using the <a href="https://github.com/mbostock/topojson/wiki/Command-Line-Reference"><code>topojson</code> command-line tool</a>. This can also serve as a guide should you be interested in implementing TopoJSON conversion in <a href="http://sgillies.net/blog/1159/topojson-with-python/">another</a> <a href="https://github.com/calvinmetcalf/topojson.py">language</a>.
 
 <p>The algorithm has four steps:<ol>
 
-<li><a href="#linearize">linearize</a> - extract lines and rings.
+<li><a href="#extract">extract</a> - decompose shapes into lines and rings.
 <li><a href="#join">join</a> - identify junctions (intersection points).
 <li><a href="#cut">cut</a> - split or rotate arcs to terminate at junctions.
 <li><a href="#dedup">dedup</a> - consolidate duplicate arcs.
@@ -39,11 +39,11 @@ iframe {
 
 Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along in the code.
 
-<h2><a href="#linearize" name="linearize">#</a>1. Linearize</h2>
+<h2><a href="#extract" name="extract">#</a>1. Extract</h2>
 
-<p>The minimum information needed to infer the topology is the set of all lines and rings extracted from the input geometry. This minimization simplifies the downstream logic; for example, the topology doesn’t care whether two polygons are represented as two Polygon geometries or one MultiPolygon geometry, as both are simply two rings.
+<p>The minimum information needed to infer the topology is the set of all lines and rings extracted from the input geometry. This extraction simplifies the downstream logic; for example, the topology doesn’t care whether two polygons are represented as two Polygon geometries or one MultiPolygon geometry, as both are simply two rings.
 
-<p>Extracting lines and rings is a straightforward mapping of the input geometries. For example, a LineString is converted to one line, a MultiLineString is converted to zero or more lines, and a Polygon is converted to one or more rings. The algorithm must also record which lines and rings are associated with which input geometries, so that the input can be reconstructed from the final topology when the conversion is complete.
+<p>Extracting lines and rings is a straightforward decomposition of the input geometries. For example, a LineString is converted to one line, a MultiLineString is converted to zero or more lines, and a Polygon is converted to one or more rings. The algorithm must also record which lines and rings are associated with which input geometries, so that the geometry can be recomposed from the final topology when the conversion is complete.
 
 <p>This animation demonstrates the linearization of
 

@@ -150,8 +150,8 @@ function ready(error, states, counties) {
   function apply(event) {
     window.current = event;
     switch (event.type) {
-      case "linearize:line":
-      case "linearize:ring": {
+      case "extract:line":
+      case "extract:ring": {
         event.selection = g.append("path")
             .attr("d", path({type: "LineString", coordinates: event.coordinates.map(transform)}))
             .style("fill", "none")

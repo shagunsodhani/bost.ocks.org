@@ -153,46 +153,46 @@ function topology(objects, Q, callback) {
   }
 
 
-  function linearize(objects) {
+  function extract(objects) {
     var index = -1,
         lines = [],
         rings = [],
         coordinates = [];
 
-    function linearizeGeometry(geometry) {
-      if (geometry && linearizeGeometryType.hasOwnProperty(geometry.type)) linearizeGeometryType[geometry.type](geometry);
+    function extractGeometry(geometry) {
+      if (geometry && extractGeometryType.hasOwnProperty(geometry.type)) extractGeometryType[geometry.type](geometry);
     }
 
-    var linearizeGeometryType = {
-      GeometryCollection: function(o) { o.geometries.forEach(linearizeGeometry); },
-      LineString: function(o) { o.arcs = linearizeLine(o.coordinates); delete o.coordinates; },
-      MultiLineString: function(o) { o.arcs = o.coordinates.map(linearizeLine); delete o.coordinates; },
-      Polygon: function(o) { o.arcs = o.coordinates.map(linearizeRing); delete o.coordinates; },
-      MultiPolygon: function(o) { o.arcs = o.coordinates.map(linearizeMultiRing); delete o.coordinates; }
+    var extractGeometryType = {
+      GeometryCollection: function(o) { o.geometries.forEach(extractGeometry); },
+      LineString: function(o) { o.arcs = extractLine(o.coordinates); delete o.coordinates; },
+      MultiLineString: function(o) { o.arcs = o.coordinates.map(extractLine); delete o.coordinates; },
+      Polygon: function(o) { o.arcs = o.coordinates.map(extractRing); delete o.coordinates; },
+      MultiPolygon: function(o) { o.arcs = o.coordinates.map(extractMultiRing); delete o.coordinates; }
     };
 
-    function linearizeLine(line) {
+    function extractLine(line) {
       for (var i = 0, n = line.length; i < n; ++i) coordinates[++index] = line[i];
       var arc = {0: index - n + 1, 1: index};
       lines.push(arc);
-      callback({type: "linearize:line", coordinates: coordinates.slice(index - n + 1, index + 1)});
+      callback({type: "extract:line", coordinates: coordinates.slice(index - n + 1, index + 1)});
       return arc;
     }
 
-    function linearizeRing(ring) {
+    function extractRing(ring) {
       for (var i = 0, n = ring.length; i < n; ++i) coordinates[++index] = ring[i];
       var arc = {0: index - n + 1, 1: index};
       rings.push(arc);
-      callback({type: "linearize:ring", coordinates: coordinates.slice(index - n + 1, index + 1)});
+      callback({type: "extract:ring", coordinates: coordinates.slice(index - n + 1, index + 1)});
       return arc;
     }
 
-    function linearizeMultiRing(rings) {
-      return rings.map(linearizeRing);
+    function extractMultiRing(rings) {
+      return rings.map(extractRing);
     }
 
     for (var key in objects) {
-      linearizeGeometry(objects[key]);
+      extractGeometry(objects[key]);
     }
 
     return {
@@ -676,7 +676,7 @@ function topology(objects, Q, callback) {
   }
 
   function index(objects) {
-    var topology = dedup(cut(linearize(objects))),
+    var topology = dedup(cut(extract(objects))),
         coordinates = topology.coordinates,
         indexByArc = hashtable(topology.arcs.length, hashArc, equalArc);
 

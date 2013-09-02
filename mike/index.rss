@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>02 Aug 2013 13:30 GMT</pubDate>
-    <lastBuildDate>02 Aug 2013 13:30 GMT</lastBuildDate>
+    <pubDate>02 Sep 2013 01:00 GMT</pubDate>
+    <lastBuildDate>02 Sep 2013 01:00 GMT</lastBuildDate>
+    <item>
+      <title>How To Infer Topology</title>
+      <link>http://bost.ocks.org/mike/topology/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/topology/"><img src="http://bost.ocks.org/mike/topology.png" width="720" height="80"></a>]]></description>
+      <pubDate>02 Sep 2013 01:00 GMT</pubDate>
+    </item>
     <item>
       <title>For Yankees, Little Bang for Their Buck</title>
       <link>http://www.nytimes.com/interactive/2013/08/02/sports/baseball/bang-for-your-buck.html</link>

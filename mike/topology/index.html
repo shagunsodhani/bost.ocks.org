@@ -21,7 +21,7 @@ iframe {
 
 <h1>How To Infer Topology</h1>
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992/da86d227016038ab114307ff24afdb2c8c133eaf/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6406992/6edb424f82d0dcd0e6400e3cde4a057309a322e2/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6406992" target="_blank">bl.ocks.org/6406992</a></aside>
 
@@ -47,7 +47,7 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>This animation demonstrates extraction on U.S. state borders:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6408735/a949568833a3317a576e9d4a6614ea9c07757ec6/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408735/b885b26c44fe4911f6a7fdbdadc31ac23dd3ab9b/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6408735" target="_blank">bl.ocks.org/6408735</a></aside>
 
@@ -57,23 +57,25 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <h2><a href="#join" name="join">#</a>2. Join</h2>
 
-<p>The next step is to identify junctions: intersection points where two or more lines or rings meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction point. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
+<p>The next step is to identify junctions: intersection points where two or more lines or rings meet. For example, consider the line <i>ABC</i>, where <i>A</i>, <i>B</i> and <i>C</i> are distinct points. If there is another line <i>DBE</i>, then <i>B</i> is a junction. Similarly, if there are two lines <i>ABC</i> and <i>ABD</i>, then because the lines diverge at point <i>B</i>, <i>B</i> is a junction. A few simple examples:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/e27ea71cca597fe11bc64639fff294d62c5aeedf/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6409154/cd1fd329b2add21f623a68cf8a1d3b16be054b44/" marginwidth="0" marginheight="0" style="height:240px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6409154" target="_blank">bl.ocks.org/6409154</a></aside>
 
-<p>Junctions are irrespective to order. So, given the two lines <i>ABC</i> and <i>CBA</i>, then <i>B</i> is not a junction — unless there is some other line that intersects <i>B</i>. For the purposes of topology construction, we also consider the start and end point of every line to be a junction. This simplifies the code slightly, and because it is not necessary to cut a line at a given junction if the line already terminates at that junction, has no detrimental effect.
+<p>Junctions are irrespective to order. So, given two lines <i>ABC</i> and <i>CBA</i>, then <i>B</i> is not a junction — unless there is some other line that intersects <i>B</i>. For the purposes of topology construction, we also consider the start and end point of every line to be a junction. This simplifies the code slightly, and has no detrimental effect because it is not necessary to cut a line at a given junction if the line already terminates at that junction.
 
-<p>The junctions for the U.S. state borders are shown here as black dots:
+<p>The junctions for the U.S. state borders can be seen here as black dots:
 
-<p><iframe src="http://bl.ocks.org/mbostock/raw/6408918/9ffeb819065709b170f38fd1eeb6b45c30477804/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
+<p><iframe src="http://bl.ocks.org/mbostock/raw/6408918/e440132e3db9a0fa53e2d09ad83447aba4fd99fb/" marginwidth="0" marginheight="10" style="height:520px;" scrolling="no"></iframe>
 
 <aside><a href="http://bl.ocks.org/mbostock/6408918" target="_blank">bl.ocks.org/6408918</a></aside>
 
-<p>As you expect, the border intersection points in the interior of the contiguous United States are correctly identified as junctions. However, you can also see a number of additional junction points on the coasts, particularly around Texas and Louisiana in the Gulf of Mexico. These junctions are caused by coastal features that are too small to see in the current map.
+<p>As you expect, the border intersection points in the interior of the contiguous United States are correctly identified as junctions. You can also see a few additional junctions on the coasts, such as on the Gulf of Mexico and Puget Sound. These junctions are caused by coastal features that are too small to see in the current map, such as adjacent islands that share a single point. Independent rings, such as the Hawaiian islands, have no junctions; this is because rings can be freely rotated without changing the geometry.
 
-<p>One complication in junction-finding is self-intersection: a line or ring can intersect with itself.
+<aside>A <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to record neighbors. However, note that the hashtable can be as large as the input geometry! <a href="http://en.wikipedia.org/wiki/Linear_probing">Linear probing</a> provides a noticeable performance improvement over array buckets.</aside>
+
+<p>The process of identifying junctions requires iterating over each line and ring while recording the neighbors of each visited point. If a point is subsequently revisited and has a <i>different</i> set of neighbors than before, then the point is a junction. For example, given the two lines <i>ABC</i> and <i>ABD</i>, the first time we visit <i>B</i>, the neighbors are {<i>A</i>, <i>C</i>}. The second time we visit <i>B</i>, the new neighbors are {<i>A</i>, <i>D</i>}, which is different than before, and thus <i>B</i> is a junction.
 
 <h2><a href="#cut" name="cut">#</a>3. Cut or Rotate</h2>
 

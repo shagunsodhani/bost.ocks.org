@@ -81,7 +81,7 @@ Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree
 
 <p>The process of identifying junctions requires iterating over each line and ring while recording the neighbors of each visited point. If a point is subsequently revisited and has a <i>different</i> set of neighbors than before, then the point is a junction. For example, given the two lines <i>ABC</i> and <i>ABD</i>, the first time we visit <i>B</i>, the neighbors are {<i>A</i>, <i>C</i>}. The second time we visit <i>B</i>, the new neighbors are {<i>A</i>, <i>D</i>}, which is different than before, and thus <i>B</i> is a junction.
 
-<h2><a href="#cut" name="cut">#</a>3. Cut or Rotate</h2>
+<h2><a href="#cut" name="cut">#</a>3. Cut</h2>
 
 <p>With all junctions identified, the next step is to cut the lines and rings so that they terminate at the junctions. For example, if <i>B</i> is a junction, then the line <i>ABC</i> is split into two lines <i>AB</i> and <i>BC</i>, while the line <i>ABD</i> is split into <i>AB</i> and <i>BD</i>. Splitting lines at junctions guarantees that all shared point sequences (like <i>AB</i> and <i>AB</i>) will be correctly <a href="#dedup">deduped</a>, and can be performed by simply iterating over the lines and rings while querying the set of previously-computed junctions.
 

@@ -40,7 +40,7 @@ iframe {
 <li><a href="#dedup">dedup</a> - consolidate duplicate arcs.
 </ol>
 
-<p>Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology">source file</a> of the same name, should you wish to follow along.
+<p>Each step is implemented in a <a href="https://github.com/mbostock/topojson/tree/master/lib/topojson/topology">source file</a> of the same name, should you wish to follow along.
 
 <h2><a href="#extract" name="extract">#</a>1. Extract</h2>
 
@@ -80,7 +80,7 @@ iframe {
 
 <p>As you expect, the border intersections in the contiguous United States are correctly identified. You can see a few additional junctions on the coasts, such as on the Gulf of Mexico and Puget Sound. These junctions are caused by coastal features that are too small to see in the current map, such as adjacent islands that share a single point. Independent rings, such as the Hawaiian islands, have no junctions; as before, this is because rings can be freely rotated.
 
-<aside>A <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to record neighbors. However, note that the hashtable can be as large as the input geometry! <a href="http://en.wikipedia.org/wiki/Linear_probing">Linear probing</a> provides a noticeable performance improvement over array buckets.</aside>
+<aside>A <a href="https://github.com/mbostock/topojson/tree/master/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to record neighbors. However, note that the hashtable can be as large as the input geometry! <a href="http://en.wikipedia.org/wiki/Linear_probing">Linear probing</a> provides a noticeable performance improvement over array buckets.</aside>
 
 <p>The process of identifying junctions requires iterating over each line and ring while recording the neighbors of each visited point. If a point is subsequently revisited and has a <i>different</i> set of neighbors than before, then the point is a junction. For example, given the two lines <i>ABC</i> and <i>ABD</i>, the first time we visit <i>B</i>, the neighbors are {<i>A</i>, <i>C</i>}. The second time we visit <i>B</i>, the new neighbors are {<i>A</i>, <i>D</i>}, which is different than before, and thus <i>B</i> is a junction.
 
@@ -110,7 +110,7 @@ iframe {
 
 <p>The first time an arc is seen, it flashes red. If it is revisited (and thus duplicated), it flashes blue.
 
-<aside>A <a href="https://github.com/mbostock/topojson/tree/better-exact-topology/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to index arcs, so as to reduce the number of pairwise arc-equality comparisons. You could either compute a hash code for each arc, or index arcs by endpoint.</aside>
+<aside>A <a href="https://github.com/mbostock/topojson/tree/master/lib/topojson/topology/hashtable.js">hashtable</a> is a reasonable way to index arcs, so as to reduce the number of pairwise arc-equality comparisons. You could either compute a hash code for each arc, or index arcs by endpoint.</aside>
 
 <p>Detecting whether two arcs are the same is mostly a matter of iterating over the points in the arc and seeing whether they are equal, similar to string comparison. However, since arcs can be reversed, it’s necessary to perform a backwards traversal if the forwards traversal fails.
 

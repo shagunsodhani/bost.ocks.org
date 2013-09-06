@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>02 Sep 2013 01:00 GMT</pubDate>
-    <lastBuildDate>02 Sep 2013 01:00 GMT</lastBuildDate>
+    <pubDate>06 Sep 2013 17:30 GMT</pubDate>
+    <lastBuildDate>06 Sep 2013 17:30 GMT</lastBuildDate>
+    <item>
+      <title>Constellations of Directors and Their Stars</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/09/07/director-star-chart/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/09/07/director-star-chart/"><img src="http://bost.ocks.org/mike/director-constellations.png" width="720" height="80"></a>]]></description>
+      <pubDate>06 Sep 2013 17:30 GMT</pubDate>
+    </item>
     <item>
       <title>How To Infer Topology</title>
       <link>http://bost.ocks.org/mike/topology/</link>

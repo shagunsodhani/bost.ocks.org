@@ -118,7 +118,7 @@ iframe {
 
 <h2><a href="#further-reading" name="further-reading">#</a>Further Reading</h2>
 
-<p>The implementation described in this article is in <a href="https://github.com/mbostock/topojson/pull/103">a pull request</a> and is planned for the next release of TopoJSON, 1.4.0. (It differs substantially from the old implementation; after this rewrite, I’m amazed the old implementation worked at all, though I’m glad there’s a respectable test suite!) There are a few tasks left to implement that take advantage of the new topology constructor, but I expect the release will happen in the next week or two.
+<p>The implementation described in this article is new for <a href="https://github.com/mbostock/topojson/releases/v1.4.0">TopoJSON 1.4.0</a>. (It differs substantially from the old implementation; after this rewrite, I’m amazed the old implementation worked at all, though I’m glad there’s a respectable test suite!)
 
 <p>An issue of particular importance to topology inference is messy inputs. For example, if you have two points [-122.416712304917, 37.783305712306] and [-122.416712304916, 37.783305712306], then in regards to the topology they are as distinct as San Francisco and New York. The TopoJSON reference implementation eliminates many of these errors by quantizing inputs, rounding them to lower precision. Quantization gives excellent results when constructing topologies from multiple layers, such as county, state and nation borders. However, overly-quantized inputs can introduce excessive arc self-intersection, resulting in a big topology. So user control over quantization, and perhaps more heuristics, are still needed for dealing with “real-world” inputs. Or we could all start using topological formats…
 

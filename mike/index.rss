@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>06 Sep 2013 17:30 GMT</pubDate>
-    <lastBuildDate>06 Sep 2013 17:30 GMT</lastBuildDate>
+    <pubDate>13 Sep 2013 10:00 GMT</pubDate>
+    <lastBuildDate>13 Sep 2013 10:00 GMT</lastBuildDate>
+    <item>
+      <title>Front Row to Fashion Week</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/09/13/fashion-week-editors-picks/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/09/13/fashion-week-editors-picks/"><img src="http://bost.ocks.org/mike/dresses.png" width="720" height="80"></a>]]></description>
+      <pubDate>13 Sep 2013 10:00 GMT</pubDate>
+    </item>
     <item>
       <title>Constellations of Directors and Their Stars</title>
       <link>http://www.nytimes.com/newsgraphics/2013/09/07/director-star-chart/</link>

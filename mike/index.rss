@@ -5,8 +5,20 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>13 Sep 2013 10:00 GMT</pubDate>
-    <lastBuildDate>13 Sep 2013 10:00 GMT</lastBuildDate>
+    <pubDate>25 Sep 2013 12:15 GMT</pubDate>
+    <lastBuildDate>25 Sep 2013 12:15 GMT</lastBuildDate>
+    <item>
+      <title>Oracle’s Path to Victory</title>
+      <link>http://www.nytimes.com/interactive/2013/09/25/sports/americas-cup-course.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/09/25/sports/americas-cup-course.html"><img src="http://bost.ocks.org/mike/americas-cup-course.png" width="720" height="80"></a>]]></description>
+      <pubDate>25 Sep 2013 12:15 GMT</pubDate>
+    </item>
+    <item>
+      <title>State-by-State Premiums Under the Health Care Law</title>
+      <link>http://www.nytimes.com/interactive/2013/09/24/us/health-care-premiums.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2013/09/24/us/health-care-premiums.html"><img src="http://bost.ocks.org/mike/health-care-premiums.png" width="720" height="80"></a>]]></description>
+      <pubDate>25 Sep 2013 12:15 GMT</pubDate>
+    </item>
     <item>
       <title>Front Row to Fashion Week</title>
       <link>http://www.nytimes.com/newsgraphics/2013/09/13/fashion-week-editors-picks/</link>

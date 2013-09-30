@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>25 Sep 2013 12:15 GMT</pubDate>
-    <lastBuildDate>25 Sep 2013 12:15 GMT</lastBuildDate>
+    <pubDate>29 Sep 2013 12:00 GMT</pubDate>
+    <lastBuildDate>29 Sep 2013 12:00 GMT</lastBuildDate>
+    <item>
+      <title>For Eli Manning, 150 Games and Counting</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/09/28/eli-manning-milestone/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/09/28/eli-manning-milestone/"><img src="http://bost.ocks.org/mike/nfl-starters.png" width="720" height="80"></a>]]></description>
+      <pubDate>29 Sep 2013 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Oracle’s Path to Victory</title>
       <link>http://www.nytimes.com/interactive/2013/09/25/sports/americas-cup-course.html</link>

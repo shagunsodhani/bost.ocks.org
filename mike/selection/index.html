@@ -843,7 +843,7 @@ tree(
 
 <aside>In Chrome, you can open the console with the keyboard shortcut <span style="font-family:'Lucida Grande';">⌥⌘J</span>.</aside>
 
-<p>In the <a href="https://developers.google.com/chrome-developer-tools/docs/console#opening_the_console">JavaScript console</a>, try running this command and inspecting the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. While accessing a node directly is supported by D3’s API, for reasons that will soon be apparent it more common to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
+<p>In the <a href="https://developers.google.com/chrome-developer-tools/docs/console#opening_the_console">JavaScript console</a>, try running this command and inspecting the group as <code>selection[0]</code> and the node as <code>selection[0][0]</code>. While accessing a node directly is supported by D3’s API, for reasons that will soon be apparent it is more common to use <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-node">selection.node</a>.
 
 <p>Likewise, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-d3_selectAll">d3.selectAll</a> returns a selection with one group and any number of elements:
 
@@ -1189,7 +1189,7 @@ tree(
 
 </script>
 
-<p>Just as selection.style takes either a constant string to define a uniform style property (<i>e.g.</i>, <code>"red"</code>) for every selected element, or a function to compute a dynamic style per-element (<code>function(d) { return d.color; }</code>), <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> can accept a either a constant value or a function.
+<p>Just as selection.style takes either a constant string to define a uniform style property (<i>e.g.</i>, <code>"red"</code>) for every selected element, or a function to compute a dynamic style per-element (<code>function(d) { return d.color; }</code>), <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> can accept either a constant value or a function.
 
 <p>However, unlike the other selection methods, <b>selection.data defines data per-group rather than per-element</b>: data is expressed as an array of values for the group, or a function that returns such an array. Thus, a <a href="#group">grouped</a> selection has correspondingly grouped data!
 

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>29 Sep 2013 12:00 GMT</pubDate>
-    <lastBuildDate>29 Sep 2013 12:00 GMT</lastBuildDate>
+    <pubDate>14 Oct 2013 23:00 GMT</pubDate>
+    <lastBuildDate>14 Oct 2013 23:00 GMT</lastBuildDate>
+    <item>
+      <title>The Russia Left Behind</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/10/13/russia/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/10/13/russia/"><img src="http://bost.ocks.org/mike/russia.png" width="720" height="80"></a>]]></description>
+      <pubDate>14 Oct 2013 23:00 GMT</pubDate>
+    </item>
     <item>
       <title>For Eli Manning, 150 Games and Counting</title>
       <link>http://www.nytimes.com/newsgraphics/2013/09/28/eli-manning-milestone/</link>

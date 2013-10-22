@@ -79,7 +79,7 @@ path:hover {
 
 <aside>This code adapts Leaflet’s <code>latLngToLayerPoint</code> and <code>LatLng</code> methods to project a single point, passing the resulting coordinates to an output <a href="https://github.com/mbostock/d3/wiki/Geo-Streams">geometry stream</a>.</aside>
 
-<pre><code>function projectPoint(x) {
+<pre><code>function projectPoint(x, y) {
   var point = map.latLngToLayerPoint(new L.LatLng(y, x));
   this.stream.point(point.x, point.y);
 }</code></pre>

@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>14 Oct 2013 23:00 GMT</pubDate>
-    <lastBuildDate>14 Oct 2013 23:00 GMT</lastBuildDate>
+    <pubDate>27 Oct 2013 12:00 GMT</pubDate>
+    <lastBuildDate>27 Oct 2013 12:00 GMT</lastBuildDate>
+    <item>
+      <title>A Game of Shark and Minnow</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/10/27/south-china-sea/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/10/27/south-china-sea/"><img src="http://bost.ocks.org/mike/south-china-sea.png" width="720" height="80"></a>]]></description>
+      <pubDate>27 Oct 2013 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>The Russia Left Behind</title>
       <link>http://www.nytimes.com/newsgraphics/2013/10/13/russia/</link>

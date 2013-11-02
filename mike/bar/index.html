@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>A Bar Chart, Part 1</title>
+<title>Let’s Make a Bar Chart</title>
 <style>
 
 @import url(../style.css);
 
 .chart {
-  margin-left: 42px;
-  font: 10px sans-serif;
+  margin: 2em 0;
   shape-rendering: crispEdges;
 }
 
 .chart div {
+  font: 10px sans-serif;
   background-color: steelblue;
   text-align: right;
   padding: 3px;
@@ -35,11 +35,13 @@
   <a href="../" rel="author">Mike Bostock</a>
 </header>
 
-<h1>A Bar Chart, Part 1</h1>
+<h1>Let’s Make a Bar Chart</h1>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
-<p>Say you have some data — a simple array of numbers:
+<aside>This is part 1 of a three-part series. Jump to <a href="2/">part 2</a> or <a href="3/">part 3</a>. The tutorial supersedes a much older tutorial I wrote called “A Bar Chart, Part 1”.</aside>
+
+<p>Say you have a little data – an array of numbers:
 
 <pre><code>var data = [4, 8, 15, 16, 23, 42];</code></pre>
 
@@ -49,308 +51,176 @@ var data = [4, 8, 15, 16, 23, 42];
 
 </script>
 
-<p>One of the ways you might visualize this univariate data is a bar chart. This guide will examine how to create a simple bar chart using D3, first with basic HTML, and then a more advanced example with SVG.
+<p>A bar chart is a simple yet <a href="http://flowingdata.com/2010/03/20/graphical-perception-learn-the-fundamentals-first/">perceptually-accurate</a> way to visualize such data. This introductory tutorial covers how to make a bar chart using the <a href="http://d3js.org">D3 JavaScript library</a>. First we’ll make a bare-bones version in only HTML, and later a more complete chart in <a href="http://www.w3.org/Graphics/SVG/">Scalable Vector Graphics</a> (SVG).
 
-<h2>HTML</h2>
+<p>This tutorial assumes you know a little about web development: how to edit a web page and view it in your browser, how to include <a href="http://d3js.org/d3.v3.js">d3.js</a> on the page, and the like. If you like, you can fork this <a target="_blank" href="http://codepen.io/mbostock/pen/Jaemg">CodePen template</a> to get started.
 
-<p>To get started with HTML, you'll first need a container for the chart:
+<h2><a href="#selecting" name="selecting">#</a>Selecting an Element</h2>
 
-<pre><code>var chart = d3.select("body").append("div")
-    .attr("class", "chart");</code></pre>
+<p>In vanilla JavaScript, you typically deal with elements one at a time. For example, you might create a <code>div</code> element, set its contents, and then append it to the body:
 
-<p>This code selects the document body, which will be the parent of the new chart. Every visible node needs a parent, with the exception of the document's root node. The chart container, a `div` element, is then created and appended to the body. The `append` operator adds the new node as the last child: the chart will appear at the end of the body.
+<aside>This code snippet is JavaScript and should be placed in a <code>script</code> tag somewhere in the body, after loading D3.</aside>
+<pre><code>var div = document.createElement("div");
+div.innerHTML = "Hello, world!";
+document.body.appendChild(div);</code></pre>
 
-<p>D3 uses the [method chaining](http://en.wikipedia.org/wiki/Method_chaining) design pattern. Above, setting the attribute returns the current selection, and the `chart` variable thus refers to the chart container element. This approach minimizes the amount of code needed to apply many selections and transformations in sequence.
+<p>With D3 (as with jQuery and other libraries), you instead handle groups of related elements called <i>selections</i>. Working with elements <i>en masse</i> gives selections their power; you can manipulate a single element or lots of them without substantially restructuring your code.
 
-<p>The `attr` operator sets the "class" attribute on the chart container, allowing stylesheets to be applied to the chart elements. This is convenient for static styles, such as the background color and font size. CSS code lives in a `style` element or an external stylesheet referenced by a `link` element, rather than the `script` element used for JavaScript:
+<p>A selection can be created in myriad ways, but most often you create one by querying a <a href="http://www.w3.org/TR/selectors-api/">selector</a>: a query string that identifies desired elements by property, say by name or class (<code>"div"</code> or <code>".foo"</code>, respectively). So, while you can create a selection for a single element:
 
-<pre><code>.chart div {
+<pre><code>var body = d3.select("body");
+var div = body.append("div");
+div.html("Hello, world!");</code></pre>
+
+<p>You can just as easily perform the same operation on many elements:
+
+<pre><code>var section = d3.selectAll("section");
+var div = section.append("div");
+div.html("Hello, world!");</code></pre>
+
+<h2><a href="#chaining" name="chaining">#</a>Chaining Methods</h2>
+
+<p>Another convenience of selections is <i>method chaining</i>: when you call a method on a selection, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">selection.attr</a>, it returns the current selection. This lets you apply multiple operations to the same set of elements without repeating yourself. If you wanted to set the text color and the background color of the body without method chaining, you’d say:
+
+<pre><code>var body = d3.select("body");
+body.style("color", "black");
+body.style("background-color", "white");</code></pre>
+
+<p>“Body, body, body!” With method chaining, the repetition is eliminated:
+
+<pre><code>d3.select("body")
+    .style("color", "black")
+    .style("background-color", "white");</code></pre>
+
+<p>Note that we didn’t even need a <code>var</code> for the selected body element. After applying our operations, the selection is discarded. Method chaining allows you to write shorter code and, hopefully, waste less time naming variables.
+
+<p>There is a gotcha with method chaining, however. While most operations return the same selection, some methods return a new one! For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a> returns a new selection containing the new elements. This conveniently allows you to chain operations into the new elements:
+
+<aside>The recommended indentation pattern for method chaining is four spaces for methods that preserve the current selection and two spaces for methods that change the selection.</aside>
+
+<pre><code>d3.selectAll("section")
+    .attr("class", "special")
+  .append("div")
+    .html("Hello, world!");</code></pre>
+
+<p>Since method chaining can only be used to descend into the document hierarchy, use <code>var</code> to keep references to selections and go back up:
+
+<pre><code>var section = d3.selectAll("section");
+
+section.append("div")
+    .html("First!");
+
+section.append("div")
+    .html("Second.");</code></pre>
+
+<h2><a href="#manual" name="manual">#</a>Coding a Chart, Manually</h2>
+
+<p>Consider how you might create a bar chart <i>without</i> JavaScript. After all, there are only six numbers in this trivial data set, so it’s not unreasonable to write a few <code>div</code> elements by hand, set their width as a multiple of the data, and be done with it.
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;style&gt;
+
+.chart div {
   font: 10px sans-serif;
   background-color: steelblue;
   text-align: right;
   padding: 3px;
   margin: 1px;
   color: white;
-}</code></pre>
+}
 
-<p>Next, add some `div` elements to the container, setting the width by scaling the data:
+&lt;/style&gt;
+&lt;div class="chart"&gt;
+  &lt;div style="width: 40px;"&gt;4&lt;/div&gt;
+  &lt;div style="width: 80px;"&gt;8&lt;/div&gt;
+  &lt;div style="width: 150px;"&gt;15&lt;/div&gt;
+  &lt;div style="width: 160px;"&gt;16&lt;/div&gt;
+  &lt;div style="width: 230px;"&gt;23&lt;/div&gt;
+  &lt;div style="width: 420px;"&gt;42&lt;/div&gt;
+&lt;/div&gt;</code></pre>
 
-<pre><code>chart.selectAll("div")
+<p>That looks like this:
+
+<p><div class="chart">
+  <div style="width: 40px;">4</div>
+  <div style="width: 80px;">8</div>
+  <div style="width: 150px;">15</div>
+  <div style="width: 160px;">16</div>
+  <div style="width: 230px;">23</div>
+  <div style="width: 420px;">42</div>
+</div>
+
+<p>There is one <code>div</code> for the chart container, and one child <code>div</code> for each bar. The child <code>div</code>s have a blue background color and a white foreground color, giving the appearance of bars with right-aligned value labels.
+
+<p>You could simplify this implementation even further by removing the containing chart <code>div</code>. But more commonly your page will contain content in addition to the chart, so having a chart container lets you position and style the chart without affecting the rest of the page. (If you have multiple charts on the same page, you might need to give each container a unique id or class.)
+
+<h2><a href="#automatic" name="automatic">#</a>Coding a Chart, Automatically</h2>
+
+<p>Of course hard-coding is impractical for most datasets, and the point of this tutorial is to teach you how to create charts from data automatically. So now let’s create the identical structure using D3, starting with an empty page that contains only a <code>div</code> of class <code>"chart"</code>:
+
+<pre><code>d3.select(".chart")
+  .selectAll("div")
     .data(data)
   .enter().append("div")
     .style("width", function(d) { return d * 10 + "px"; })
     .text(function(d) { return d; });</code></pre>
 
-<p>This code selects the child `div` elements of the chart container. This selection is empty because the container was just added. However, by binding this selection to the array of numbers via the `data` operator, you can obtain the *entering* selection—a set of placeholder nodes, one per data element, to which you can append the desired child nodes for each bar.
+<p>Although partly familiar, this code introduces an important new concept — the <i>data-join</i>. Let’s break it down, rewriting the above concise code in a longer form, to see how it works.
 
-<p>The `text` operator sets the text content of the bars. The identity function, `function(d) { return d; }`, causes each data value (number) to be formatted using JavaScript's default string conversion, equivalent to the built-in `String` function. This may be ugly for some numbers (*e.g.*, 0.12000000000000001). The `d3.format` class, modeled after Python's [string formatting](http://docs.python.org/library/stdtypes.html#string-formatting), is available for more control over how the number is formatted, supporting comma-grouping of thousands and fixed precision.
+<p>First, we select the chart container using a class selector.
 
-<p>The above code results in a rudimentary bar chart:
+<pre><code>var chart = d3.select(".chart");</code></pre>
 
-<script>
+<p>Next we initiate the data-join by defining the selection to which we will join data.
 
-d3.select(".content").append("div")
-    .attr("class", "chart")
-  .selectAll("div")
-    .data(data)
-  .enter().append("div")
-    .style("width", function(d) { return d * 10 + "px"; })
-    .text(function(d) { return d; });
+<pre><code>var bar = chart.selectAll("div");</code></pre>
 
-</script>
+<p>The data-join is a general pattern that can be used to create, update or destroy elements whenever data changes. It might feel unnecessary to apply this general pattern here, but the data-join facilitates the generalization of your code in the future, such as when you want fluid transitions with <a href="http://bost.ocks.org/mike/constancy/">object constancy</a>. It may feel weird to make an empty selection just to append a few <code>div</code> elements, but think of it as declaring the elements you <i>want</i> to exist (see <a href="http://bost.ocks.org/mike/join/">“Thinking with Joins”</a>).
 
-<p>One weakness of the code so far is the [magic number][1] 10, which scales the data value to the appropriate bar width. This number depends on the *domain* of the data (the maximum value, 42), and the width of the chart (420). To avoid hard-coding the *x*-scale of 10, you can use D3's linear scale class, and compute the maximum value from the data:
+<p>Now we join the data (defined above) to the selection using the <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a> operator.
 
-[1]: http://en.wikipedia.org/wiki/Magic_number_(programming)#Unnamed_numerical_constants
+<pre><code>var barUpdate = bar.data(data);</code></pre>
 
-<pre><code>var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range(["0px", "420px"]);</code></pre>
+<p>Since we know that the selection is empty, the returned <i>update</i> and <i>exit</i> selections are empty, and we are only concerned with the <i>enter</i> selection: new data for which there was no existing element. We instantiate these missing elements by appending to the enter selection.
 
-<script>
+<pre><code>var barEnter = barUpdate.enter().append("div");</code></pre>
 
-var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range(["0px", "420px"]);
+<p>Now we set the width of each new bar as a multiple of the associated data value, <code>d</code>.
 
-</script>
+<pre><code>barEnter.style("width", function(d) { return d * 10 + "px"; });</code></pre>
 
-<p>Although it looks like an object, the `x` variable here is actually a *function* that converts data values (in the domain) to scaled values (in the range). For example, an input value of 4 returns "40px", and an input value of 16 returns "160px". The output range of the scale in this example are strings, with the appropriate `px` units for CSS. D3's automatic interpolators detect the numbers within the strings, while retaining the constant remainder.
+<p>These elements were created with the data-join, so each entering bar is already bound to data. By specifying a function as the value of the width style property, we can compute the width of each bar dynamically from the data.
 
-<p>The new scale arguably still has a magic number: 420px, the width of the chart. If you want to make the chart resizable, you can inspect the width of the chart container, `chart.style("width")`. Or, use percentages rather than pixels. In any case, the reusable scale makes the chart specification easier to modify—for example, you can easily replace the linear scale with a log or root scale.
+<p>Lastly, we use a function to set the text content of each bar.
 
-<p>Using the new scale, you can simplify the width style definition:
+<aside>When formatting numbers for text labels, you may want to use <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> for rounding and grouping to improve readability.</aside>
 
-<pre><code>chart.selectAll("div")
-    .data(data)
-  .enter().append("div")
-    .style("width", x)
-    .text(String);</code></pre>
+<pre><code>barEnter.text(function(d) { return d; });</code></pre>
 
-<p>Now, the HTML representation is very concise, but it's not very flexible. Displaying reference lines in the background, or generating columns rather than bars, is difficult in pure HTML. Chart types such as pies and streamgraphs are practically impossible. Fortunately, there's a convenient alternative: [Scalable Vector Graphics](http://en.wikipedia.org/wiki/Scalable_Vector_Graphics) (SVG)!
+<p>D3’s selection operators such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-property">property</a>, allow you to specify the value either as a constant (the same for all selected elements) or a function (computed separately for each element). If the value of a particular attribute should be based on the element’s associated data, then use a function to compute it; otherwise, if it’s the same for all elements, then a simple string or number will suffice.
 
-<h2>SVG</h2>
+<h2><a href="#scaling" name="scaling">#</a>Scaling to Fit</h2>
 
-<p>You use SVG much the same way as HTML, but it offers substantially more flexibility. To start with SVG, create an `svg` container instead of a `div`:
+<p>One weakness of the code above is the <a href="http://en.wikipedia.org/wiki/Magic_number_(programming)#Unnamed_numerical_constants">magic number</a> 10, which is used to scale the data value to the appropriate pixel width. This number depends on the domain of the data (the minimum and maximum value, 0 and 42 respectively), and the desired width of the chart (420).
 
-<pre><code>var chart = d3.select("body").append("svg")
-    .attr("class", "chart")
-    .attr("width", 420)
-    .attr("height", 20 * data.length);</code></pre>
+<p>Rather than hard-coding a number, we can use D3's linear scale to compute a suitable mapping from data-space (<i>domain</i>) to display-space (<i>range</i>) automatically:
 
-<p>An immediate difference you will notice with SVG is that the units are implicitly pixels, and thus do not need the "px" suffix. Even with pixels, you can rescale the SVG without losing image quality. You can use percentages for relative positioning, too. To use a numeric range for the *x*-scale:
+<aside>D3’s scales can also be used to interpolate many other types of display-space values, such as paths, color spaces and geometric transforms.</aside>
 
 <pre><code>var x = d3.scale.linear()
     .domain([0, d3.max(data)])
     .range([0, 420]);</code></pre>
 
-<script>
+<p>Although it looks like an object, the <code>x</code> variable here is also a function that converts data values in the domain to scaled display values in the range. For example, an input value of 4 returns 40, and an input value of 16 returns 160. Using the new scale, we can remove the magic number:
 
-var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range([0, 420]);
-
-</script>
-
-<p>Unlike HTML, SVG does not provide automatic flow layout. Shapes are positioned relative to the top-left corner, called the origin. Thus, by default, the bars would be drawn on top of each other. To fix this, set the *y*-coordinate and height explicitly:
-
-<pre><code>chart.selectAll("rect")
+<pre><code>d3.select(".chart")
+  .selectAll("div")
     .data(data)
-  .enter().append("rect")
-    .attr("y", function(d, i) { return i * 20; })
-    .attr("width", x)
-    .attr("height", 20);</code></pre>
+  .enter().append("div")
+    .style("width", function(d) { return x(d) + "px"; })
+    .text(function(d) { return d; });</code></pre>
 
-<p>Also, the CSS changes slightly when using SVG. Rather than the background, the fill determines the bar color. You can also apply a white border to each bar by setting the stroke style:
-
-<pre><code>.chart rect {
-  stroke: white;
-  fill: steelblue;
-}</code></pre>
-
-<p>The SVG-based chart is now almost identical to our original. The chart is currently missing labels, but that will be fixed shortly:
-
-<script>
-
-d3.select(".content").append("svg")
-    .attr("class", "chart")
-    .attr("width", 420)
-    .attr("height", 20 * data.length)
-  .selectAll("rect")
-    .data(data)
-  .enter().append("rect")
-    .attr("y", function(d, i) { return i * 20; })
-    .attr("width", x)
-    .attr("height", 20);
-
-</script>
-
-<p>Astute readers will notice that a magic number crept back into the chart description: the bar height of 20 pixels. Arguably, this number isn't magic—twenty is a reasonable height for the bars, just as fourteen is a reasonable point size for text. However, if you prefer to set a height for the entire chart, use a second scale for the *y*-axis:
-
-<pre><code>var y = d3.scale.ordinal()
-    .domain(data)
-    .rangeBands([0, 120]);</code></pre>
-
-<script>
-
-var y = d3.scale.ordinal()
-    .domain(data)
-    .rangeBands([0, 120]);
-
-</script>
-
-<p>As with `x` previously, `y` is now a function. It takes as input values from the data array, and for each value returns the corresponding *y*-coordinate. For example, an input value of 4 returns 0, and an input value of 16 returns 60. This approach requires that the values in our dataset are unique; ordinal scales are often used to encode non-quantitative data, such as country names. Alternatively, you can use array indices as the ordinal domain: \[0, 1, 2…\].
-
-<p>The new scale plugs into the bar specification, replacing the "y" attribute:
-
-<pre><code>chart.selectAll("rect")
-    .data(data)
-  .enter().append("rect")
-    .attr("y", y)
-    .attr("width", x)
-    .attr("height", y.rangeBand());</code></pre>
-
-<p>The new scales can also be applied to render labels, showing the associated value. This code centers labels vertically within each bar, and right-aligns text:
-
-<pre><code>chart.selectAll("text")
-    .data(data)
-  .enter().append("text")
-    .attr("x", x)
-    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-    .attr("dx", -3) // padding-right
-    .attr("dy", ".35em") // vertical-align: middle
-    .attr("text-anchor", "end") // text-align: right
-    .text(String);</code></pre>
-
-<p>The formal [SVG Text](http://www.w3.org/TR/SVG/text.html) specification describes in detail the meaning of the "dx", "dy" and "text-anchor" attributes. The full spec is dense, as SVG offers a level of control required by only the most ambitious typographers; fortunately, it's not too hard to remember standard settings for alignment and padding!
-
-<p>The SVG chart now looks identical to the earlier HTML version:
-
-<script>
-
-var chart = d3.select(".content").append("svg")
-    .attr("class", "chart")
-    .attr("width", 420)
-    .attr("height", 120);
-
-chart.selectAll("rect")
-    .data(data)
-  .enter().append("rect")
-    .attr("y", y)
-    .attr("width", x)
-    .attr("height", y.rangeBand());
-
-chart.selectAll("text")
-    .data(data)
-  .enter().append("text")
-    .attr("class", "bar")
-    .attr("x", x)
-    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-    .attr("dx", -3)
-    .attr("dy", ".35em")
-    .attr("text-anchor", "end")
-    .text(String);
-
-</script>
-
-<p>With the basic chart is in place, you can place additional marks to improve readability. As a first step, pad the SVG container to make space for labels:
-
-<pre><code>var chart = d3.select("body").append("svg")
-    .attr("class", "chart")
-    .attr("width", 440)
-    .attr("height", 140)
-  .append("g")
-    .attr("transform", "translate(10,15)");</code></pre>
-
-<p>The `g` element is a [container element](http://www.w3.org/TR/SVG/struct.html), much like the `div` element in HTML. Setting a [transform](http://www.w3.org/TR/SVG/coords.html#TransformAttribute) on a container affects how its children are positioned. For padding, you need only to translate; however, for advanced graphical effects, you can use any affine transformation, such as scale, rotate and shear!
-
-<p>The linear scale, `x`, provides a `ticks` routine that generates values in the domain at sensible intervals. For a chart this size, about ten ticks is appropriate; for smaller or larger charts, you can vary the number of ticks to generate. These tick values serve as data for reference lines:
-
-<pre><code>chart.selectAll("line")
-    .data(x.ticks(10))
-  .enter().append("line")
-    .attr("x1", x)
-    .attr("x2", x)
-    .attr("y1", 0)
-    .attr("y2", 120)
-    .style("stroke", "#ccc");</code></pre>
-
-<p>Positioning text above the reference lines reveals their value:
-
-<pre><code>chart.selectAll(".rule")
-    .data(x.ticks(10))
-  .enter().append("text")
-    .attr("class", "rule")
-    .attr("x", x)
-    .attr("y", 0)
-    .attr("dy", -3)
-    .attr("text-anchor", "middle")
-    .text(String);</code></pre>
-
-<p>Note that the rule labels are assigned the class "rule"; this avoids a selector collision with the value labels on each bar. (Another way to disambiguate is to put reference labels in a separate `g` container.) Lastly, add a single black line for the *y*-axis:
-
-<pre><code>chart.append("line")
-    .attr("y1", 0)
-    .attr("y2", 120)
-    .style("stroke", "#000");</code></pre>
-
-<p>Et voilà!
-
-<script>
-
-var chart = d3.select(".content").append("svg")
-    .attr("class", "chart")
-    .attr("width", 440)
-    .attr("height", 140)
-    .style("margin-left", "32px") // Tweak alignment…
-  .append("g")
-    .attr("transform", "translate(10,15)");
-
-chart.selectAll("line")
-    .data(x.ticks(10))
-  .enter().append("line")
-    .attr("x1", x)
-    .attr("x2", x)
-    .attr("y1", 0)
-    .attr("y2", 120)
-    .style("stroke", "#ccc");
-
-chart.selectAll(".rule")
-    .data(x.ticks(10))
-  .enter().append("text")
-    .attr("class", "rule")
-    .attr("x", x)
-    .attr("y", 0)
-    .attr("dy", -3)
-    .attr("text-anchor", "middle")
-    .text(String);
-
-chart.selectAll("rect")
-    .data(data)
-  .enter().append("rect")
-    .attr("y", y)
-    .attr("width", x)
-    .attr("height", y.rangeBand());
-
-chart.selectAll(".bar")
-    .data(data)
-  .enter().append("text")
-    .attr("class", "bar")
-    .attr("x", x)
-    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-    .attr("dx", -3)
-    .attr("dy", ".35em")
-    .attr("text-anchor", "end")
-    .text(String);
-
-chart.append("line")
-    .attr("y1", 0)
-    .attr("y2", 120)
-    .style("stroke", "#000");
-
-</script>
-
-<p>This tutorial covered many of the core concepts in D3, including selections, dynamic properties, and scales. However, this only scratches the surface! Continue reading [part 2](bar-2.html) to learn about transitions in dynamic visualizations. Or, explore the [examples gallery](../ex/) to see more advanced techniques with D3.
+<p>Now, the HTML representation is very concise, but it's not very flexible. Displaying reference lines in the background, or generating columns rather than bars, is difficult to achieve in pure HTML. Chart types such as pies and streamgraphs are practically impossible. <a href="2/">Part 2</a> of this tutorial will cover how to use Scalable Vector Graphics for a richer representation.
 
 <footer>
   <aside>November 1, 2013</aside>

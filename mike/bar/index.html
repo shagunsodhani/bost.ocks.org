@@ -152,7 +152,7 @@ section.append("div")
 
 <p>There is one <code>div</code> for the chart container, and one child <code>div</code> for each bar. The child <code>div</code>s have a blue background color and a white foreground color, giving the appearance of bars with right-aligned value labels.
 
-<p>You could simplify this implementation even further by removing the containing chart <code>div</code>. But more commonly your page will contain content in addition to the chart, so having a chart container lets you position and style the chart without affecting the rest of the page. (If you have multiple charts on the same page, you might need to give each container a unique id or class.)
+<p>You could simplify this implementation even further by removing the containing chart <code>div</code>. But more commonly your page will contain content in addition to the chart, so having a chart container lets you position and style the chart without affecting the rest of the page.
 
 <h2><a href="#automatic" name="automatic">#</a>Coding a Chart, Automatically</h2>
 
@@ -165,7 +165,7 @@ section.append("div")
     .style("width", function(d) { return d * 10 + "px"; })
     .text(function(d) { return d; });</code></pre>
 
-<p>Although partly familiar, this code introduces an important new concept — the <i>data-join</i>. Let’s break it down, rewriting the above concise code in a longer form, to see how it works.
+<p>Although partly familiar, this code introduces an important new concept — the <i>data-join</i>. Let’s break it down, rewriting the above concise code in long form, to see how it works.
 
 <p>First, we select the chart container using a class selector.
 
@@ -220,7 +220,9 @@ section.append("div")
     .style("width", function(d) { return x(d) + "px"; })
     .text(function(d) { return d; });</code></pre>
 
-<p>Now, the HTML representation is very concise, but it's not very flexible. Displaying reference lines in the background, or generating columns rather than bars, is difficult to achieve in pure HTML. Chart types such as pies and streamgraphs are practically impossible. <a href="2/">Part 2</a> of this tutorial will cover how to use Scalable Vector Graphics for a richer representation.
+<h2>Next: <a href="2/">Part 2</a></h2>
+
+<p>The bare-bones bar chart presented here is simple to implement, yet severely limited. A bar chart should have grid lines to assist in comparing values, and you may prefer vertical colums to horizontal bars. Or you might want a different chart type, such as a pie or streamgraph. For greater visual expression, you’ll need Scalable Vector Graphics. This is covered in <a href="2/">Part 2</a>.
 
 <footer>
   <aside>November 1, 2013</aside>

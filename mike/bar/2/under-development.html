@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Let’s Make a Bar Chart, II</title>
+<style>
+
+@import url(../../style.css);
+
+.chart {
+  margin-left: 42px;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+.chart div {
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+.chart rect {
+  stroke: white;
+  fill: steelblue;
+}
+
+.chart text.bar {
+  fill: white;
+}
+
+</style>
+
+<header>
+  <aside>November 1, 2013</aside>
+  <a href="../../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Let’s Make a Bar Chart, II</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<aside>This is part 2 of a three-part series. Jump to <a href="../">part 1</a> or <a href="../3/">part 3</a>.</aside>
+
+<p>You use SVG much the same way as HTML, but it offers substantially more flexibility. To start with SVG, create an `svg` container instead of a `div`:
+
+<pre><code>var chart = d3.select("body").append("svg")
+    .attr("class", "chart")
+    .attr("width", 420)
+    .attr("height", 20 * data.length);</code></pre>
+
+<p>An immediate difference you will notice with SVG is that the units are implicitly pixels, and thus do not need the "px" suffix. Even with pixels, you can rescale the SVG without losing image quality. You can use percentages for relative positioning, too. To use a numeric range for the *x*-scale:
+
+<pre><code>var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, 420]);</code></pre>
+
+<script>
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, 420]);
+
+</script>
+
+<p>Unlike HTML, SVG does not provide automatic flow layout. Shapes are positioned relative to the top-left corner, called the origin. Thus, by default, the bars would be drawn on top of each other. To fix this, set the *y*-coordinate and height explicitly:
+
+<pre><code>chart.selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", function(d, i) { return i * 20; })
+    .attr("width", x)
+    .attr("height", 20);</code></pre>
+
+<p>Also, the CSS changes slightly when using SVG. Rather than the background, the fill determines the bar color. You can also apply a white border to each bar by setting the stroke style:
+
+<pre><code>.chart rect {
+  stroke: white;
+  fill: steelblue;
+}</code></pre>
+
+<p>The SVG-based chart is now almost identical to our original. The chart is currently missing labels, but that will be fixed shortly:
+
+<script>
+
+d3.select(".content").append("svg")
+    .attr("class", "chart")
+    .attr("width", 420)
+    .attr("height", 20 * data.length)
+  .selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", function(d, i) { return i * 20; })
+    .attr("width", x)
+    .attr("height", 20);
+
+</script>
+
+<p>Astute readers will notice that a magic number crept back into the chart description: the bar height of 20 pixels. Arguably, this number isn't magic—twenty is a reasonable height for the bars, just as fourteen is a reasonable point size for text. However, if you prefer to set a height for the entire chart, use a second scale for the *y*-axis:
+
+<pre><code>var y = d3.scale.ordinal()
+    .domain(data)
+    .rangeBands([0, 120]);</code></pre>
+
+<script>
+
+var y = d3.scale.ordinal()
+    .domain(data)
+    .rangeBands([0, 120]);
+
+</script>
+
+<p>As with `x` previously, `y` is now a function. It takes as input values from the data array, and for each value returns the corresponding *y*-coordinate. For example, an input value of 4 returns 0, and an input value of 16 returns 60. This approach requires that the values in our dataset are unique; ordinal scales are often used to encode non-quantitative data, such as country names. Alternatively, you can use array indices as the ordinal domain: \[0, 1, 2…\].
+
+<p>The new scale plugs into the bar specification, replacing the "y" attribute:
+
+<pre><code>chart.selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", y)
+    .attr("width", x)
+    .attr("height", y.rangeBand());</code></pre>
+
+<p>The new scales can also be applied to render labels, showing the associated value. This code centers labels vertically within each bar, and right-aligns text:
+
+<pre><code>chart.selectAll("text")
+    .data(data)
+  .enter().append("text")
+    .attr("x", x)
+    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
+    .attr("dx", -3) // padding-right
+    .attr("dy", ".35em") // vertical-align: middle
+    .attr("text-anchor", "end") // text-align: right
+    .text(String);</code></pre>
+
+<p>The formal [SVG Text](http://www.w3.org/TR/SVG/text.html) specification describes in detail the meaning of the "dx", "dy" and "text-anchor" attributes. The full spec is dense, as SVG offers a level of control required by only the most ambitious typographers; fortunately, it's not too hard to remember standard settings for alignment and padding!
+
+<p>The SVG chart now looks identical to the earlier HTML version:
+
+<script>
+
+var chart = d3.select(".content").append("svg")
+    .attr("class", "chart")
+    .attr("width", 420)
+    .attr("height", 120);
+
+chart.selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", y)
+    .attr("width", x)
+    .attr("height", y.rangeBand());
+
+chart.selectAll("text")
+    .data(data)
+  .enter().append("text")
+    .attr("class", "bar")
+    .attr("x", x)
+    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
+    .attr("dx", -3)
+    .attr("dy", ".35em")
+    .attr("text-anchor", "end")
+    .text(String);
+
+</script>
+
+<p>With the basic chart is in place, you can place additional marks to improve readability. As a first step, pad the SVG container to make space for labels:
+
+<pre><code>var chart = d3.select("body").append("svg")
+    .attr("class", "chart")
+    .attr("width", 440)
+    .attr("height", 140)
+  .append("g")
+    .attr("transform", "translate(10,15)");</code></pre>
+
+<p>The `g` element is a [container element](http://www.w3.org/TR/SVG/struct.html), much like the `div` element in HTML. Setting a [transform](http://www.w3.org/TR/SVG/coords.html#TransformAttribute) on a container affects how its children are positioned. For padding, you need only to translate; however, for advanced graphical effects, you can use any affine transformation, such as scale, rotate and shear!
+
+<p>The linear scale, `x`, provides a `ticks` routine that generates values in the domain at sensible intervals. For a chart this size, about ten ticks is appropriate; for smaller or larger charts, you can vary the number of ticks to generate. These tick values serve as data for reference lines:
+
+<pre><code>chart.selectAll("line")
+    .data(x.ticks(10))
+  .enter().append("line")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 0)
+    .attr("y2", 120)
+    .style("stroke", "#ccc");</code></pre>
+
+<p>Positioning text above the reference lines reveals their value:
+
+<pre><code>chart.selectAll(".rule")
+    .data(x.ticks(10))
+  .enter().append("text")
+    .attr("class", "rule")
+    .attr("x", x)
+    .attr("y", 0)
+    .attr("dy", -3)
+    .attr("text-anchor", "middle")
+    .text(String);</code></pre>
+
+<p>Note that the rule labels are assigned the class "rule"; this avoids a selector collision with the value labels on each bar. (Another way to disambiguate is to put reference labels in a separate `g` container.) Lastly, add a single black line for the *y*-axis:
+
+<pre><code>chart.append("line")
+    .attr("y1", 0)
+    .attr("y2", 120)
+    .style("stroke", "#000");</code></pre>
+
+<p>Et voilà!
+
+<script>
+
+var chart = d3.select(".content").append("svg")
+    .attr("class", "chart")
+    .attr("width", 440)
+    .attr("height", 140)
+    .style("margin-left", "32px") // Tweak alignment…
+  .append("g")
+    .attr("transform", "translate(10,15)");
+
+chart.selectAll("line")
+    .data(x.ticks(10))
+  .enter().append("line")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 0)
+    .attr("y2", 120)
+    .style("stroke", "#ccc");
+
+chart.selectAll(".rule")
+    .data(x.ticks(10))
+  .enter().append("text")
+    .attr("class", "rule")
+    .attr("x", x)
+    .attr("y", 0)
+    .attr("dy", -3)
+    .attr("text-anchor", "middle")
+    .text(String);
+
+chart.selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", y)
+    .attr("width", x)
+    .attr("height", y.rangeBand());
+
+chart.selectAll(".bar")
+    .data(data)
+  .enter().append("text")
+    .attr("class", "bar")
+    .attr("x", x)
+    .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
+    .attr("dx", -3)
+    .attr("dy", ".35em")
+    .attr("text-anchor", "end")
+    .text(String);
+
+chart.append("line")
+    .attr("y1", 0)
+    .attr("y2", 120)
+    .style("stroke", "#000");
+
+</script>
+
+<p>This tutorial covered many of the core concepts in D3, including selections, dynamic properties, and scales. However, this only scratches the surface! Continue reading [part 2](bar-2.html) to learn about transitions in dynamic visualizations. Or, explore the [examples gallery](../ex/) to see more advanced techniques with D3.
+
+<footer>
+  <aside>November 1, 2013</aside>
+  <a href="../../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../../highlight.min.js"></script>

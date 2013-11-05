@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Let’s Make a Bar Chart</title>
+<style>
+
+@import url(../style.css);
+
+.chart {
+  margin: 2em 0;
+  shape-rendering: crispEdges;
+}
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+.chart rect {
+  stroke: white;
+  fill: steelblue;
+}
+
+.chart text.bar {
+  fill: white;
+}
+
+</style>
+
+<header>
+  <aside>November 5, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Let’s Make a Bar Chart</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<p>Say you have a little data, an array of numbers:
+
+<pre><code>var data = [4, 8, 15, 16, 23, 42];</code></pre>
+
+<script>
+
+var data = [4, 8, 15, 16, 23, 42];
+
+</script>
+
+<p>A bar chart is a simple yet <a href="http://flowingdata.com/2010/03/20/graphical-perception-learn-the-fundamentals-first/">perceptually-accurate</a> way to visualize such data. This introductory tutorial covers how to make a bar chart using the <a href="http://d3js.org">D3 JavaScript library</a>. First we’ll make a bare-bones version in HTML, then a more complete chart in <a href="http://www.w3.org/Graphics/SVG/">Scalable Vector Graphics</a> (SVG), and lastly animated transitions between views.
+
+<p>This tutorial assumes you know a little about web development: how to edit a web page and view it in your browser, how to include <a href="http://d3js.org/d3.v3.js">d3.js</a> on the page, and the like. You might find it convenient to fork this <a target="_blank" href="http://codepen.io/mbostock/pen/Jaemg">CodePen template</a> to get started.
+
+<h2><a href="#selecting" name="selecting">#</a>Selecting an Element</h2>
+
+<p>In vanilla JavaScript, you typically deal with elements one at a time. For example, to create a <code>div</code> element, set its contents, and then append it to the body:
+
+<aside>This code snippet is JavaScript and should be placed in a <code>script</code> tag somewhere in the body, after loading D3.</aside>
+<pre><code>var div = document.createElement("div");
+div.innerHTML = "Hello, world!";
+document.body.appendChild(div);</code></pre>
+
+<p>With D3 (as with jQuery and other libraries), you instead handle groups of related elements called <i>selections</i>. Working with elements <i>en masse</i> gives selections their power; you can manipulate a single element or many of them without substantially restructuring your code. Although this may seem like a small change, eliminating loops and other control flow can make your code much cleaner.
+
+<p>A selection can be created in myriad ways. Most often you create one by querying a <a href="http://www.w3.org/TR/selectors-api/"><i>selector</i></a>, which is a special string that identifies desired elements by property, say by name or class (<code>"div"</code> or <code>".foo"</code>, respectively). While you can create a selection for a single element:
+
+<pre><code>var body = d3.select("body");
+var div = body.append("div");
+div.html("Hello, world!");</code></pre>
+
+<p>You can just as easily perform the same operation on many elements:
+
+<pre><code>var section = d3.selectAll("section");
+var div = section.append("div");
+div.html("Hello, world!");</code></pre>
+
+<h2><a href="#chaining" name="chaining">#</a>Chaining Methods</h2>
+
+<p>Another convenience of selections is <i>method chaining</i>: selection methods, such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">selection.attr</a>, return the current selection. This lets you easily apply multiple operations to the same elements. To set the text color and background color of the body without method chaining, you’d say:
+
+<pre><code>var body = d3.select("body");
+body.style("color", "black");
+body.style("background-color", "white");</code></pre>
+
+<p>“Body, body, body!” Compare this to method chaining, where the repetition is eliminated:
+
+<pre><code>d3.select("body")
+    .style("color", "black")
+    .style("background-color", "white");</code></pre>
+
+<p>Note we didn’t even need a <code>var</code> for the selected body element. After applying any operations, the selection can be discarded. Method chaining lets you write shorter code (and waste less time fretting over variable names).
+
+<p>There is a gotcha with method chaining, however: while most operations return the same selection, some methods return a new one! For example, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a> returns a new selection containing the new elements. This conveniently allows you to chain operations into the new elements.
+
+<aside>The recommended indentation pattern for method chaining is four spaces for methods that preserve the current selection and two spaces for methods that change the selection.</aside>
+
+<pre><code>d3.selectAll("section")
+    .attr("class", "special")
+  .append("div")
+    .html("Hello, world!");</code></pre>
+
+<p>Since method chaining can only be used to descend into the document hierarchy, use <code>var</code> to keep references to selections and go back up.
+
+<pre><code>var section = d3.selectAll("section");
+
+section.append("div")
+    .html("First!");
+
+section.append("div")
+    .html("Second.");</code></pre>
+
+<h2><a href="#manual" name="manual">#</a>Coding a Chart, Manually</h2>
+
+<p>Now consider how you might create a bar chart <i>without</i> JavaScript. After all, there are only six numbers in this trivial data set, so it’s not hard to write a few <code>div</code> elements by hand, set their width as a multiple of the data, and be done with it.
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;style&gt;
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+&lt;/style&gt;
+&lt;div class="chart"&gt;
+  &lt;div style="width: 40px;"&gt;4&lt;/div&gt;
+  &lt;div style="width: 80px;"&gt;8&lt;/div&gt;
+  &lt;div style="width: 150px;"&gt;15&lt;/div&gt;
+  &lt;div style="width: 160px;"&gt;16&lt;/div&gt;
+  &lt;div style="width: 230px;"&gt;23&lt;/div&gt;
+  &lt;div style="width: 420px;"&gt;42&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+<p>That looks like this:
+
+<p><div class="chart">
+  <div style="width: 40px;">4</div>
+  <div style="width: 80px;">8</div>
+  <div style="width: 150px;">15</div>
+  <div style="width: 160px;">16</div>
+  <div style="width: 230px;">23</div>
+  <div style="width: 420px;">42</div>
+</div>
+
+<p>This chart has one <code>div</code> for a container, and one child <code>div</code> for each bar. The child <code>div</code>s have a blue background color and a white foreground color, giving the appearance of bars with right-aligned value labels. You could simplify this implementation even further by removing the containing chart <code>div</code>. But more commonly your page will contain content in addition to the chart, so having a chart container lets you position and style the chart without affecting the rest of the page.
+
+<h2><a href="#automatic" name="automatic">#</a>Coding a Chart, Automatically</h2>
+
+<p>Of course hard-coding is impractical for most datasets, and the point of this tutorial is to teach you how to create charts from data automatically. So now let’s create the identical structure using D3, starting with an empty page that contains only a <code>div</code> of class <code>"chart"</code>. The following script selects the chart container and then appends a child <code>div</code> for each bar with the desired width:
+
+<pre><code>d3.select(".chart")
+  .selectAll("div")
+    .data(data)
+  .enter().append("div")
+    .style("width", function(d) { return d * 10 + "px"; })
+    .text(function(d) { return d; });</code></pre>
+
+<p>Although partly familiar, this code introduces an important new concept — the <i>data join</i>. Let’s break it down, rewriting the above concise code in long form, to see how it works.
+
+<p>First, we select the chart container using a class selector.
+
+<pre><code>var chart = d3.select(".chart");</code></pre>
+
+<p>Next we initiate the data join by defining the selection to which we will join data.
+
+<pre><code>var bar = chart.selectAll("div");</code></pre>
+
+<p>The data join is a general pattern that can be used to create, update or destroy elements whenever data changes. It might feel odd, but the benefit of this approach is that you only have to learn and use a single pattern to manipulate the page. So whether you’re building a static chart or a dynamic one with fluid transitions and <a href="http://bost.ocks.org/mike/constancy/">object constancy</a>, your code remains roughly the same. Think of the initial selection as declaring the elements you <i>want</i> to exist (see <a href="http://bost.ocks.org/mike/join/">“Thinking with Joins”</a>).
+
+<p>Next we join the data (defined previously) to the selection using <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>.
+
+<pre><code>var barUpdate = bar.data(data);</code></pre>
+
+<p>Since we know the selection is empty, the returned <i>update</i> and <i>exit</i> selections are also empty, and we need only handle the <i>enter</i> selection which represents new data for which there was no existing element. We instantiate these missing elements by appending to the enter selection.
+
+<pre><code>var barEnter = barUpdate.enter().append("div");</code></pre>
+
+<p>Now we set the width of each new bar as a multiple of the associated data value, <code>d</code>.
+
+<pre><code>barEnter.style("width", function(d) { return d * 10 + "px"; });</code></pre>
+
+<p>Because these elements were created with the data join, each bar is already bound to data. We set the dimensions of each bar based on its data by passing a function to compute the width style property.
+
+<p>Lastly, we use a function to set the text content of each bar, and produce a label.
+
+<aside>When formatting numbers for text labels, you may want to use <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> for rounding and grouping to improve readability.</aside>
+
+<pre><code>barEnter.text(function(d) { return d; });</code></pre>
+
+<p>D3’s selection operators such as <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr">attr</a>, <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style">style</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-property">property</a>, allow you to specify the value either as a constant (the same for all selected elements) or a function (computed separately for each element). If the value of a particular attribute should be based on the element’s associated data, then use a function to compute it; otherwise, if it’s the same for all elements, then a simple string or number suffices.
+
+<h2><a href="#scaling" name="scaling">#</a>Scaling to Fit</h2>
+
+<p>One weakness of the code above is the <a href="http://en.wikipedia.org/wiki/Magic_number_(programming)#Unnamed_numerical_constants">magic number</a> 10, which is used to scale the data value to the appropriate pixel width. This number depends on the domain of the data (the minimum and maximum value, 0 and 42 respectively), and the desired width of the chart (420), but of course these dependencies are only implicit in the value 10.
+
+<p>We can make these dependencies explicit and eliminate the magic number by using a <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">linear scale</a>. D3’s scales specify a mapping from data space (<i>domain</i>) to display space (<i>range</i>):
+
+<aside>D3’s scales can also be used to interpolate many other types of display-space values, such as paths, color spaces and geometric transforms.</aside>
+
+<pre><code>var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, 420]);</code></pre>
+
+<p>Although <code>x</code> here looks like an object, it is also a function that returns the scaled display value in the range for a given data value in the domain. For example, an input value of 4 returns 40, and an input value of 16 returns 160. To use the new scale, simply replace the hard-coded multiplication by calling the scale function:
+
+<pre><code>d3.select(".chart")
+  .selectAll("div")
+    .data(data)
+  .enter().append("div")
+    .style("width", function(d) { return x(d) + "px"; })
+    .text(function(d) { return d; });</code></pre>
+
+<h2>Next: Part 2</h2>
+
+<p>The code for part 1 of the tutorial is available at <a href="http://bl.ocks.org/mbostock/7322386">bl.ocks.org/7322386</a>.
+
+<p>The bare-bones bar chart presented here is simple to implement, yet obviously limited. A bar chart should have grid lines to assist in comparing values, and you may prefer vertical colums to horizontal bars. Or you might want a different chart type, such as a pie or streamgraph. For greater visual expression, you’ll need Scalable Vector Graphics. SVG will be covered in the next section; follow <a href="https://twitter.com/mbostock">me on Twitter</a> to be notified when the next section is published.
+
+<footer>
+  <aside>November 5, 2013</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../highlight.min.js"></script>

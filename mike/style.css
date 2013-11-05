@@ -39,7 +39,8 @@ h1, h2 {
   text-rendering: optimizeLegibility;
 }
 
-h2 a {
+h2 a[name],
+h2 a[id] {
   color: #ccc;
   left: -20px;
   position: absolute;

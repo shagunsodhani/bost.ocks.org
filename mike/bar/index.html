@@ -175,6 +175,8 @@ section.append("div")
 
 <p>Next we join the data (defined previously) to the selection using <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>.
 
+<aside>The data operator returns the update selection. The <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">enter</a> and <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-exit">exit</a> selections hang off the update selection, so you can ignore them if you don’t need to add or remove elements.</aside>
+
 <pre><code>var barUpdate = bar.data(data);</code></pre>
 
 <p>Since we know the selection is empty, the returned <i>update</i> and <i>exit</i> selections are also empty, and we need only handle the <i>enter</i> selection which represents new data for which there was no existing element. We instantiate these missing elements by appending to the enter selection.

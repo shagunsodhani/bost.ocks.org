@@ -76,7 +76,7 @@ rect.parent {
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
 
-<script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
 var margin = {top: 20, right: 0, bottom: 0, left: 0},
@@ -94,7 +94,7 @@ var y = d3.scale.linear()
     .range([0, height]);
 
 var treemap = d3.layout.treemap()
-    .children(function(d, depth) { return depth ? null : d.children; })
+    .children(function(d, depth) { return depth ? null : d._children; })
     .sort(function(a, b) { return a.value - b.value; })
     .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
     .round(false);
@@ -122,7 +122,6 @@ grandparent.append("text")
     .attr("dy", ".75em");
 
 d3.json("flare.json", function(root) {
-
   initialize(root);
   accumulate(root);
   layout(root);
@@ -137,8 +136,10 @@ d3.json("flare.json", function(root) {
 
   // Aggregate the values for internal nodes. This is normally done by the
   // treemap layout, but not here because of our custom implementation.
+  // We also take a snapshot of the original children (_children) to avoid
+  // the children being overwritten when when layout is computed.
   function accumulate(d) {
-    return d.children
+    return (d._children = d.children)
         ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
         : d.value;
   }
@@ -151,9 +152,9 @@ d3.json("flare.json", function(root) {
   // of sibling was laid out in 1×1, we must rescale to fit using absolute
   // coordinates. This lets us use a viewport to zoom.
   function layout(d) {
-    if (d.children) {
-      treemap.nodes({children: d.children});
-      d.children.forEach(function(c) {
+    if (d._children) {
+      treemap.nodes({_children: d._children});
+      d._children.forEach(function(c) {
         c.x = d.x + c.x * d.dx;
         c.y = d.y + c.y * d.dy;
         c.dx *= d.dx;
@@ -176,15 +177,15 @@ d3.json("flare.json", function(root) {
         .attr("class", "depth");
 
     var g = g1.selectAll("g")
-        .data(d.children)
+        .data(d._children)
       .enter().append("g");
 
-    g.filter(function(d) { return d.children; })
+    g.filter(function(d) { return d._children; })
         .classed("children", true)
         .on("click", transition);
 
     g.selectAll(".child")
-        .data(function(d) { return d.children || [d]; })
+        .data(function(d) { return d._children || [d]; })
       .enter().append("rect")
         .attr("class", "child")
         .call(rect);

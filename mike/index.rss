@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>5 Nov 2013 09:00 GMT</pubDate>
-    <lastBuildDate>5 Nov 2013 09:00 GMT</lastBuildDate>
+    <pubDate>6 Nov 2013 13:00 GMT</pubDate>
+    <lastBuildDate>6 Nov 2013 13:00 GMT</lastBuildDate>
+    <item>
+      <title>Let’s Make a Bar Chart, II</title>
+      <link>http://bost.ocks.org/mike/bar/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/bar/2/"><img src="http://bost.ocks.org/mike/bar.png" width="720" height="80"></a>]]></description>
+      <pubDate>6 Nov 2013 13:00 GMT</pubDate>
+    </item>
     <item>
       <title>Let’s Make a Bar Chart</title>
       <link>http://bost.ocks.org/mike/bar/</link>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Let’s Make a Bar Chart, II</title>
+<style>
+
+@import url(../../style.css);
+
+.example {
+  margin: 2em 0;
+}
+
+</style>
+
+<header>
+  <aside>November 6, 2013</aside>
+  <a href="../../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Let’s Make a Bar Chart, II</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<p>The <a href="../">previous part</a> of this tutorial covered making a basic bar chart in HTML; in this part, we’ll extend the example bar chart using <a href="http://www.w3.org/Graphics/SVG/">Scalable Vector Graphics</a> (SVG) and make it more realistic by loading an external data file in <a href="http://en.wikipedia.org/wiki/Tab-separated_values">tab-separated values</a> (TSV) format.
+
+<h2><a href="#svg" name="svg">#</a>Introducing SVG</h2>
+
+<p>Whereas HTML is largely limited to rectangular shapes, SVG supports powerful drawing primitives like Bézier curves, gradients, clipping and masks. We won’t need all of SVG’s extensive feature set for a lowly bar chart, but learning SVG is a worthwhile addition to your visual lexicon when it comes to designing visualizations.
+
+<aside>You can export SVG directly from desktop applications such as Adobe Illustrator, which allows hybrid approaches that combine hand-drawn shapes with data.</aside>
+
+<p>Like anything, this richness necessarily comes at a cost. The large <a href="http://www.w3.org/TR/SVG/">SVG specification</a> may be intimidating, but remember that you don’t need to master every feature to get started. <a href="http://bl.ocks.org/mbostock">Browsing examples</a> is an enjoyable way to pick up new techniques.
+
+<p>And despite obvious differences, SVG and HTML share many similarities. You can write SVG markup and embed it directly in a web page (provided you use <code class="html">&lt;!DOCTYPE html&gt;</code>). You can inspect SVG elements in your browser’s developer tools. And SVG elements can be styled with CSS, albeit using different property names like <code>fill</code> instead of <code>background-color</code>. However, unlike HTML, SVG elements must be positioned relative to the top-left corner of the container; SVG does not support flow layout or even text wrapping.
+
+<h2><a href="#manual" name="manual">#</a>Coding a Chart, Manually</h2>
+
+<p>Before we construct the new chart using JavaScript, let’s revisit the static specification in SVG.
+
+<aside><a href="http://bl.ocks.org/mbostock/7331260">bl.ocks.org/7331260</a></aside>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;style&gt;
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+&lt;/style&gt;
+&lt;svg class="chart" width="420" height="120"&gt;
+  &lt;g transform="translate(0,0)"&gt;
+    &lt;rect width="40" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="37" y="9.5" dy=".35em"&gt;4&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;g transform="translate(0,20)"&gt;
+    &lt;rect width="80" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="77" y="9.5" dy=".35em"&gt;8&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;g transform="translate(0,40)"&gt;
+    &lt;rect width="150" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="147" y="9.5" dy=".35em"&gt;15&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;g transform="translate(0,60)"&gt;
+    &lt;rect width="160" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="157" y="9.5" dy=".35em"&gt;16&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;g transform="translate(0,80)"&gt;
+    &lt;rect width="230" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="227" y="9.5" dy=".35em"&gt;23&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;g transform="translate(0,100)"&gt;
+    &lt;rect width="420" height="19"&gt;&lt;/rect&gt;
+    &lt;text x="417" y="9.5" dy=".35em"&gt;42&lt;/text&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>As before, a stylesheet applies colors and other aesthetic properties to the SVG elements. But unlike the <code>div</code> elements that were implicitly positioned using flow layout, the SVG elements must be absolutely positioned with hard-coded translations relative to the origin.
+
+<p>A common point of confusion in SVG is distinguishing between properties that must be specified as attributes and properties that can be set as styles. The full list of <a href="http://www.w3.org/TR/SVG/styling.html">styling properties</a> is documented in the specification, but a quick rule of thumb is that geometry (such as the <code>width</code> of a <code>rect</code> element) must be specified as attributes, while aesthetics (such as a <code>fill</code> color) can be specified as styles. While you can use attributes for anything, I recommend you prefer styles for aesthetics; this ensures any inline styles play nicely with cascading stylesheets.
+
+<p>SVG requires text to be placed explicitly in <code>text</code> elements. Since <code>text</code> elements do not support padding or margins, the text position must be offset by three pixels from the end of the bar, while the <code>dy</code> offset is used to center the text vertically.
+
+<style>
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+</style>
+
+<p class="example"><svg class="chart" width="420" height="120">
+  <g transform="translate(0,0)">
+    <rect width="40" height="19"></rect>
+    <text x="37" y="9.5" dy=".35em">4</text>
+  </g>
+  <g transform="translate(0,20)">
+    <rect width="80" height="19"></rect>
+    <text x="77" y="9.5" dy=".35em">8</text>
+  </g>
+  <g transform="translate(0,40)">
+    <rect width="150" height="19"></rect>
+    <text x="147" y="9.5" dy=".35em">15</text>
+  </g>
+  <g transform="translate(0,60)">
+    <rect width="160" height="19"></rect>
+    <text x="157" y="9.5" dy=".35em">16</text>
+  </g>
+  <g transform="translate(0,80)">
+    <rect width="230" height="19"></rect>
+    <text x="227" y="9.5" dy=".35em">23</text>
+  </g>
+  <g transform="translate(0,100)">
+    <rect width="420" height="19"></rect>
+    <text x="417" y="9.5" dy=".35em">42</text>
+  </g>
+</svg>
+
+<p>Despite its very different specification, the resulting chart is identical to the previous one.
+
+<h2><a href="#automatic" name="automatic">#</a>Coding a Chart, Automatically</h2>
+
+<p>Next let’s construct the chart using D3. By now, parts of this code should look familiar:
+
+<aside><a href="http://bl.ocks.org/mbostock/7331275">bl.ocks.org/7331275</a></aside>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+&lt;/style&gt;
+&lt;svg class="chart"&gt;&lt;/svg&gt;
+&lt;script src="http://d3js.org/d3.v3.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+
+var data = [4, 8, 15, 16, 23, 42];
+
+var width = 420,
+    barHeight = 20;
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, width]);
+
+var chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", barHeight * data.length);
+
+var bar = chart.selectAll("g")
+    .data(data)
+  .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+
+bar.append("rect")
+    .attr("width", x)
+    .attr("height", barHeight - 1);
+
+bar.append("text")
+    .attr("x", function(d) { return x(d) - 3; })
+    .attr("y", barHeight / 2)
+    .attr("dy", ".35em")
+    .text(function(d) { return d; });
+
+&lt;/script&gt;</code></pre>
+
+<p>We set the <code>svg</code> element’s size in JavaScript so that we can compute the height based on the size of the dataset (<code>data.length</code>). This way, the size is based on the height of each bar rather than the overall height of the chart, and we ensure adequate room for labels.
+
+<p>Each bar consists of a <code>g</code> element which in turn contains a <code>rect</code> and a <code>text</code>. We use a data join (an enter selection) to create a <code>g</code> element for each data point. We then translate the <code>g</code> element vertically, creating a local origin for positioning the bar and its associated label.
+
+<p>Since there is exactly one <code>rect</code> and one <code>text</code> element per <code>g</code> element, we can append these elements directly to the <code>g</code>, without needing additional data joins. Data joins are only needed when creating a <i>variable</i> number of children based on data; here we are appending just <i>one</i> child per parent. The appended <code>rect</code>s and <code>text</code>s inherit data from their parent <code>g</code> element, and thus we can use data to compute the bar width and label position.
+
+<h2><a href="#data" name="data">#</a>Loading Data</h2>
+
+<p>Let’s make this chart more realistic by extracting the dataset into a separate file. An external data file separates the chart implementation from its data, making it easier to reuse the implementation on multiple datasets or even live data that changes over time.
+
+<p>Tab-separated values (TSV) is a convenient tabular data format. This format can be exported from Microsoft Excel and other spreadsheet programs, or authored by hand in a text editor. Each line represents a table row, where each row consists of multiple colums separated by tabs. The first line is the header row and specifies the column names. Whereas before our dataset was a simple array of numbers, now we’ll add a descriptive name column. Our data file now looks like this:
+
+<aside>When authoring by hand, note that delimiters (tabs for TSV and commas for CSV), newlines and double quotes must be escaped with double quotes!</aside>
+
+<pre style="tab-size:16;"><code>name&#09;value
+Locke&#09;4
+Reyes&#09;8
+Ford&#09;15
+Jarrah&#09;16
+Shephard&#09;23
+Kwon&#09;42</code></pre>
+
+<p>To use this data in a web browser, we need to download the file from a web server and then parse it, which converts the text of the file into usable JavaScript objects. Fortunately, these two tasks can be performed by a single function, <a href="https://github.com/mbostock/d3/wiki/CSV">d3.tsv</a>.
+
+<p>Loading data introduces a new complexity: downloads are <i>asynchronous</i>. When you call d3.tsv, it returns immediately while the file downloads in the background. At some point in the future when the download finishes, your callback function is invoked with the new data, or an error if the download failed. In effect your code is evaluated out of order:
+
+<pre><code>// 1. Code here runs first, before the download starts.
+
+d3.tsv("data.tsv", function(error, data) {
+  // 3. Code here runs last, after the download finishes.
+});
+
+// 2. Code here runs second, while the file is downloading.</code></pre>
+
+<p>Thus we need to separate the chart implementation into two phases. First, we initialize as much as we can when the page loads and before the data is available. It’s good to set the chart size when the page loads, so that the page does not reflow after the data downloads. Second, we complete the remainder of the chart inside the callback function.
+
+<p>Restructuring the code:
+
+<aside><a href="http://bl.ocks.org/mbostock/7341714">bl.ocks.org/7341714</a></aside>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+&lt;/style&gt;
+&lt;svg class="chart"&gt;&lt;/svg&gt;
+&lt;script src="http://d3js.org/d3.v3.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+
+var width = 420,
+    barHeight = 20;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var chart = d3.select(".chart")
+    .attr("width", width);
+
+d3.tsv("data.tsv", type, function(error, data) {
+  x.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  chart.attr("height", barHeight * data.length);
+
+  var bar = chart.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+
+  bar.append("rect")
+      .attr("width", function(d) { return x(d.value); })
+      .attr("height", barHeight - 1);
+
+  bar.append("text")
+      .attr("x", function(d) { return x(d.value) - 3; })
+      .attr("y", barHeight / 2)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.value; });
+});
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+
+&lt;/script&gt;</code></pre>
+
+<p>So, what changed? Although we declared the <i>x</i>-scale in the same place as before, we can’t define the domain until the data is loaded, because the domain depends on the maximum value. Thus, the domain is set inside the callback function. Likewise, although the width of the chart can be set statically, the height of the chart depends on the number of bars and thus must be set in the callback function.
+
+<p>Now that our dataset contains both names and values, we must refer to the value as <code>d.value</code> rather than <code>d</code>; each data point is an object rather than a number. The equivalent representation in JavaScript would look like this:
+
+<pre><code>var data = [
+  {name: "Locke",    value:  4},
+  {name: "Reyes",    value:  8},
+  {name: "Ford",     value: 15},
+  {name: "Jarrah",   value: 16},
+  {name: "Shephard", value: 23},
+  {name: "Kwon",     value: 42}
+];</code></pre>
+
+<p>Any place in the old chart implementation we referred to <code>d</code> must now refer to <code>d.value</code>. In particular, whereas before we could pass the scale <code>x</code> to compute the width of the bar, we must now specify a function that passes the data value to the scale: <code>function(d) { return x(d.value); }</code>. Likewise, when computing the maximum value from our dataset, we must pass an accessor function to d3.max that tells it how to evaluate each data point.
+
+<p>Here’s one more gotcha with external data: types! The <code>name</code> column contains strings while the <code>value</code> column contains numbers. Unfortunately, d3.tsv isn’t smart enough to detect and convert types automatically. Instead, we specify a <code>type</code> function that is passed as the second argument to d3.tsv. This type conversion function can modify the data object representing each row, modifying or converting it to a more suitable representation:
+
+<aside>The type conversion function can also return null, in which case the row will be ignored. This is useful for filtering datasets on the client.</aside>
+
+<pre><code>function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}</code></pre>
+
+<p>Type conversion isn’t strictly required, but it’s an awfully good idea. By default, all columns in TSV and CSV files are strings. If you forget to convert strings to numbers, then JavaScript may not do what you expect, say returning <code>"12"</code> for <code>"1" + "2"</code> rather than <code>3</code>. Similarly, if you sort strings rather than numbers, the lexicographic behavior of d3.max may surprise you!
+
+<h2>Next: Part 3</h2>
+
+<p>The code for part 2 of the tutorial is available at <a href="http://bl.ocks.org/mbostock/7341714">bl.ocks.org/7341714</a>.
+
+<p>While our bar chart may not be any more impressive than the bare-bones chart we created <a href="../">previously</a>, this tutorial introduced SVG and external data, two essential topics for any real-world visualization. And, we’re now much better positioned to make this chart <a href="http://bl.ocks.org/mbostock/3885304">more complete</a>. The next tutorial in this series will cover axes and chart styling. After that, transitions between views and perhaps a bit of interaction. Follow <a href="https://twitter.com/mbostock">me on Twitter</a> to be notified when the next section is published.
+
+<footer>
+  <aside>November 6, 2013</aside>
+  <a href="../../" rel="author">Mike Bostock</a>
+</footer>
+
+<script src="../../highlight.min.js"></script>

@@ -39,6 +39,220 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
+<h2>Adding Axes</h2>
+
+<p>There’s no point in using SVG to recreate what can be done in HTML. So let’s start putting that richer language to use. To quickly add reference lines for quantitative position encodings, use D3’s <a href="https://github.com/mbostock/d3/wiki/SVG-Axes">axis component</a>. An axis builds on a scale, in effect visualizing the mapping from data to display. Axes are highly customizable. This axis is reminiscent of an <a href="http://www.r-project.org/">R plot</a>:
+
+<style>
+
+#axis-example1 path,
+#axis-example1 line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<p class="example"><svg id="axis-example1" width="720" height="20" style="margin-left:-5px;"></svg>
+<script>
+
+d3.select("#axis-example1")
+  .append("g")
+    .attr("transform", "translate(4.5,19.5)")
+    .call(d3.svg.axis()
+      .scale(d3.scale.linear()
+        .domain([0, 42])
+        .range([0, 420]))
+      .orient("top"));
+
+</script>
+
+<p>This more elaborate axis is styled after <a href="http://ggplot2.org/">ggplot2</a>:
+
+<style>
+
+#axis-example2 rect {
+  fill: #ddd;
+}
+
+#axis-example2 path,
+#axis-example2 .inner text {
+  display: none;
+}
+
+#axis-example2 line {
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#axis-example2 .inner line {
+  stroke: #fff;
+}
+
+#axis-example2 .minor line {
+  stroke-opacity: .5;
+}
+
+</style>
+<p class="example"><svg id="axis-example2" width="720" height="58" style="margin-left:-5px;"></svg>
+<script>(function() {
+
+var x = d3.scale.linear()
+    .domain([0, 42])
+    .range([0, 420]);
+
+var chart = d3.select("#axis-example2");
+
+chart.append("rect")
+    .attr("x", 5)
+    .attr("width", 420)
+    .attr("height", 40);
+
+chart.append("g")
+    .attr("transform", "translate(4.5,39.5)")
+    .attr("class", "outer axis")
+    .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(10));
+
+chart.append("g")
+    .attr("transform", "translate(4.5,39.5)")
+    .attr("class", "inner axis")
+    .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickSize(-40)
+      .ticks(40))
+  .selectAll(".tick")
+    .data(x.ticks(10), function(d) { return d; })
+  .exit()
+    .classed("minor", true);
+
+})()</script>
+
+<p>For this tutorial, we’ll use minimalist white reference lines overlaid on top of the bars (vaguely in the style of Edward Tufte, though note he’d likely prefer a table for such a small dataset). In effect the lines subtract from the bars rather than add “ink”:
+
+<style>
+
+#axis-example3 rect {
+  fill: steelblue;
+}
+
+#axis-example3 text {
+  font: 10px sans-serif;
+}
+
+#axis-example3 path {
+  display: none;
+}
+
+#axis-example3 line {
+  stroke: #fff;
+  stroke-opacity: .5;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<p class="example"><svg id="axis-example3"></svg>
+<script>(function() {
+
+var data = [4, 8, 15, 16, 23, 42].reverse();
+
+var margin = {top: 12, right: 0, bottom: 0, left: 5},
+    width = 420,
+    barHeight = 20,
+    height = barHeight * data.length;
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, width]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .tickSize(-height);
+
+var chart = d3.select("#axis-example3")
+    .style("margin-left", -margin.left + "px")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+chart.append("g")
+    .attr("class", "bars")
+  .selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("y", function(d, i) { return i * barHeight; })
+    .attr("height", barHeight - 1)
+    .attr("width", x);
+
+chart.append("g")
+    .attr("class", "axis")
+    .call(xAxis)
+  .select(".tick line")
+    .style("stroke", "#000");
+
+})()</script>
+
+<p>Before we can add the axis, we need to clear some additional space in the chart. Currently the bars cover the entire chart area, from top to bottom and from left to right. We need a top margin to fit the chart labels, and we need a small left and right margin in case the first or last label goes outside the chart bounds. Without these margins, the labels would be clipped or invisible. (Again unlike HTML, the SVG container is implicitly <a href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow">overflow: hidden</a>, and this behavior cannot be changed.)
+
+<p><a href="http://bl.ocks.org/mbostock/3019563">By convention</a>, margins in D3 are specified as a margin object, along with an outer width and outer height. The <i>outer</i> size refers to the chart size including the margins, while the <i>inner</i> size refers to the smaller chart area, not including the margins. For example, a standard margin for a 960×500 chart area is:
+
+<pre><code>var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;</code></pre>
+
+<p>Thus, 960 and 500 are the outer width and height, respectively, while the computed <code>width</code> and <code>height</code> (890 and 450) define the inner width and height. These inner dimensions are often used to initialize scale ranges.
+
+<p>If we wish to size the chart by its inner rather than outer dimensions, the convention is easily modified. Here we define the inner width as 420 pixels, and the inner height as 20 pixels per bar:
+
+<pre><code>var margin = {top: 12, right: 0, bottom: 0, left: 5},
+    width = 420,
+    barHeight = 20,
+    height = barHeight * data.length;</code></pre>
+
+<p>Applying the margin conventions to the SVG container involves adding the appropriate margins to the inner dimensions, and then adding a <code>g</code> element to offset the origin of the chart area. Any SVG elements subsequently added to the chart will thus inherit the margins.
+
+<pre><code>var chart = d3.select(".chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");</code></pre>
+
+<p>Next we declare an axis object, binding it the existing linear <i>x</i>-scale. The “top” orientation instructs the axis to render its tick labels centered on the top of each tick line, while a tick size of <code>-height</code> configures the tick lines to descend down across the bars. (The default tick size of 6 would position the ticks pointing upwards, as in the R-style axis.)
+
+<pre><code>var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .tickSize(-height);</code></pre>
+
+<p>The axis is instantiated via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-call">selection.call</a>:
+
+<pre><code>chart.append("g")
+    .attr("class", "axis")
+    .call(xAxis);</code></pre>
+
+<p>Lastly we apply a stylesheet to the axis, tailoring its appearance:
+
+<pre><code class="css">.axis path {
+  display: none;
+}
+
+.axis line {
+  stroke: #fff;
+  stroke-opacity: .5;
+  shape-rendering: crispEdges;
+}</code></pre>
+
+<h2>Next: Part 3</h2>
+
+<p>The code for part 2 of the tutorial is available at <a href="http://bl.ocks.org/mbostock/7328809">bl.ocks.org/7328809</a>.
+
+<p>This tutorial demonstrated a basic SVG bar chart with a small, hard-coded dataset. For a more real-world example, see this <a href="http://bl.ocks.org/mbostock/3885304">bar chart with external data</a>. There are numerous other bar chart examples in the <a href="https://github.com/mbostock/d3/wiki/Gallery">D3 gallery</a>, including <a href="http://bl.ocks.org/mbostock/3886208">stacked bars</a>, <a href="http://bl.ocks.org/mbostock/3886394">normalized stacked bars</a>, <a href="http://bl.ocks.org/mbostock/3887051">grouped bars</a> and <a href="http://bl.ocks.org/mbostock/2368837">bars with negative values</a>. These examples are all static. Transitions will be covered in the next section; follow <a href="https://twitter.com/mbostock">me on Twitter</a> to be notified when the next section is published.
+
 <aside>This is part 3 of a three-part series. Jump to <a href="../">part 1</a> or <a href="../2/">part 2</a>.</aside>
 
 <p>The <a href="../">previous part</a> of this tutorial covered the construction of a no-frills, static bar chart. This part will showcase some of the dynamic capabilities of D3, including *transitions* and *data joins*.

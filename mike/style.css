@@ -22,8 +22,19 @@ html {
 .ocks-org h2,
 .ocks-org h3,
 .ocks-org h4 {
-  color: #000;
   font-family: "PT Sans", sans-serif;
+}
+
+.ocks-org h1,
+.ocks-org h2,
+.ocks-org h3,
+.ocks-org h4 {
+  color: #000;
+}
+
+.ocks-org header,
+.ocks-org footer {
+  color: #636363;
 }
 
 h1 {
@@ -54,24 +65,20 @@ footer {
   font-size: small;
 }
 
-header aside,
-footer aside {
+.ocks-org header aside,
+.ocks-org footer aside {
   float: left;
   margin-right: .5em;
 }
 
-header aside:after,
-footer aside:after {
+.ocks-org header aside:after,
+.ocks-org footer aside:after {
   padding-left: .5em;
   content: "/";
 }
 
 footer {
   margin-top: 8em;
-}
-
-aside {
-  color: #636363;
 }
 
 h1 ~ aside {

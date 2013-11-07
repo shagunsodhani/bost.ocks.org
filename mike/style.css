@@ -47,22 +47,32 @@ h2 a[id] {
   width: 740px;
 }
 
+header,
 footer {
   font-size: small;
-  margin-top: 8em;
-}
-
-header aside {
-  margin-top: 88px;
 }
 
 header aside,
 footer aside {
-  color: #636363;
-  text-align: right;
+  float: left;
+  margin-right: .5em;
+}
+
+header aside:after,
+footer aside:after {
+  padding-left: .5em;
+  content: "/";
+}
+
+footer {
+  margin-top: 8em;
 }
 
 aside {
+  color: #636363;
+}
+
+h1 ~ aside {
   font-size: small;
   right: 0;
   position: absolute;

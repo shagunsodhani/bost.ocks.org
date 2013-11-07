@@ -14,7 +14,6 @@ circle {
 }
 
 </style>
-<script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
 
 <header>
   <aside>February 5, 2012</aside>
@@ -49,34 +48,7 @@ circle {
 
 <p>Here’s the deal. Instead of telling D3 <i>how</i> to do something, tell D3 <i>what</i> you want. You want the circle elements to correspond to data. You want one circle per datum. Instead of instructing D3 to create circles, then, tell D3 that the selection <code>"circle"</code> should correspond to data. This concept is called the <i>data join</i>:
 
-<script>
-
-var svg = d3.select("body").append("svg")
-    .attr("width", 720)
-    .attr("height", 240)
-  .append("g")
-    .attr("transform", "translate(0,128)");
-
-var data = svg.append("g").attr("transform", "translate(300)");
-data.append("circle").style("fill", "#3182bd");
-data.append("text").attr("y", -120).text("Data").style("font-weight", "bold");
-data.append("text").attr("x", -50).text("Enter");
-
-svg.append("text").attr("x", 360).text("Update");
-
-var elements = svg.append("g").attr("transform", "translate(420)");
-elements.append("circle").style("fill", "#e6550d");
-elements.append("text").attr("y", -120).text("Elements").style("font-weight", "bold");
-elements.append("text").attr("x", 50).text("Exit");
-
-svg.selectAll("circle")
-    .attr("r", 110);
-
-svg.selectAll("text")
-    .attr("dy", ".35em")
-    .attr("text-anchor", "middle");
-
-</script>
+<p id="join">
 
 <p>Data points joined to existing elements produce the <i>update</i> (inner) selection. Leftover unbound data produce the <i>enter</i> selection (left), which represents missing elements. Likewise, any remaining unbound elements produce the <i>exit</i> selection (right), which represents elements to be removed.
 
@@ -140,4 +112,33 @@ circle
   <a href="../" rel="author">Mike Bostock</a>
 </footer>
 
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var svg = d3.select("#join").append("svg")
+    .attr("width", 720)
+    .attr("height", 240)
+  .append("g")
+    .attr("transform", "translate(0,128)");
+
+var data = svg.append("g").attr("transform", "translate(300)");
+data.append("circle").style("fill", "#3182bd");
+data.append("text").attr("y", -120).text("Data").style("font-weight", "bold");
+data.append("text").attr("x", -50).text("Enter");
+
+svg.append("text").attr("x", 360).text("Update");
+
+var elements = svg.append("g").attr("transform", "translate(420)");
+elements.append("circle").style("fill", "#e6550d");
+elements.append("text").attr("y", -120).text("Elements").style("font-weight", "bold");
+elements.append("text").attr("x", 50).text("Exit");
+
+svg.selectAll("circle")
+    .attr("r", 110);
+
+svg.selectAll("text")
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle");
+
+</script>
 <script src="../highlight.min.js"></script>

@@ -15,11 +15,11 @@ body {
 
 header,
 footer,
+aside,
 h1,
 h2,
 h3,
-h4,
-aside {
+h4 {
   color: #000;
   font-family: "PT Sans", sans-serif;
 }

@@ -88,7 +88,7 @@ svg.selectAll("text")
 
 <li><p>The update selection is returned by <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-data">selection.data</a>, while the enter and exit selections hang off the update selection; <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-enter">selection.enter</a> thus returns the enter selection.
 
-<li><p>The missing elements are added to the SVG container by calling <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a> on the enter selection. This appens a new circle for each data point to the SVG container.
+<li><p>The missing elements are added to the SVG container by calling <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-append">selection.append</a> on the enter selection. This appends a new circle for each data point to the SVG container.
 
 </ol><p>Thinking with joins means declaring a relationship between a selection (such as <code>"circle"</code>) and data, and then implementing this relationship through the three <i>enter</i>, <i>update</i> and <i>exit</i> states.
 

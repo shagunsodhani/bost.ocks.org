@@ -10,10 +10,17 @@
   margin: 2em 0;
 }
 
+iframe {
+  margin-top: 40px;
+  width: 960px;
+  height: 500px;
+  border: none;
+}
+
 </style>
 
 <header>
-  <aside>November 7, 2013</aside>
+  <aside>November 13, 2013</aside>
   <a href="../../" rel="author">Mike Bostock</a>
 </header>
 
@@ -21,35 +28,112 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
-<p>In the previous parts of this tutorial we made a basic bar chart <a href="../">in HTML</a> and then <a href="../2/">in SVG</a>; now, we’ll improve the display using axes and implement a fluid sort-order transition.
+<p>In the previous parts of this tutorial we made a basic bar chart <a href="../">in HTML</a> and then <a href="../2/">in SVG</a>; now, we’ll improve the display by rotating the chart into columns and adding axes. We’ll also switch to a real dataset, showing the relative frequency of letters in the English language.
+
+<iframe style="margin-left:-40px;" src="http://bl.ocks.org/mbostock/raw/3885304/964f9100166627a89c7e6c23ce8128f5aefd5510/" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p><aside><a style="position:relative;top:6px;" href="http://bl.ocks.org/mbostock/3885304/" target="_blank">bl.ocks.org/3885304</a></aside>
+
+<p>Source: <a href="http://books.google.com/books?id=dx8zM-VeKI8C&lpg=PP1&dq=LEWAND%2C%20Robert.%20Cryptological%20mathematics&pg=PA36#v=onepage&q=letter%20frequency&f=false"><i>Cryptological Mathematics</i></a>, Robert Lewand.
+
+<h2><a href="#columns" name="columns">#</a>Rotating into Columns</h2>
+
+<p>Rotating a bar chart into a column chart largely involves swapping <i>x</i> with <i>y</i>. However, a number of smaller indicidental changes are also required. This is the cost of working directly with SVG rather than using a high-level visualization grammar like <a href="http://ggplot2.org/">ggplot2</a>. On the other hand, SVG offers greater customizability; and SVG is a web standard, so we can use the browser’s developer tools like the element inspector, and use SVG for things beyond visualization.
+
+<p>When renaming the <code>x</code> scale to the <code>y</code> scale, the domain becomes <code>[height, 0]</code> rather than <code>[0, width]</code>. This is because the origin of SVG’s coordinate system is in the top-left corner. We want the zero-value to be positioned at the bottom of the chart, rather than the top. Likewise this means that we need to position the bar <code>rect</code>s by setting the <code>"y"</code> and <code>"height"</code> attributes, whereas before we only needed to set <code>"width"</code>. (The default value of the <code>"x"</code> attribute is zero, and the old bars were left-aligned.)
+
+<p>We previously multiplied the <code>var barHeight</code> by the index of each data point (0, 1, 2, …) to produce fixed-height bars. The resulting chart’s height thus depended on the size of the dataset. But here the opposite behavior is desired: the chart width is fixed and the bar width variable.  So rather than fix the <code>barHeight</code>, now we compute the <code>barWidth</code> by dividing the available chart width by the size of the dataset, <code>data.length</code>.
+
+<p>Lastly, the bar labels must be positioned differently for columns rather than bars, centered just below the top of the column. The new <code>"dy"</code> attribute value of <code>".75em"</code> anchors the label at approximately the text’s <a href="http://en.wikipedia.org/wiki/Cap_height">cap height</a> rather than the baseline.
+
+<aside><a href="http://bl.ocks.org/mbostock/7452541">bl.ocks.org/7452541</a></aside>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+&lt;/style&gt;
+&lt;svg class="chart"&gt;&lt;/svg&gt;
+&lt;script src="http://d3js.org/d3.v3.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+
+var width = 960,
+    height = 500;
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.tsv("data.tsv", type, function(error, data) {
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  var barWidth = width / data.length;
+
+  var bar = chart.selectAll("g")
+      .data(data)
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; });
+
+  bar.append("rect")
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", barWidth - 1);
+
+  bar.append("text")
+      .attr("x", barWidth / 2)
+      .attr("y", function(d) { return y(d.value) + 3; })
+      .attr("dy", ".75em")
+      .text(function(d) { return d.value; });
+});
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+
+&lt;/script&gt;</code></pre>
 
 <h2><a href="#ordinal" name="ordinal">#</a>Encoding Ordinal Data</h2>
 
-<p>To produce fixed-height bars, we previously multiplied the <code>var barHeight</code> by the index of each data point (0, 1, 2, …). The resulting chart’s height thus depended on the size of the dataset. But often the opposite behavior is desired: the chart size is fixed and the bar thickness variable. We could divide the available chart area by the dataset size, but D3’s <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales">ordinal scales</a> provide a convenient alternative.
+<p>Unlike <i>quantitative</i> values that can be compared numerically, subtracted or divided, <i>ordinal</i> values are compared by rank. Letters are ordinal; in the alphabet, A occurs before B, and B before C. Whereas D3’s linear, pow and log scales serve to encode quantitative data, <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales">ordinal scales</a> encode ordinal data. We can thus use an ordinal scale to simplify the positioning of bars by letter.
 
-<p>Unlike <i>quantitative</i> values that can be compared numerically, subtracted or divided, <i>ordinal</i> values are compared by rank. Names are ordinal; in alphabetical order, “Ford” occurs before “Jarrah”. Where D3’s linear, pow and log scales serve to encode quantitative data, ordinal scales encode ordinal data. In its most explicit form, an ordinal scale is a mapping from a discrete set of data values (such as names) to a corresponding discrete set of display values (such as pixel positions). Like quantitative scales these sets are called the <i>domain</i> and <i>range</i>, respectively.
+<p>In its most explicit form, an ordinal scale is a mapping from a discrete set of data values (such as names) to a corresponding discrete set of display values (such as pixel positions). Like quantitative scales these sets are called the <i>domain</i> and <i>range</i>, respectively.
 
-<pre><code>var y = d3.scale.ordinal()
-    .domain(["Ford", "Jarrah", "Kwon", "Locke", "Reyes", "Shephard"])
+<aside>To keep this example code short, only the first six letters of the alphabet are shown. In the full code below, we’ll compute the scale’s domain from the data and it will include every letter.</aside>
+
+<pre><code>var x = d3.scale.ordinal()
+    .domain(["A", "B", "C", "D", "E", "F"])
     .range([0, 1, 2, 3, 4, 5]);</code></pre>
 
-<p>The result of <code>y("Ford")</code> is <code>0</code>, <code>y("Jarrah")</code> is <code>1</code>, and so on.
+<p>The result of <code>x("A")</code> is <code>0</code>, <code>x("B")</code> is <code>1</code>, and so on. In specifying the domain and range, all that matters is the order of values: element <i>i</i> in the domain is mapped to element <i>i</i> in the range.
 
-<p>It would be silly to enumerate the positions of each bar by hand, so instead you can convert a continuous range into a discrete set of values using <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangeBands">rangeBands</a> or <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangePoints">rangePoints</a>. The rangeBands method computes range values so as to divide the chart area into evenly-spaced, evenly-sized bands, as in a bar chart. The similar rangePoints method computes evenly-spaced range values as in a scatterplot. For example:
+<p>It would be tedious to enumerate the positions of each bar by hand, so instead we can convert a continuous range into a discrete set of values using <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangeBands">rangeBands</a> or <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangePoints">rangePoints</a>. The rangeBands method computes range values so as to divide the chart area into evenly-spaced, evenly-sized bands, as in a bar chart. The similar rangePoints method computes evenly-spaced range values as in a scatterplot. For example:
 
-<pre><code>var y = d3.scale.ordinal()
-    .domain(["Ford", "Jarrah", "Kwon", "Locke", "Reyes", "Shephard"])
-    .rangeBands([0, height]);</code></pre>
+<pre><code>var x = d3.scale.ordinal()
+    .domain(["A", "B", "C", "D", "E", "F"])
+    .rangeBands([0, width]);</code></pre>
 
-<aside>The full range can be retrieved with <code>y.range()</code>.</aside>
+<aside>The full range can be retrieved for inspection with <code>x.range()</code>.</aside>
 
-<p>If <code>height</code> is <code>500</code>, <code>y("Ford")</code> is now <code>0</code> and <code>y("Jarrah")</code> is <code>83.3</code>, and so on. These positions serve as the left edge of each bar, while <code>y.rangeBand()</code> returns the thickness of each bar, again <code>83.3</code>. But the best part of rangeBands is that it can also add padding between bars with an optional third argument. And, the <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangeRoundBands">rangeRoundBands</a> variant will compute positions that snap to exact pixel boundaries for crisp edges. Compare:
+<p>If <code>width</code> is <code>960</code>, <code>x("A")</code> is now <code>0</code> and <code>x("B")</code> is <code>160</code>, and so on. These positions serve as the left edge of each bar, while <code>x.rangeBand()</code> returns the width of each bar. But rangeBands can also add padding between bars with an optional third argument, and the <a href="https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal_rangeRoundBands">rangeRoundBands</a> variant will compute positions that snap to exact pixel boundaries for crisp edges. Compare:
 
-<pre><code>var y = d3.scale.ordinal()
-    .domain(["Ford", "Jarrah", "Kwon", "Locke", "Reyes", "Shephard"])
-    .rangeRoundBands([0, height], .1);</code></pre>
+<pre><code>var x = d3.scale.ordinal()
+    .domain(["A", "B", "C", "D", "E", "F"])
+    .rangeRoundBands([0, width], .1);</code></pre>
 
-<p>Now <code>y("Ford")</code> is <code>11</code> and each bar is 73-pixels wide. And, rather than hard-code the names in our dataset, we can compute the names automatically using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map">array.map</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">array.sort</a>.
+<p>Now <code>x("A")</code> is <code>17</code> and each bar is 141 pixels wide. And, rather than hard-code the letters in our domain, we can compute them from data using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map">array.map</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">array.sort</a>. All together:
 
 <aside><a href="http://bl.ocks.org/mbostock/7440840">bl.ocks.org/7440840</a></aside>
 
@@ -64,7 +148,7 @@
 .chart text {
   fill: white;
   font: 10px sans-serif;
-  text-anchor: end;
+  text-anchor: middle;
 }
 
 &lt;/style&gt;
@@ -75,33 +159,34 @@
 var width = 960,
     height = 500;
 
-var x = d3.scale.linear()
-    .range([0, width]);
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
 
-var y = d3.scale.ordinal()
-    .rangeRoundBands([0, height], .1);
+var y = d3.scale.linear()
+    .range([height, 0]);
 
 var chart = d3.select(".chart")
     .attr("width", width)
     .attr("height", height);
 
 d3.tsv("data.tsv", type, function(error, data) {
-  x.domain([0, d3.max(data, function(d) { return d.value; })]);
-  y.domain(data.map(function(d) { return d.name; }).sort());
+  x.domain(data.map(function(d) { return d.name; }));
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
   var bar = chart.selectAll("g")
       .data(data)
     .enter().append("g")
-      .attr("transform", function(d) { return "translate(0," + y(d.name) + ")"; });
+      .attr("transform", function(d) { return "translate(" + x(d.name) + ",0)"; });
 
   bar.append("rect")
-      .attr("width", function(d) { return x(d.value); })
-      .attr("height", y.rangeBand());
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", x.rangeBand());
 
   bar.append("text")
-      .attr("x", function(d) { return x(d.value) - 3; })
-      .attr("y", y.rangeBand() / 2)
-      .attr("dy", ".35em")
+      .attr("x", x.rangeBand() / 2)
+      .attr("y", function(d) { return y(d.value) + 3; })
+      .attr("dy", ".75em")
       .text(function(d) { return d.value; });
 });
 
@@ -112,39 +197,19 @@ function type(d) {
 
 &lt;/script&gt;</code></pre>
 
+<h2><a href="#margins" name="margins">#</a>Preparing Margins</h2>
 
-<h2>Axes</h2>
+<p>Ordinal scales are often used in conjunction with D3’s axis component to quickly display labeled tick marks, improving the chart’s legibility. But before we can add an axis, we need to clear some space in the margins.
 
-<p>Applying an ordinal scale to an axis.
+<aside>Unlike HTML, the SVG container is implicitly <a href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow">overflow: hidden</a>. IE9 allows overflow, but other browsers do not, so you shouldn’t rely on it.</aside>
 
-<p>To reorder, can sort domain which changes mapping. But do not modify in-place.
-
-<h2><a href="#columns" name="columns">#</a>Reorienting Bars Into Columns</h2>
-
-<p>The <i>y</i>-scale’s range is inverted to [height, 0]. Scales encode position rather than length.
-
-<p>Defining outer rather than inner dimensions.
-
-<h2><a href="#margins" name="margins">#</a>Margins</h2>
-
-<p>Before we can add the axis, we need to clear some additional space in the chart. Currently the bars cover the entire chart area, from top to bottom and from left to right. We need a top margin to fit the chart labels, and we need a small left and right margin in case the first or last label goes outside the chart bounds. Without these margins, the labels would be clipped or invisible. (Again unlike HTML, the SVG container is implicitly <a href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow">overflow: hidden</a>, and this behavior cannot be changed.)
-
-<p><a href="http://bl.ocks.org/mbostock/3019563">By convention</a>, margins in D3 are specified as a margin object, along with an outer width and outer height. The <i>outer</i> size refers to the chart size including the margins, while the <i>inner</i> size refers to the smaller chart area, not including the margins. For example, a standard margin for a 960×500 chart area is:
+<p><a href="http://bl.ocks.org/mbostock/3019563">By convention</a>, margins in D3 are specified as an object with top, right, bottom and left properties. Then, the <i>outer</i> size of the chart area, which includes the margins, is used to compute the <i>inner</i> size available for graphical marks by subtracting the margins. For example, reasonable values for a 960×500 chart are:
 
 <pre><code>var margin = {top: 20, right: 30, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;</code></pre>
 
-<p>Thus, 960 and 500 are the outer width and height, respectively, while the computed <code>width</code> and <code>height</code> (890 and 450) define the inner width and height. These inner dimensions are often used to initialize scale ranges.
-
-<p>If we wish to size the chart by its inner rather than outer dimensions, the convention is easily modified. Here we define the inner width as 420 pixels, and the inner height as 20 pixels per bar:
-
-<pre><code>var margin = {top: 12, right: 0, bottom: 0, left: 5},
-    width = 420,
-    barHeight = 20,
-    height = barHeight * data.length;</code></pre>
-
-<p>Applying the margin conventions to the SVG container involves adding the appropriate margins to the inner dimensions, and then adding a <code>g</code> element to offset the origin of the chart area. Any SVG elements subsequently added to the chart will thus inherit the margins.
+<p>Thus, 960 and 500 are the outer width and height, respectively, while the computed inner <code>width</code> and <code>height</code> are 890 and 450. These inner dimensions can be used to initialize scale ranges. To apply the margins to the SVG container, we set the width and height of the SVG element to the outer dimensions, and add a <code>g</code> element to offset the origin of the chart area by the top-left margin.
 
 <pre><code>var chart = d3.select(".chart")
     .attr("width", width + margin.left + margin.right)
@@ -152,47 +217,251 @@ function type(d) {
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");</code></pre>
 
-<h2><a href="#axes" name="axes">#</a>Axes</h2>
+<p>Any elements subsequently added to <code>chart</code> will thus inherit the margins.
 
-<p>Next we declare an axis object, binding it the existing linear <i>x</i>-scale. The “top” orientation instructs the axis to render its tick labels centered on the top of each tick line, while a tick size of <code>-height</code> configures the tick lines to descend down across the bars. (The default tick size of 6 would position the ticks pointing upwards, as in the R-style axis.)
+<h2><a href="#axes" name="axes">#</a>Adding Axes</h2>
+
+<p>We define an axis by binding it to our existing <i>x</i>-scale and declaring one of the four orientations. Since our <i>x</i>-axis will appear below the bars, here we use the <code>"bottom"</code> orientation.
 
 <pre><code>var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("top")
-    .tickSize(-height);</code></pre>
+    .orient("bottom");</code></pre>
 
-<p>The axis is instantiated via <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-call">selection.call</a>:
+<p>The resulting <code>xAxis</code> object be used to render multiple axes by repeated application using <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-call">selection.call</a>. Think of it as a rubber stamp which can print out axes wherever they are needed. The axis elements are positioned relative to a local origin, so to transform into the desired position we set the <code>"transform"</code> attribute on a containing <code>g</code> element:
 
 <pre><code>chart.append("g")
-    .attr("class", "axis")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
     .call(xAxis);</code></pre>
 
-<p>Lastly we apply a stylesheet to the axis, tailoring its appearance:
+<p>The axis container should also have a class name so that we can apply styles. The name <code>"axis"</code> here is arbitrary; call it whatever you like. Multiple class names, such as <code>"x axis"</code>, are useful for styling axes differently by dimension while retaining some shared styles across dimensions.
 
-<pre><code class="css">.axis path {
-  display: none;
+<p>The axis component consists of a <code>path</code> element which displays the domain, and multiple <code>g</code> <code>".tick"</code> elements for each tick mark. A tick in turn contains a <code>text</code> label and a <code>line</code> mark. Most of D3’s examples therefore use the following minimalist style:
+
+<pre><code class="css">.axis text {
+  font: 10px sans-serif;
 }
 
+.axis path,
 .axis line {
-  stroke: #fff;
-  stroke-opacity: .5;
+  fill: none;
+  stroke: #000;
   shape-rendering: crispEdges;
 }</code></pre>
 
-<h2><a href="#events" name="events">#</a>Handling Events</h2>
+<p>This produces an axis reminiscent of <a href="http://www.r-project.org/">R</a>:
 
-<p>Defining radio inputs with labels.
+<style>
 
-<p>Adding event listeners. Distinguishing between states.
+#axis-example1 path,
+#axis-example1 line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
-<p>Writing an update function to reorder.
+</style>
+<p class="example"><svg id="axis-example1" width="720" height="20" style="margin-left:-5px;"></svg>
+<script>
 
-<p>Adding a transition.
+d3.select("#axis-example1")
+  .append("g")
+    .attr("transform", "translate(4.5,1.5)")
+    .call(d3.svg.axis()
+      .scale(d3.scale.linear()
+        .domain([0, 42])
+        .range([0, 420]))
+      .orient("bottom"));
 
-<p>Adding a staggered delay to improve readability.
+</script>
+
+<p>However, axes are highly customizable. This more elaborate axis is styled after <a href="http://ggplot2.org/">ggplot2</a>:
+
+<style>
+
+#axis-example2 rect {
+  fill: #ddd;
+}
+
+#axis-example2 path,
+#axis-example2 .inner text {
+  display: none;
+}
+
+#axis-example2 line {
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#axis-example2 .inner line {
+  stroke: #fff;
+}
+
+#axis-example2 .minor line {
+  stroke-opacity: .5;
+}
+
+</style>
+<p class="example"><svg id="axis-example2" width="720" height="58" style="margin-left:-5px;"></svg>
+<script>(function() {
+
+var x = d3.scale.linear()
+    .domain([0, 42])
+    .range([0, 420]);
+
+var chart = d3.select("#axis-example2");
+
+chart.append("rect")
+    .attr("x", 5)
+    .attr("width", 420)
+    .attr("height", 40);
+
+chart.append("g")
+    .attr("transform", "translate(4.5,39.5)")
+    .attr("class", "outer axis")
+    .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(10));
+
+chart.append("g")
+    .attr("transform", "translate(4.5,39.5)")
+    .attr("class", "inner axis")
+    .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickSize(-40)
+      .ticks(40))
+  .selectAll(".tick")
+    .data(x.ticks(10), function(d) { return d; })
+  .exit()
+    .classed("minor", true);
+
+})()</script>
+
+<p>Beyond styles, you can further customize the appearance of an axis by selecting its elements and modifying them after the axis is created; the elements of an axis are part of its public API. The <a href="http://bl.ocks.org/mbostock/4349486">ggplot2-style axis</a> above is rendered using two overlaid axes, one inside the chart area and one outside, in the bottom margin. The major and minor ticks are styled differently.
+
+<p>With axes, we can now remove the labels from the bar. The complete code:
+
+<aside><a href="http://bl.ocks.org/mbostock/7441121">bl.ocks.org/7441121</a></aside>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+
+.bar {
+  fill: steelblue;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+&lt;/style&gt;
+&lt;svg class="chart"&gt;&lt;/svg&gt;
+&lt;script src="http://d3js.org/d3.v3.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+
+var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var chart = d3.select(".chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("data.tsv", type, function(error, data) {
+  x.domain(data.map(function(d) { return d.name; }));
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  chart.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  chart.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+  chart.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.name); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", x.rangeBand());
+});
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+
+&lt;/script&gt;</code></pre>
+
+<h2><a href="#communicating" name="communicating">#</a>Communicating</h2>
+
+<p>At this point in the tutorial, I must apologize. I have done you a disservice.
+
+<p>In my effort to explain the technical details of chart construction, I have glossed over a critical component of effective visualization: <i>effective communication</i>. It doesn’t matter how good a chart looks if it doesn’t communicate anything! We must label the chart to give the reader sufficient context to interpret it.
+
+<p>This problem is more pervasive than you might expect. When visualizing data, it’s easy to internalize and forget the extra knowledge you have about your dataset or your intent. <i>You</i> know it’s a bar chart of relative frequency of letters in the English language. But unless you state that explicitly, your reader may not. Labels, captions, legends and other explanatory elements are essential to understanding. A title can be added to the <i>y</i>-axis by appending a <code>text</code> element and positioning it as desired.
+
+<pre><code>svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+  .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Frequency");</code></pre>
+
+<p>Unit-appropriate number formatting also improves legibility by tailoring the display to your data. Since our chart displays relative frequency, percentages are more appropriate than the default behavior which shows a number between 0 and 1. A <a href="https://github.com/mbostock/d3/wiki/Formatting">format string</a> as the second argument to <a href="https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks">axis.ticks</a> will customize the tick formatting, and the scale will automatically choose a precision appropriate to the tick interval.
+
+<aside>For total control over formatting, you can instead pass a function to <a href="https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-tickFormat">axis.tickFormat</a>.</aside>
+
+<pre><code>var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10, "%");</code></pre>
+
+<h2>Next: Part 4</h2>
+
+<p>The code for part 3 of the tutorial is available at <a href="http://bl.ocks.org/mbostock/3885304">bl.ocks.org/3885304</a>.
+
+<p>The next tutorial in this series will cover interaction and transitions between views. Follow <a href="https://twitter.com/mbostock">me on Twitter</a> to be notified when the next section is published.
 
 <footer>
-  <aside>November 7, 2013</aside>
+  <aside>November 13, 2013</aside>
   <a href="../../" rel="author">Mike Bostock</a>
 </footer>
 

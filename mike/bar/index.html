@@ -107,6 +107,8 @@ section.append("div")
 
 <p>Now consider how you might create a bar chart <i>without</i> JavaScript. After all, there are only six numbers in this trivial data set, so it’s not hard to write a few <code>div</code> elements by hand, set their width as a multiple of the data, and be done with it.
 
+<aside>Careful observers will note that the three-pixel padding here distorts the accuracy of the chart by making the bars longer! This can be fixed via <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing">box-sizing: border-box</a>, or by switching to SVG, as we will in part 2.</aside>
+
 <pre><code class="html">&lt;!DOCTYPE html&gt;
 &lt;style&gt;
 

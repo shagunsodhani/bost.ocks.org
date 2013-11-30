@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>19 Nov 2013 09:00 GMT</pubDate>
-    <lastBuildDate>19 Nov 2013 09:00 GMT</lastBuildDate>
+    <pubDate>30 Nov 2013 10:00 GMT</pubDate>
+    <lastBuildDate>30 Nov 2013 10:00 GMT</lastBuildDate>
+    <item>
+      <title>Tracing the History of N.C.A.A. Conferences</title>
+      <link>http://www.nytimes.com/newsgraphics/2013/11/30/football-conferences/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2013/11/30/football-conferences/"><img src="http://bost.ocks.org/mike/ncaa.png" width="720" height="80"></a>]]></description>
+      <pubDate>30 Nov 2013 10:00 GMT</pubDate>
+    </item>
     <item>
       <title>Let’s Make a Bar Chart, III</title>
       <link>http://bost.ocks.org/mike/bar/3/</link>

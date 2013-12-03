@@ -9,7 +9,7 @@
 #chart {
   width: 960px;
   height: 500px;
-  background: #bbb;
+  background: #ddd;
 }
 
 text {
@@ -43,12 +43,13 @@ rect.parent,
   cursor: pointer;
 }
 
-rect.parent {
-  pointer-events: all;
+.children rect.parent {
+  fill: #bbb;
+  fill-opacity: .5;
 }
 
 .children:hover rect.child {
-  fill: #aaa;
+  fill: #bbb;
 }
 
 </style>

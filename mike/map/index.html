@@ -201,28 +201,30 @@ which topojson</code></pre>
 
 <p>Taking the downloaded <code>ne_10m_admin_0_map_subunits.shp</code> as input, use <code>ogr2ogr</code> to create the <code>subunits.json</code> GeoJSON file:
 
+<aside>Note: earlier versions of Natural Earth data used lowercase property names, such as <code>adm0_a3</code> instead of <code>ADM0_A3</code>.</aside>
+
 <pre><code>ogr2ogr \
   -f GeoJSON \
-  -where "adm0_a3 IN ('GBR', 'IRL')" \
+  -where "ADM0_A3 IN ('GBR', 'IRL')" \
   subunits.json \
   ne_10m_admin_0_map_subunits.shp</code></pre>
 
-<p>The <code>-where</code> argument implies a filter: only features whose <code>adm0_a3</code> property equals <code>"GBR"</code> or <code>"IRL"</code> will be in the output GeoJSON. Here, <code>adm0</code> refers to Admin-0, the highest level administrative boundaries, and <code>a3</code> refers to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3">ISO 3166-1 alpha-3</a> country codes. Despite mapping only the United Kingdom, we need all of <a href="http://en.wikipedia.org/wiki/Ireland">Ireland</a> to portray land accurately; otherwise, we might give the mistaken impression that Northern Ireland is an island unto itself!
+<p>The <code>-where</code> argument implies a filter: only features whose <code>ADM0_A3</code> property equals <code>"GBR"</code> or <code>"IRL"</code> will be in the output GeoJSON. Here, <code>ADM0</code> refers to Admin-0, the highest level administrative boundaries, and <code>A3</code> refers to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3">ISO 3166-1 alpha-3</a> country codes. Despite mapping only the United Kingdom, we need all of <a href="http://en.wikipedia.org/wiki/Ireland">Ireland</a> to portray land accurately; otherwise, we might give the mistaken impression that Northern Ireland is an island unto itself!
 
-<p>Next we’ll filter the populated places. The places’ properties are (somewhat arbitrarily) different, so the where clause refers to <code>iso_a2</code> instead. The <code>SCALERANK</code> filter further whittles the labels down to major cities.
+<p>Next we’ll filter the populated places. The places’ properties are (somewhat arbitrarily) different, so the where clause refers to <code>ISO_A2</code> instead. The <code>SCALERANK</code> filter further whittles the labels down to major cities.
 
 <aside>If you’re unsure which properties to filter on, try dropping the where clause and viewing the GeoJSON output in a text editor.</aside>
 
 <pre><code>ogr2ogr \
   -f GeoJSON \
-  -where "iso_a2 = 'GB' AND SCALERANK < 8" \
+  -where "ISO_A2 = 'GB' AND SCALERANK < 8" \
   places.json \
   ne_10m_populated_places.shp</code></pre>
 
-<p>And last we combine <code>subunits.json</code> and <code>places.json</code> into a single <code>uk.json</code>. This step includes a minor transformation to fix inconsistencies in the source data, renaming the <code>NAME</code> property to <code>name</code>, and promoting the <code>su_a3</code> property to the object id.
+<p>And last we combine <code>subunits.json</code> and <code>places.json</code> into a single <code>uk.json</code>. This step includes a minor transformation to fix inconsistencies in the source data, renaming the <code>NAME</code> property to <code>name</code>, and promoting the <code>SU_A3</code> property to the object id.
 
 <pre><code>topojson \
-  --id-property su_a3 \
+  --id-property SU_A3 \
   -p name=NAME \
   -p name \
   -o uk.json \

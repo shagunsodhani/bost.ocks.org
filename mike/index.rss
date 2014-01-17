@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>30 Nov 2013 10:00 GMT</pubDate>
-    <lastBuildDate>30 Nov 2013 10:00 GMT</lastBuildDate>
+    <pubDate>11 Jan 2013 12:00 GMT</pubDate>
+    <lastBuildDate>11 Jan 2013 12:00 GMT</lastBuildDate>
+    <item>
+      <title>Taking the Battle to the States</title>
+      <link>http://www.nytimes.com/interactive/2014/01/11/us/politics/who-controls-the-states-and-where-they-stand.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2014/01/11/us/politics/who-controls-the-states-and-where-they-stand.html"><img src="http://bost.ocks.org/mike/state-control.png" width="720" height="80"></a>]]></description>
+      <pubDate>11 Jan 2013 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Tracing the History of N.C.A.A. Conferences</title>
       <link>http://www.nytimes.com/newsgraphics/2013/11/30/football-conferences/</link>

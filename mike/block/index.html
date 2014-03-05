@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>Let’s Make a Block</title>
+<style>
+
+@import url(../style.css?aea6f0a);
+
+</style>
+
+<header>
+  <aside>March 5, 2014</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>Let’s Make a Block</h1>
+
+<p>This is a quick guide to how I post examples on <a href="http://bl.ocks.org/mbostock">bl.ocks.org</a>. This is not the <i>only</i> way to do it — for example, you can use <a href="https://gist.github.com/">GitHub Gist</a> directly. But I find this approach convenient because it allows you to preview locally and publish with git, without futzing with a clunky interface to copy files.
+
+<h2><a name="setup" href="#setup">#</a>Setup</h2>
+
+<p>Do you have <a href="http://nodejs.org/">Node</a> installed already? If not, I recommend using <a href="http://brew.sh/">Homebrew</a>:
+
+<pre><code>brew install node</code></pre>
+
+<p>You’ll also need a local web server for previewing your code because web browsers don’t like to run code out of your local file system. I prefer <a href="https://github.com/nodeapps/http-server">http-server</a>:
+
+<pre><code>npm install -g http-server</code></pre>
+
+<p>If this is your first time using Node, you may need to edit your <code>PATH</code> so that you can run programs installed by <a href="https://www.npmjs.org/">NPM</a>, Node’s package manager. I do this by editing <code>/etc/paths</code>, like so:
+
+<pre><code>/usr/local/share/npm/bin
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin</code></pre>
+
+<p>This file is normally hidden, so you won’t be able to open it using File > Open. You can, however, open it from the terminal. For example, using <a href="http://www.sublimetext.com/">Sublime Text</a>:
+
+<pre><code>subl /etc/paths</code></pre>
+
+<p>If you don’t already have the <code>subl</code> alias for launching Sublime Text from the terminal, you can create it like so:
+
+<pre><code>ln -s '/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl' /usr/local/bin/subl</code></pre>
+
+<p>Once you’ve made your changes and saved, close and reopen the terminal to pick up the new <code>PATH</code>.
+
+<h2><a name="develop" href="#develop">#</a>Develop</h2>
+
+<p>In the terminal, make a new folder for your example, and then <code>cd</code> into that folder.
+
+<pre>mkdir example
+cd example</pre>
+
+<p>Next we’ll make an empty file in this directory for our example code, and then open the entire folder in Sublime Text.
+
+<pre>touch index.html
+subl .</pre>
+
+<aside>Sublime Text has a bug where if you open an empty directory, saving a new file won’t default to this directory. Opening a directory with at least one file, even if it’s empty, avoids this bug. Hence the <code>touch</code>.</aside>
+
+<p>If we want to create another file for example — such as a README or Makefile — we can just use ⌘N to create a new file, and ⌘S to save, and it will automatically save it to the right place. In Sublime Text, you should now see an empty window:
+
+<p><img style="margin-left:-60px;width:820px;" src="editor.png">
+
+<p>Go to File (⌘T) and start typing "index.html". As soon as <code>index.html</code> highlighted, you can stop typing and hit return to open the empty file. Paste in the following contents, and then save (⌘S):
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;meta charset="utf-8"&gt;
+Hello, world!</code></pre>
+
+<p>Back in the terminal, fire up the web server so that we can preview your shiny new example:
+
+<pre>http-server &</pre>
+
+<p>Now you can visit <a href="http://localhost:8080">localhost:8080</a> in your browser and refresh whenever you make changes. Iterate as many times as you like to develop your example, bouncing between your editor and browser.
+
+<h2><a href="#publish" name="publish">#</a>Publish</h2>
+
+<p>We’ll use <a href="https://github.com/mbostock/gistup">gistup</a> to create the gist from the terminal. Install it via NPM:
+
+<pre><code>npm install -g gistup</code></pre>
+
+<p>To create the gist from the files in the current directory:
+
+<pre><code>gistup</code></pre>
+
+<p>If you want to be fancy, you can even give your gist a description:
+
+<pre><code>gistup -m 'Hello World'</code></pre>
+
+<p>When gistup completes successfully, it will open the created gist in your web browser. Running gistup for the first time requires creating a <a href="https://github.com/settings/applications">personal access token</a> so that you can post to the GitHub API from the terminal; it also requires setting up <a href="https://help.github.com/articles/generating-ssh-keys">SSH keys</a> so that you can git push. If you have problems with either of these steps, check the <a href="https://github.com/mbostock/gistup#troubleshooting">gistup troubleshooting guide</a>.
+
+<p>Now that you’ve made a gist, you can view it live on bl.ocks.org! Simply copy your gist number and replace the URL. For example:
+
+<pre><a href="https://gist.github.com/mbostock/9360565">https://gist.github.com/mbostock/9360565</a></pre>
+
+<p>Becomes:
+
+<pre><a href="http://bl.ocks.org/mbostock/9360565">http://bl.ocks.org/mbostock/9360565</a></pre>
+
+<p>You can also install the <a href="https://github.com/mbostock/bl.ocks.org">bl.ocks.org browser extension</a>, which will insert a convenient button on the GitHub Gist page to take you to the corresponding block.
+
+<h2><a href="#update" name="update">#</a>Update</h2>
+
+<p>Need to make any changes after you publish? As before, make your changes locally and preview them in your web browser using your localhost web server. Once you’re happy with the changes, commit them using git, and push them to GitHub to republish:
+
+<pre>git commit -am 'Made some changes.'
+git push</pre>
+
+<p>Because bl.ocks.org caches, you may need to wait up to five minutes to see your changes propagate. Or you can visit a specific revision immediately by appending it to the URL (<a href="http://bl.ocks.org/mbostock/9360565/6f0d85784a550f679bfe5b12ab7598f60b988415">e.g.</a>).
+
+<p>One final tip: if you add a 230×120 <code>thumbnail.png</code> to your gist, bl.ocks.org will display it on your <a href="http://bl.ocks.org/mbostock">user page</a>.
+
+<footer>
+  <aside>March 5, 2014</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script>
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-3", "ocks.org");
+ga("send", "pageview");
+
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script async src="../highlight.min.js"></script>
+<script async src="//www.google-analytics.com/analytics.js"></script>

@@ -142,8 +142,7 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 
 d3.json("us-states.json", function(collection) {
   var transform = d3.geo.transform({point: projectPoint}),
-      path = d3.geo.path().projection(transform),
-      bounds = path.bounds(collection);
+      path = d3.geo.path().projection(transform);
 
   var feature = g.selectAll("path")
       .data(collection.features)
@@ -154,7 +153,8 @@ d3.json("us-states.json", function(collection) {
 
   // Reposition the SVG to cover the features.
   function reset() {
-    var topLeft = bounds[0],
+    var bounds = path.bounds(collection),
+        topLeft = bounds[0],
         bottomRight = bounds[1];
 
     svg .attr("width", bottomRight[0] - topLeft[0])

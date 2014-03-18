@@ -4,7 +4,7 @@
 <title>D3 + Leaflet</title>
 <style>
 
-@import url(leaflet.css?0.5);
+@import url(//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.css);
 @import url(../style.css?aea6f0a);
 
 #map {
@@ -39,18 +39,16 @@ path:hover {
 
 <p id="map">
 
-<p><aside>Images © 2012 CloudMade, OpenStreetMap contributors, CC-BY-SA.</aside>
+<p><aside><a href="https://www.mapbox.com/about/maps/">© Mapbox, © OpenStreetMap</a></aside>
 
-<p>This is a quick demonstration of using <a href="http://d3js.org">D3</a> to render GeoJSON shapes in conjunction with <a href="http://leaflet.cloudmade.com/">Leaflet</a>. The implementation is straightforward, but Leaflet is <strike>regretfully missing <a href="http://leaflet.cloudmade.com/reference.html">documentation</a> and <a href="http://leaflet.cloudmade.com/examples.html">examples</a> for custom overlays</strike>, [EDIT: the documentation has since been updated and there is now a helpful section titled “Implementing Custom Layers”] so hopefully this will help you get started.
+<p>This is a quick demonstration of using <a href="http://d3js.org">D3</a> to render GeoJSON shapes in conjunction with <a href="http://leafletjs.com/">Leaflet</a>. The implementation is straightforward, but Leaflet is <strike>regretfully missing <a href="http://leafletjs.com/reference.html">documentation</a> and <a href="http://leafletjs.com/examples.html">examples</a> for custom overlays</strike>, [EDIT: the documentation has since been updated and there is now a helpful section titled “Implementing Custom Layers”] so hopefully this will help you get started.
 
 <h2><a href="#init" name="init">#</a>Initializing the Map and SVG Overlay</h2>
 
-<p>We’ll start with a basic map using Cloudmade’s “Pale Dawn” tiles:
+<p>We’ll start with a basic map using MapBox tiles:
 
 <pre><code>var map = new L.Map("map", {center: [37.8, -96.9], zoom: 4})
-    .addLayer(new L.TileLayer("http://{s}.tile.cloudmade.com/…/998/256/{z}/{x}/{y}.png"));</code></pre>
-
-<aside>Cloudmade tiles require an <a href="http://cloudmade.com/register">API key</a>. I’ve elided mine from the code snippet, so it won’t work if you simply copy-paste.</aside>
+    .addLayer(new L.TileLayer("http://{s}.tiles.mapbox.com/v3/examples.map-vyofok3q/{z}/{x}/{y}.png"));</code></pre>
 
 <p>The map is placed inside a paragraph (<code>p</code>) element with the id “map”. An associated stylesheet specifies the dimensions:
 
@@ -66,7 +64,7 @@ path:hover {
 
 <p>Inside the SVG, you’ll also need a G (group) element. This will be used to translate the SVG elements so that the top-left corner of the SVG, ⟨0,0⟩, corresponds to Leaflet’s layer origin. The <code>leaflet-zoom-hide</code> class is needed so that the overlay is hidden during Leaflet’s zoom animation; alternatively, you could disable the animation using the <code>zoomAnimation</code> option when constructing the map.
 
-<h2><a href="#project" name="project">#</a>Loading and Projecting GeoJson</h2>
+<h2><a href="#project" name="project">#</a>Loading and Projecting GeoJSON</h2>
 
 <p>Next, we load the GeoJSON file using <a href="https://github.com/mbostock/d3/wiki/Requests#wiki-d3_json">d3.json</a>:
 
@@ -131,11 +129,11 @@ g   .attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");</c
 </footer>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="leaflet.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.js"></script>
 <script>
 
 var map = new L.Map("map", {center: [37.8, -96.9], zoom: 4})
-    .addLayer(new L.TileLayer("http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{z}/{x}/{y}.png"));
+    .addLayer(new L.TileLayer("http://{s}.tiles.mapbox.com/v3/examples.map-vyofok3q/{z}/{x}/{y}.png"));
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");

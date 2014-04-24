@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>07 Mar 2014 12:00 GMT</pubDate>
-    <lastBuildDate>07 Mar 2014 12:00 GMT</lastBuildDate>
+    <pubDate>22 Apr 2014 12:00 GMT</pubDate>
+    <lastBuildDate>22 Apr 2014 12:00 GMT</lastBuildDate>
+    <item>
+      <title>Who Will Win The Senate?</title>
+      <link>http://www.nytimes.com/newsgraphics/2014/senate-model/</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/newsgraphics/2014/senate-model/"><img src="http://bost.ocks.org/mike/leo.png" width="720" height="80"></a>]]></description>
+      <pubDate>22 Apr 2014 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Let’s Make a Block</title>
       <link>http://bost.ocks.org/mike/block/</link>

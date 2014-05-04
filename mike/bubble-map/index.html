@@ -85,6 +85,16 @@ body {
 
 <p style="font-size:smaller;color:#777;">Source: American Community Survey, 2012 5-Year Estimate
 
+<p>This tutorial necessarily covers a lot of ground. The main tasks are for any visualization are:
+
+<ul>
+<li><b>acquiring</b> data from primary sources,
+<li><b>transforming</b> data into a display-appropriate representation, and
+<li><b>displaying</b> data in a suitable visual encoding.
+</ul>
+
+<p>There are many different ways to perform these tasks, but this tutorial will focus on my <a href="#initializing">preferred workflow</a>. After acquiring <a href="#finding-boundaries">cartographic boundaries</a> and <a href="#finding-data">population estimates</a> from the U.S. Census Bureau, we’ll <a href="#merging-data">transform</a> this data to TopoJSON and <a href="#displaying-data">display</a> it using D3. Lastly, I’ll briefly comment on effective design for <a href="#communicating">visual communication</a>.
+
 <h2><a href="#initializing" name="initializing">#</a>Initializing</h2>
 
 <p>At a minimum, you’ll need <a href="http://nodejs.org">Node</a> and a <a href="https://github.com/nodeapps/http-server">basic web server</a> for making maps. I covered this <a href="../block/#setup">previously</a>, so I won’t repeat myself here.

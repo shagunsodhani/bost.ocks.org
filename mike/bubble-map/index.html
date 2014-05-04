@@ -374,7 +374,7 @@ svg.append("path")
 
 <h2><a href="#communicating" name="communicating">#</a>Communicating</h2>
 
-<p>To make this map <i>communicate</i> rather than simply look pretty, we need a few administrative touches. Adding a basic tooltip using SVG’s <a href="http://www.w3.org/TR/SVG11/struct.html#DescriptionAndTitleElements">title element</a> is a reasonable improvement, but we really need a legend to describe the area encoding, so that the meaning of the circles is apparent. Here is a basic legend that displays three circles and their associated population sizes:
+<p>To make this map <i>communicate</i> rather than simply look pretty, we need a few administrative touches. Adding a basic tooltip using SVG’s <a href="http://www.w3.org/TR/SVG11/struct.html#DescriptionAndTitleElements">title element</a> is a reasonable improvement, but we really need a legend to make the meaning of the area encoding is apparent. Here is a basic legend that displays three circles and their associated population sizes:
 
 <pre><code>var legend = svg.append("g")
     .attr("class", "legend")

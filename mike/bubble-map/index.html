@@ -281,6 +281,8 @@ d3.json("build/counties.json", function(error, us) {
 &#9;&#9;--filter=none \
 &#9;&#9;-- counties=$<</code></pre>
 
+<h2><a href="#merging-boundaries" name="merging-boundaries">#</a>Merging Boundaries</h2>
+
 <p>One subtle detail you may not have noticed in the final bubble map is that it displays state boundaries rather than county boundaries. This reduces visual noise; each county has a corresponding bubble, while the state boundary lines provide additional geographic context.
 
 <p>We can compute the state boundaries without downloading another shapefile because TopoJSON is a <a href="http://en.wikipedia.org/wiki/Geospatial_topology">topological format</a>. The following rule merges (or “dissolves”) counties within the same state, producing a new <code>states</code> layer in the output TopoJSON file:

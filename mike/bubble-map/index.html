@@ -256,9 +256,11 @@ d3.json("build/counties.json", function(error, us) {
 
 <p><iframe width="720" height="405" src="//www.youtube.com/embed/ndZmak1U6-U" frameborder="0" allowfullscreen></iframe>
 
-<p>I recently learned that the Census Bureau has <a href="http://www.census.gov/developers/">an API</a>. However, it requires an API key, so I haven’t tried it yet. The API supports stateless GET requests, so it should be easy to incorporate into the Makefile. If you’ve tried it, <a href="https://twitter.com/mbostock">let me know</a> how it worked out.
+<aside>I recently learned that the Census Bureau has <a href="http://www.census.gov/developers/">an API</a>. However, it requires an API key, so I haven’t tried it yet. The API supports stateless GET requests, so it should be easy to incorporate into the Makefile. If you’ve tried it, <a href="https://twitter.com/mbostock">let me know</a> how it worked out.</aside>
 
-<p>(If you would rather experience the FactFinder vicariously, you may instead download <a href="https://gist.githubusercontent.com/mbostock/9943478/raw/ACS_12_5YR_B01003_with_ann.csv">my copy</a>. However, I recommend that you get data from primary sources whenever possible, as this is the only way to ensure the data’s accuracy.)
+<p>An eminently more usable alternative to FactFinder is <a href="http://censusreporter.org/">censusreporter.org</a>, a Knight News Challenge-funder project with a convenient autocomplete interface and a robust API. Here is a direct link to download the latest ACS <a href="http://api.censusreporter.org/1.0/data/download/latest?table_ids=B01003&geo_ids=050|01000US&format=csv">total population estimate by county</a>. Note, however, that the column headers for this CSV are slightly different than the ones from FactFinder: <i>you must either edit the file or the Makefile rules accordingly</i>.
+
+<p>If you want to experience the FactFinder vicariously, you may also instead download <a href="https://gist.githubusercontent.com/mbostock/9943478/raw/ACS_12_5YR_B01003_with_ann.csv">my copy</a>. However, I recommend that you prefer data from primary sources whenever possible, as this ensures the data’s accuracy.
 
 <h2><a href="#merging-data" name="merging-data">#</a>Merging Data</h2>
 

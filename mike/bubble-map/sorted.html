@@ -56,7 +56,6 @@ d3.json("us.json", function(error, us) {
       .attr("class", "bubble")
     .selectAll("circle")
       .data(topojson.feature(us, us.objects.counties).features
-        .filter(function(d) { return !isNaN(d.properties.population); })
         .sort(function(a, b) { return b.properties.population - a.properties.population; }))
     .enter().append("circle")
       .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })

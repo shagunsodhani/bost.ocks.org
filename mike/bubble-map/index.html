@@ -362,7 +362,7 @@ svg.append("path")
 
 <p class="map" id="map--dot">
 
-<p>To size the bubbles, we create a <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#sqrt">d3.scale.sqrt</a> so that the area of the circle is proportional to the associated population; the radius of the circle is proportional to the square root of the population. (Alternatively, you could use <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes#symbol">d3.svg.symbol</a> for other proportional symbols.) We could compute the domain of the scale from the data, but since we know the approximate distribution of the data beforehand, we can simply hard-code reasonable values:
+<p>To size the bubbles, create a <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#sqrt">d3.scale.sqrt</a> so that the area of the circle is proportional to the associated population; the radius of the circle is proportional to the square root of the population. (Alternatively, you could use <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes#symbol">d3.svg.symbol</a> for other proportional symbols.) We could compute the domain of the scale from the data, but since we know the approximate distribution of the data beforehand, we can simply hard-code reasonable values:
 
 <aside>To avoid distortion, make sure that the minimum domain and range values are both zero!</aside>
 
@@ -372,17 +372,38 @@ svg.append("path")
 
 <p class="map" id="map--basic">
 
-<aside style="margin-top:-4em;">View <a href="basic.html">basic.html</a> for the full source of the base map.</aside>
+<aside style="margin-top:-4em;">View <a href="basic.html">basic.html</a> for the full source of this map.</aside>
 
-<p>This version of the map suffers from <i>occlusion</i>: larger circles, such as Cook County in Illinois and Los Angeles County in California, completely obscure smaller bubbles underneath. To fix this, sort the bubbles by descending size so that smaller bubbles are drawn on top of larger bubbles. Transparency and a thin white stroke on the exterior of the circle also help.
+<p>This version of the map suffers greatly from <i>occlusion</i>: larger circles, such as Cook County in Illinois and Los Angeles County in California, obscure smaller bubbles underneath. Occlusion can be mitigated by making the bubbles smaller, but this makes it harder to see less-populated counties and emphasizes dense urban areas.
 
-<p>Note that to sort the circles, you’ll also need to filter out counties that don’t have any defined population! This raises an important point: <i>often the source data is not as clean and as regular as we expect</i>, and data-cleanliness issues are not always obvious in the visualization.
+<p>Another way to reduce occlusion is to sort bubbles by descending size, so that smaller bubbles are drawn on top of larger bubbles. The bubbles still overlap, but the smaller bubbles are now visible.
 
-<p>It’s critical to spot-check data and verify that it looks correct along the way. For example, some U.S. county shapefiles include multiple features for a county when that county has discontiguous areas. (Honolulu County in Hawaii consists not only of Oahu, but the tiny Ford and Sand islands as well.) Unless you <a href="https://github.com/mbostock/topojson/blob/master/bin/topojson-group">group</a> features by county into MultiPolygons, you’d see multiple bubbles for the same county, which would be grossly misleading!
+<pre><code>svg.append("g")
+    .attr("class", "bubble")
+  .selectAll("circle")
+    .data(topojson.feature(us, us.objects.counties).features
+      .sort(function(a, b) { return b.properties.population - a.properties.population; }))
+  .enter().append("circle")
+    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+    .attr("r", function(d) { return radius(d.properties.population); });</code></pre>
+
+<p>A bit of transparency and thin white stroke also helps.
+
+<pre><code>.bubble {
+  fill-opacity: .5;
+  stroke: #fff;
+  stroke-width: .5px;
+}</code></pre>
 
 <p class="map" id="map--sorted">
 
-<aside style="margin-top:-4em;">View <a href="sorted.html">sorted.html</a> for the full source of the base map.</aside>
+<aside style="margin-top:-4em;">View <a href="sorted.html">sorted.html</a> for the full source of this map.</aside>
+
+<p>Boom! A bubble map. But now that our map is legible, it’s a good time to consider its validity: <i>often our source data is not as clean and regular as we expect</i>, and data-cleanliness issues may not be apparent in the visualization. It’s critical to spot-check data and verify that it’s correct. You should run some sanity checks on the data, such as whether any counties are duplicated or missing data.
+
+<aside>The <a href="https://github.com/mbostock/d3/wiki/Arrays#d3_nest">d3.nest</a> operator is useful for checking uniqueness.</aside>
+
+<p>For example, an earlier version of this tutorial used county boundaries from a <a href="http://www.nationalatlas.gov/mld/1cntyp.html">different source</a>, and the shapefile specified separate features for each of a county’s discontiguous areas. (Honolulu County in Hawaii consists not only of Oahu, but the tiny Ford and Sand islands as well.) To avoid duplicate bubbles and misleading readers, you would need to <a href="https://github.com/mbostock/topojson/blob/master/bin/topojson-group">group</a> features by county! The shapefile from the U.S. Census Bureau is already grouped, so we could skip this step.
 
 <h2><a href="#communicating" name="communicating">#</a>Communicating</h2>
 
@@ -503,7 +524,6 @@ d3.json("us.json", function(error, us) {
       .attr("class", "bubble")
     .selectAll("g")
       .data(topojson.feature(us, us.objects.counties).features
-        .filter(function(d) { return !isNaN(d.properties.population); })
         .sort(function(a, b) { return b.properties.population - a.properties.population; }))
     .enter().append("circle")
       .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
@@ -513,7 +533,6 @@ d3.json("us.json", function(error, us) {
       .attr("class", "bubble")
     .selectAll("g")
       .data(topojson.feature(us, us.objects.counties).features
-        .filter(function(d) { return !isNaN(d.properties.population); })
         .sort(function(a, b) { return b.properties.population - a.properties.population; }))
     .enter().append("circle")
       .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })

@@ -253,11 +253,11 @@ which topojson</code></pre>
 
 &lt;/script&gt;</code></pre>
 
-<p>Then, fire up a local web server to view your example. I use Python, but any server will do:
+<p>Then, fire up a local web server to view your example. I use <a href="https://github.com/nodeapps/http-server">http-server</a>, but any server will do:
 
 <aside>A web server is needed to skirt security restrictions loading data out of the local file system.</aside>
 
-<pre><code>python -m SimpleHTTPServer 8008 &</code></pre>
+<pre><code>http-server -p 8008 &</code></pre>
 
 <p>If you visit <a href="http://localhost:8008">http://localhost:8008</a>, you should now see a glorious blank page:
 

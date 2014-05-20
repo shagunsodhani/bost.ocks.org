@@ -435,7 +435,7 @@ function type(d) {
 
 <p>This problem is more pervasive than you might expect. When visualizing data, it’s easy to internalize and forget the extra knowledge you have about your dataset or your intent. <i>You</i> know it’s a bar chart of relative frequency of letters in the English language. But unless you state that explicitly, your reader may not. Labels, captions, legends and other explanatory elements are essential to understanding. A title can be added to the <i>y</i>-axis by appending a <code>text</code> element and positioning it as desired.
 
-<pre><code>svg.append("g")
+<pre><code>chart.append("g")
     .attr("class", "y axis")
     .call(yAxis)
   .append("text")

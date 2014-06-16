@@ -100,23 +100,22 @@ setInterval(dance, 2500);
 
 <p>Data is specified as an array of values; this mirrors the concept of a selection, which is an array of elements. In the code above, the first number (the first <i>datum</i>, 32) is bound to the first circle (the first <i>element</i>, based on the order in which they are defined in the DOM), the second number is bound to the second circle, and so on.
 
-<p>After data is bound, it is accessible as the first argument to attribute and style functions. By convention, we typically use the name <code>d</code> to refer to bound data. To set the <i>x</i>-position and radius using the data:
+<p>After data is bound, it is accessible as the first argument to attribute and style functions. By convention, we typically use the name <code>d</code> to refer to bound data. To set the radius using the data:
 
-<pre><code class="javascript">circle.attr("cx", function(d) { return d; });
-circle.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
+<pre><code class="javascript">circle.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <p>This results in a primitive visualization:
 
 <p><svg width="720" height="120">
-  <circle cx="32" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
-  <circle cx="57" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
-  <circle cx="112" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
+  <circle cx="40" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
+  <circle cx="80" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
+  <circle cx="120" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
 </svg>
 
 <pre><code class="html">&lt;svg width="720" height="120"&gt;
-  &lt;circle cx="32" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
-  &lt;circle cx="57" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
-  &lt;circle cx="112" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="40" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="80" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="120" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
 &lt;/svg&gt;</code></pre>
 
 <p>There’s a second optional argument to each function you can also use: the <i>index</i> of the element within its selection. The index is often useful for positioning elements sequentially. Again by convention, this is often referred to as <code>i</code>. For example:
@@ -191,7 +190,7 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <p>Often you have the opposite problem from <i>enter</i>: you have too many existing elements, and you want to remove some of them. Again you can select nodes and <a href="https://github.com/mbostock/d3/wiki/Selections#remove">remove</a> them manually, but the <a href="https://github.com/mbostock/d3/wiki/Selections#exit"><i>exit</i></a> selection computed by a data join is more powerful.
 
-<p>The exit selection is the opposite of the enter selection: it contains the leftover elements for which there is no corresponding data.
+<p>The exit selection is the reflection of the enter selection: it contains the leftover elements for which there is no corresponding data.
 
 <pre><code class="javascript">var circle = svg.selectAll("circle")
     .data([32, 57]);</code></pre>

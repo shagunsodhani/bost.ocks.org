@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>22 May 2014 19:00 GMT</pubDate>
-    <lastBuildDate>22 May 2014 19:00 GMT</lastBuildDate>
+    <pubDate>15 Jun 2014 21:00 GMT</pubDate>
+    <lastBuildDate>15 Jun 2014 21:00 GMT</lastBuildDate>
+    <item>
+      <title>Three Little Circles</title>
+      <link>http://bost.ocks.org/mike/circles/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/circles/"><img src="http://bost.ocks.org/mike/circle.png"></a>]]></description>
+      <pubDate>15 Jun 2014 21:00 GMT</pubDate>
+    </item>
     <item>
       <title>Is It Better to Rent or Buy?</title>
       <link>http://www.nytimes.com/interactive/2014/upshot/buy-rent-calculator.html</link>
@@ -372,12 +378,6 @@
       <link>http://bost.ocks.org/mike/uberdata/</link>
       <description><![CDATA[<a href="http://bost.ocks.org/mike/uberdata/"><img src="http://bost.ocks.org/mike/uberdata.png"></a>]]></description>
       <pubDate>09 Jan 2012 00:00 GMT</pubDate>
-    </item>
-    <item>
-      <title>Three Little Circles</title>
-      <link>http://mbostock.github.com/d3/tutorial/circle.html</link>
-      <description><![CDATA[<a href="http://mbostock.github.com/d3/tutorial/circle.html"><img src="http://bost.ocks.org/mike/circle.png"></a>]]></description>
-      <pubDate>04 Jul 2011 00:00 GMT</pubDate>
     </item>
   </channel>
 </rss>

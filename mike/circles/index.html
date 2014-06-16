@@ -171,8 +171,6 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <p>This pattern is so common, you’ll often see the <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#append">append</a> methods called sequentially, one immediately after the other. Despite it being common, keep in mind that this is just one special case of a data join; we’ve already seen another common case (selecting elements for update) and we’ll see other interesting cases to consider in a bit.
 
-<aside>For more on this pattern, see <a href="../join/">Thinking with Joins</a>.</aside>
-
 <pre><code class="javascript">svg.selectAll("circle")
     .data([32, 57, 112, 293])
   .enter().append("circle")

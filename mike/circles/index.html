@@ -37,7 +37,7 @@
 
 <p>The <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">d3.selectAll</a> method takes a <a href="http://www.w3.org/TR/CSS2/selector.html">selector</a> string, such as <code>"circle"</code>, and returns a <i>selection</i> representing all elements that match the selector:
 
-<pre><code class="javascript">var circle = svg.selectAll("circle");</code></pre>
+<pre><code class="javascript">var circle = d3.selectAll("circle");</code></pre>
 
 <p>With a selection, we can make various changes to selected elements. For example, we might change the fill color using <a href="https://github.com/mbostock/d3/wiki/Selections#style">selection.style</a> and the radius using <a href="https://github.com/mbostock/d3/wiki/Selections#attr">selection.attr</a>:
 
@@ -139,19 +139,26 @@ circle.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <h2><a href="#entering" name="entering">#</a>Entering Elements</h2>
 
-<p>If we had <i>four</i> numbers to display, rather than three, we wouldn’t have enough circles. When joining data to elements, D3 puts any leftover data — or equivalently “missing” elements — in the <a href="https://github.com/mbostock/d3/wiki/Selections#enter"><i>enter</i></a> selection. Thus, a fourth number would be put in the enter selection because we only have three circles. The other three numbers are returned (in the <i>update</i> selection) by selection.data:
+<p>What if we had <i>four</i> numbers to display, rather than three? We wouldn’t have enough circles, and we would need to create more elements to represent our data. You can append new nodes manually, but a more powerful alternative is the <a href="https://github.com/mbostock/d3/wiki/Selections#enter"><i>enter</i></a> selection computed by a data join.
 
-<pre><code class="javascript">var circle = svg.selectAll("circle")
-    .data([32, 57, 112, 293]);</code></pre>
+<p>When joining data to elements, D3 puts any leftover data — or equivalently “missing” elements — in the enter selection. With only three circles, a fourth number would be put in the enter selection, while the other three numbers are returned directly (in the <i>update</i> selection) by selection.data.
 
-<p>By <a href="https://github.com/mbostock/d3/wiki/Selections#append">appending</a> to the enter selection, we can create new circles for any missing data. Each new circle is already bound to the data, so we can use data to compute attributes and styles:
+<p>By <a href="https://github.com/mbostock/d3/wiki/Selections#append">appending</a> to the enter selection, we can create new circles for any missing data. The new circles will be appended to the element defined by parent selection. So, we select the <code>"svg"</code> element first, then select all <code>"circle"</code> elements, and then join them to data:
 
-<pre><code class="javascript">var circleEnter = circle.enter().append("circle");
-circleEnter.attr("cy", 60);
+<pre><code class="javascript">var svg = d3.select("svg");
+
+var circle = svg.selectAll("circle")
+    .data([32, 57, 112, 293]);
+
+var circleEnter = circle.enter().append("circle");</code></pre>
+
+<p>Entering elements are already bound to the data, so we can use data to compute attributes and styles, as well as set constant properties:
+
+<pre><code class="javascript">circleEnter.attr("cy", 60);
 circleEnter.attr("cx", function(d) { return d; });
 circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
-<p>And now we have four circles:
+<p>Now we have four circles:
 
 <p><svg width="720" height="120">
   <circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
@@ -167,9 +174,9 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
   &lt;circle cx="293" cy="60" r="17.11724276862369" style="fill:steelblue;"&gt;&lt;/circle&gt;
 &lt;/svg&gt;</code></pre>
 
-<p>Taking this to the next logical step, then, what if we have <i>no</i> existing elements? Say we start with an empty page, and we want to create new circles that correspond to our data. Then we’re joining data to an empty selection, and <i>all</i> of the data ends up in <i>enter</i>.
+<p>Taking this to the logical extreme, then, what if we have <i>no</i> existing elements, such as with an empty page? Then we’re joining data to an empty selection, and <i>all</i> data ends up in enter.
 
-<p>This pattern is so common, you’ll often see the <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#append">append</a> methods called sequentially, one immediately after the other. Despite it being common, keep in mind that this is just one special case of a data join; we’ve already seen another common case (selecting elements for update) and we’ll see other interesting cases to consider in a bit.
+<p>This pattern is so common, you’ll often see the <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#append">append</a> methods called sequentially, one immediately after the other. Despite it being common, keep in mind that this is just one special case of a data join.
 
 <pre><code class="javascript">svg.selectAll("circle")
     .data([32, 57, 112, 293])
@@ -178,11 +185,13 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
     .attr("cx", function(d) { return d; })
     .attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
-<p>This pattern is often used in conjunction with <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>, another technique for abbreviating code. Because D3 methods returns the selection they act upon, you can apply multiple operations to the same selection.
+<p>This enter pattern is often used in conjunction with <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>, another technique for abbreviating code. Because D3 methods returns the selection they act upon, you can apply multiple operations to the same selection.
 
 <h2><a href="#exiting" name="exiting">#</a>Exiting Elements</h2>
 
-<p>Often you have the opposite problem from <i>enter</i>: you have too many existing elements, and you want to remove some of them. You can select nodes and <a href="https://github.com/mbostock/d3/wiki/Selections#remove">remove</a> them manually, but a more powerful alternative is the <a href="https://github.com/mbostock/d3/wiki/Selections#exit"><i>exit</i></a> selection returned by the data join. The exit selection is the opposite of the enter selection: it contains the leftover elements (for which there is no corresponding data).
+<p>Often you have the opposite problem from <i>enter</i>: you have too many existing elements, and you want to remove some of them. Again you can select nodes and <a href="https://github.com/mbostock/d3/wiki/Selections#remove">remove</a> them manually, but the <a href="https://github.com/mbostock/d3/wiki/Selections#exit"><i>exit</i></a> selection computed by a data join is more powerful.
+
+<p>The exit selection is the opposite of the enter selection: it contains the leftover elements for which there is no corresponding data.
 
 <pre><code class="javascript">var circle = svg.selectAll("circle")
     .data([32, 57]);</code></pre>

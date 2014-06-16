@@ -155,7 +155,7 @@ var circleEnter = circle.enter().append("circle");</code></pre>
 <p>Entering elements are already bound to the data, so we can use data to compute attributes and styles, as well as set constant properties:
 
 <pre><code class="javascript">circleEnter.attr("cy", 60);
-circleEnter.attr("cx", function(d) { return d; });
+circleEnter.attr("cx", function(d, i) { return i * 100 + 30; });
 circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <p>Now we have four circles:
@@ -164,14 +164,14 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
   <circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
   <circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
   <circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
-  <circle cx="293" cy="60" r="17.11724276862369" style="fill:steelblue;"></circle>
+  <circle cx="330" cy="60" r="17.11724276862369" style="fill:steelblue;"></circle>
 </svg>
 
 <pre><code class="html">&lt;svg width="720" height="120"&gt;
   &lt;circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
   &lt;circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
   &lt;circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
-  &lt;circle cx="293" cy="60" r="17.11724276862369" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="330" cy="60" r="17.11724276862369" style="fill:steelblue;"&gt;&lt;/circle&gt;
 &lt;/svg&gt;</code></pre>
 
 <p>Taking this to the logical extreme, then, what if we have <i>no</i> existing elements, such as with an empty page? Then we’re joining data to an empty selection, and <i>all</i> data ends up in enter.
@@ -182,7 +182,7 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
     .data([32, 57, 112, 293])
   .enter().append("circle")
     .attr("cy", 60)
-    .attr("cx", function(d) { return d; })
+    .attr("cx", function(d, i) { return i * 100 + 30; })
     .attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <p>This enter pattern is often used in conjunction with <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>, another technique for abbreviating code. Because D3 methods returns the selection they act upon, you can apply multiple operations to the same selection.
@@ -199,6 +199,18 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 <p>All that’s left to do, then, is to remove the exiting elements:
 
 <pre><code class="javascript">circle.exit().remove();</code></pre>
+
+<p>And now we have two circles:
+
+<p><svg width="720" height="120">
+  <circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
+  <circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
 
 <p>Of course, you aren’t required to remove exiting elements immediately; for example, you might apply a transition to have them fade out or slide away.
 
@@ -218,8 +230,8 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
     .data([32, 57, 293], function(d) { return d; });
 
 circle.enter().append("circle")
-    .attr("cy", 90)
-    .attr("cx", function(d) { return d; })
+    .attr("cy", 60)
+    .attr("cx", function(d, i) { return i * 100 + 30; })
     .attr("r", function(d) { return Math.sqrt(d); });
 
 circle.exit().remove();</code></pre>

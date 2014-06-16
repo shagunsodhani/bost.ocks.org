@@ -15,7 +15,23 @@
 
 <h1>Three Little Circles</h1>
 
-<p>Once upon a time, there were three little circles. This tutorial shows you how to manipulate them using selections.
+<p>Once upon a time, there were three little circles.
+
+<p><svg width="720" height="120">
+  <circle cx="40" cy="60" r="10"></circle>
+  <circle cx="80" cy="60" r="10"></circle>
+  <circle cx="120" cy="60" r="10"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="40" cy="60" r="10"&gt;&lt;/circle&gt;
+  &lt;circle cx="80" cy="60" r="10"&gt;&lt;/circle&gt;
+  &lt;circle cx="120" cy="60" r="10"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>This tutorial shows you how to manipulate them using selections.
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
 
 <h2><a href="#selecting" name="selecting">#</a>Selecting Elements</h2>
 
@@ -23,76 +39,152 @@
 
 <pre><code class="javascript">var circle = svg.selectAll("circle");</code></pre>
 
-<p>Once we have a selection, we can apply various operators to the selected elements. For example, we might change the fill color using <a href="https://github.com/mbostock/d3/wiki/Selections#style">selection.style</a>, and the radius and the <i>y</i>-position using <a href="https://github.com/mbostock/d3/wiki/Selections#attr">selection.attr</a>:
+<p>With a selection, we can apply various operators to the selected elements. For example, we might change the fill color using <a href="https://github.com/mbostock/d3/wiki/Selections#style">selection.style</a> and the radius using <a href="https://github.com/mbostock/d3/wiki/Selections#attr">selection.attr</a>:
 
 <pre><code class="javascript">circle.style("fill", "steelblue");
-circle.attr("cy", 90);
 circle.attr("r", 30);</code></pre>
 
-<p>The above code sets styles and attributes for all selected elements to the same values. But we can also set values on a per-element basis by using anonymous functions. For example, to set each circle’s <i>x</i>-coordinate to a random value:
+<p>The above code sets styles and attributes for all selected elements to the same values.
 
-<pre><code class="javascript">circle.attr("cx", function() { return Math.random() * w; });</code></pre>
+<p><svg width="720" height="120">
+  <circle cx="40" cy="60" r="30" style="fill:steelblue;"></circle>
+  <circle cx="80" cy="60" r="30" style="fill:steelblue;"></circle>
+  <circle cx="120" cy="60" r="30" style="fill:steelblue;"></circle>
+</svg>
 
-<p>If you run this code multiple times, you’ll see that the attribute is recomputed randomly each time. D3 doesn’t cache computed values; the functions are run once, immediately, and then return. So you can redefine attributes however you like.
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="40" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="80" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="120" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>We can also set values on a per-element basis by using anonymous functions. The function is evaluated once per selected element. To set each circle’s <i>x</i>-coordinate to a random value:
+
+<pre><code class="javascript">circle.attr("cx", function() { return Math.random() * 720; });</code></pre>
+
+<p>If you run this code repeatedly, the circles will dance:
+
+<p><svg id="circle-dance" width="720" height="120">
+  <circle cx="40" cy="60" r="30" style="fill:steelblue;"></circle>
+  <circle cx="80" cy="60" r="30" style="fill:steelblue;"></circle>
+  <circle cx="120" cy="60" r="30" style="fill:steelblue;"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="<span class="circle-dance-x">40</span>" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="<span class="circle-dance-x">80</span>" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="<span class="circle-dance-x">120</span>" cy="60" r="30" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<script>(function() {
+
+function dance() {
+  var circle = d3.selectAll("#circle-dance circle"),
+      span = d3.selectAll(".circle-dance-x"),
+      data = d3.range(3).map(function() { return Math.random() * 720; });
+
+  circle.data(data).attr("cx", function(d) { return d; });
+  span.data(data).text(function(d) { return d; });
+}
+
+dance();
+setInterval(dance, 2500);
+
+})();</script>
+
+<p>Anonymous functions are used extensively in D3 to compute attribute values, particularly in conjunction with <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">scales</a> and <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes">shapes</a>.
 
 <h2><a href="#binding" name="binding">#</a>Binding Data</h2>
 
-<p>This is beginning to look a lot like <a href="http://jquery.com/">jQuery</a>. With D3, though, we want to use <i>data</i> to drive the appearance of our circles. For the sake of example, let’s imagine that each of these circles represents a number: 32, 57 and 112. The <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> operator binds these numbers to the circles:
+<p>More commonly, we use <i>data</i> to drive the appearance of our circles. Let’s say we want these circles represent the numbers 32, 57 and 112. The <a href="https://github.com/mbostock/d3/wiki/Selections#data">selection.data</a> operator binds the numbers to the circles:
 
 <pre><code class="javascript">circle.data([32, 57, 112]);</code></pre>
 
-<p>All data in D3 is specified as an array of values. Conveniently, this mirrors the concept of a selection, which is an array of elements. In the code above, the first number (the first <i>datum</i>, 32) is bound to the first circle (the first <i>element</i>, on top), the second number is bound to the second circle, and so on.
+<p>Data is specified as an array of values; this mirrors the concept of a selection, which is an array of elements. In the code above, the first number (the first <i>datum</i>, 32) is bound to the first circle (the first <i>element</i>, per the order in which they are defined in the DOM), the second number is bound to the second circle, and so on.
 
-<p>Once data is bound, that data is accessible as an argument to our attribute and style functions. This means we visually encode data, or in other words, create a visualization! For example, here we set the <i>x</i>-position and radius using the data:
+<p>After data is bound, it is accessible as the first argument (by convention, <code>d</code>) to attribute and style functions. Now to set the <i>x</i>-position and radius using the data:
 
 <pre><code class="javascript">circle.attr("cx", function(d) { return d; });
 circle.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
-<p>There’s a second, optional, argument to each function you can also use: the <i>index</i> of the element within its selection. This is a <a href="http://en.wikipedia.org/wiki/Zero-based_numbering">zero-based</a> index, and it’s useful for computing offsets or as a simple way of identifying individual elements. For example:
+<p>This results in a primitive visualization:
+
+<p><svg width="720" height="120">
+  <circle cx="32" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
+  <circle cx="57" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
+  <circle cx="112" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="32" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="57" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="112" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>There’s a second optional argument to each function you can also use: the <i>index</i> of the element within its selection. The index is often useful for positioning elements sequentially. For example:
 
 <pre><code class="javascript">circle.attr("cx", function(d, i) { return i * 100 + 30; });</code></pre>
 
-<p>Here we use the index <i>i</i> to position the elements sequentially only the <i>x</i>-dimension. Each element is separated by 100 pixels, with an offset of 30 pixels from the left side. In SVG, the origin is in the top-left corner.
+<p><svg width="720" height="120">
+  <circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
+  <circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
+  <circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>Note that in SVG, the <a href="http://www.w3.org/TR/SVG/coords.html#Introduction">origin</a> is in the top-left corner.
 
 <h2><a href="#entering" name="entering">#</a>Entering Elements</h2>
 
-<p>What if we had <i>four</i> numbers to display, rather than three? We wouldn’t have enough circles to display all the numbers. When joining data to elements, D3 stores the leftover data in the <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> selection. (The terms “enter” and “exit” are adopted from stage terminology.) Here, the fourth number 293 remains in the enter selection, because we only have three circle elements:
+<p>If we had <i>four</i> numbers to display, rather than three, we wouldn’t have enough circles. When joining data to elements, D3 puts any leftover data — or equivalently “missing” elements — in the <a href="https://github.com/mbostock/d3/wiki/Selections#enter"><i>enter</i></a> selection. Thus, the fourth number 293 is in the enter selection because we only have three circle elements. The other three numbers are in the (<i>update</i>) selection returned by selection.data:
 
 <pre><code class="javascript">var circle = svg.selectAll("circle")
     .data([32, 57, 112, 293]);</code></pre>
 
-<p>By appending to the enter selection, we can create new circles for any missing data. Each new circle is already bound to the data, so we can use data to compute attributes and styles:
+<p>By <a href="https://github.com/mbostock/d3/wiki/Selections#append">appending</a> to the enter selection, we can create new circles for any missing data. Each new circle is already bound to the data, so we can use data to compute attributes and styles:
 
 <pre><code class="javascript">var circleEnter = circle.enter().append("circle");
-circleEnter.attr("cy", 90);
-circleEnter.attr("cx", 160);
-circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
-
-<p>Taking this to the next logical step, then, what if we have <i>no</i> existing elements? Meaning, what if the document is empty? Say we start with an empty page, and we want to create new circles that correspond to our data? Then we’re joining data to an empty selection, and all of the data ends up in <i>enter</i>:
-
-<pre><code class="javascript">var circleEnter = circle.enter().append("circle");
-circleEnter.attr("cy", 90);
+circleEnter.attr("cy", 60);
 circleEnter.attr("cx", function(d) { return d; });
 circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
-<p>This pattern is so common, you’ll often see the <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#append">append</a> operators called sequentially, one immediately after the other. Despite it being common, keep in mind that this is just one special case of a data join; we’ve already seen another common case (selecting elements for update) and we’ll see other interesting cases to consider in a bit.
+<p>And now we have four circles:
 
-<p>Another technique you can use to make your code more concise is <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>. Each operator in D3 returns the current selection, so you can apply multiple operators sequentially. For example, the above code can be rewritten:
+<p><svg width="720" height="120">
+  <circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"></circle>
+  <circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"></circle>
+  <circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"></circle>
+  <circle cx="293" cy="60" r="17.11724276862369" style="fill:steelblue;"></circle>
+</svg>
+
+<pre><code class="html">&lt;svg width="720" height="120"&gt;
+  &lt;circle cx="30" cy="60" r="5.656854249492381" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="130" cy="60" r="7.54983443527075" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="230" cy="60" r="10.583005244258363" style="fill:steelblue;"&gt;&lt;/circle&gt;
+  &lt;circle cx="293" cy="60" r="17.11724276862369" style="fill:steelblue;"&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+
+<p>Taking this to the next logical step, then, what if we have <i>no</i> existing elements? Say we start with an empty page, and we want to create new circles that correspond to our data. Then we’re joining data to an empty selection, and <i>all</i> of the data ends up in <i>enter</i>.
+
+<p>This pattern is so common, you’ll often see the <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#enter">enter</a> + <a href="https://github.com/mbostock/d3/wiki/Selections#append">append</a> operators called sequentially, one immediately after the other. Despite it being common, keep in mind that this is just one special case of a data join; we’ve already seen another common case (selecting elements for update) and we’ll see other interesting cases to consider in a bit.
 
 <pre><code class="javascript">svg.selectAll("circle")
     .data([32, 57, 112, 293])
   .enter().append("circle")
-    .attr("cy", 90)
+    .attr("cy", 60)
     .attr("cx", function(d) { return d; })
     .attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
-<!-- As you can see, the code is made even smaller using built-in JavaScript functions, rather than defining anonymous ones. The built-in <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String">String</a> method, for example, is a shorthand way of using JavaScript’s default string conversion to compute the attribute value from the associated data. Similarly, we can plug in <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Math/sqrt">Math.sqrt</a> to set the radius attribute as the square root of the associated data. -->
-
-<p>Anonymous functions are used extensively in D3 to compute attribute values, particularly in conjunction with <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales">scales</a> and <a href="https://github.com/mbostock/d3/wiki/SVG-Shapes">shapes</a>.
+<p>This pattern is often used in conjunction with <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>, another technique for abbreviating code. Because D3 methods returns the selection they act upon, you can apply multiple operators to the same selection.
 
 <h2><a href="#exiting" name="exiting">#</a>Exiting Elements</h2>
 
-<p>Sometimes you have the opposite problem from creation: you have too <i>many</i> existing elements, and you want to remove them. You can select nodes and <a href="https://github.com/mbostock/d3/wiki/Selections#remove">remove</a> them, but more commonly, you’ll use the <a href="https://github.com/mbostock/d3/wiki/Selections#exit">exit</a> selection to let D3 determine which elements are exiting the stage. The exit selection is the opposite of the enter selection: it contains all elements for which there is no corresponding data.
+<p>Often you have the opposite problem from <i>enter</i>: you have too many existing elements, and you want to remove some of them. You can select nodes and <a href="https://github.com/mbostock/d3/wiki/Selections#remove">remove</a> them manually, but a more powerful alternative is the <a href="https://github.com/mbostock/d3/wiki/Selections#exit"><i>exit</i></a> selection returned by the data join. The exit selection is the opposite of the enter selection: it contains the leftover elements (for which there is no corresponding data).
 
 <pre><code class="javascript">var circle = svg.selectAll("circle")
     .data([32, 57]);</code></pre>
@@ -101,17 +193,19 @@ circleEnter.attr("r", function(d) { return Math.sqrt(d); });</code></pre>
 
 <pre><code class="javascript">circle.exit().remove();</code></pre>
 
-<p>The enter, update and exit selections are computed by the <a href="https://github.com/mbostock/d3/wiki/Selections#data">data</a> operator, and don’t change when you append or remove elements—at least until you call <a href="https://github.com/mbostock/d3/wiki/Selections#selectAll">selectAll</a> again. So, if you keep variables around that point to selections (such as <code>circle</code>, above), you’ll probably want to reselect after adding or removing elements.
+<p>Of course, you aren’t required to remove exiting elements immediately; for example, you might apply a transition to have them fade out or slide away.
 
 <h2><a href="#all-together" name="all-together">#</a>All Together</h2>
 
 <p>Putting everything together, consider the three possible outcomes that result from joining data to elements:<ol>
 
-<li>enter - incoming actors, entering the stage.
-<li>update - persistent actors, staying on stage.
-<li>exit - outgoing actors, exiting the stage.
+<li><i>enter</i> - incoming elements, entering the stage.
+<li><i>update</i> - persistent elements, staying on stage.
+<li><i>exit</i> - outgoing elements, exiting the stage.
 
-</ol><p>When we use the default join-by-index, either the enter or exit selection will be empty (or both): if there are more data than elements, the extra data are in the enter selection; if there are fewer data than elements, the extra elements are in the exit selection. However, by specifying a key function to the data operator, we can control exactly how data is bound to elements. And in this case, we have both enter and exit.
+</ol><p>By default, the data join happens by index. The first element is bound to the first datum, and so on. Thus, either the enter or exit selection will be empty, or both: if there are more data than elements, the extra data are in the enter selection; if there are fewer data than elements, the extra elements are in the exit selection.
+
+<p>You can control precisely which datum is bound to which element by specifying a <a href="../constancy/">key function</a> to selection.data. For example, by using the identity function, you can rebind the circles to new data, while ensuring that existing circles are rebound to the same value in the new data, if any. This can result in both enter and exit.
 
 <pre><code class="javascript">var circle = svg.selectAll("circle")
     .data([32, 57, 293], function(d) { return d; });
@@ -138,6 +232,5 @@ ga("create", "UA-48272912-3", "ocks.org");
 ga("send", "pageview");
 
 </script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
 <script async src="../highlight.min.js"></script>
 <script async src="//www.google-analytics.com/analytics.js"></script>

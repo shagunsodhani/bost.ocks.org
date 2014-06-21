@@ -1271,31 +1271,15 @@ function shuffle(array) {
 
 })()</script>
 
-<!-- <aside>Random comparator shuffle</aside> -->
-
-<!-- <aside>browserchoice.eu
-- “no one would do this” yes people do this
-- this is how microsoft implemented shuffle
-- when ordering browsers for installation on an EU-mandated website
-- likely was incompetence, not malice, but still had a material impact
-- they were publicly shamed and switched to Fisher–Yates shuffle</aside> -->
-
 <aside>Another reason this algorithm is bad is that sorting takes <i>O(n lg n)</i> time, making it significantly slower than Fisher–Yates which takes <i>O(n)</i> time. But speed is less damning than bias.</aside>
 
 <p>This may look random, so you might be tempted to conclude that random comparator shuffle is adequate, and dismiss concerns of bias as pedantic. But looks can be misleading! There are many things that appear random to the human eye but are substantially non-random.
 
-<p>This deception demonstrates that visualization is not a magic wand. Showing a single run of the algorithm does effectively assess the quality of its randomness. We must instead carefully design a visualization that addresses the specific question at hand: what is the algorithm’s bias?
+<p>This deception demonstrates that visualization is not a magic wand. Showing a single run of the algorithm does not effectively assess the quality of its randomness. We must instead carefully design a visualization that addresses the specific question at hand: what is the algorithm’s bias?
 
 <p>To show bias, we must first define it. One definition is based on the probability that an array element at index <i>i</i> prior to shuffling will be at index <i>j</i> after shuffling. If the algorithm is unbiased, every element has equal probability of ending up at every index, and thus the probability for all <i>i</i> and <i>j</i> is the same: <i>1/n</i>, where <i>n</i> is the number of elements.
 
 <p>Computing these probabilities analytically is difficult, since it depends on knowing the exact sorting algorithm used. But computing them empirically is easy: we simply shuffle thousands of times and count the number of occurrences of element <i>i</i> at index <i>j</i>. An effective display for this matrix of probabilities is a matrix diagram:
-
-<!-- - so how can we understand this bias, and see that this shuffle is actually bad
-- unfortunately just visualizing the output does not help
-- individual runs of the algorithm appear random
-- we can’t just run it once and see
--
-- [click to show a few examples] -->
 
 <style>
 
@@ -1734,8 +1718,6 @@ function partition(array, left, right, pivot) {
   return left;
 }</code></pre>
 
-<!-- <p>Note the partition function returns the new index of the pivot, since the pivot may be moved from its original position by the partition operation. -->
-
 <p>There are many variations of quicksort. The one shown above is one of the simplest — and slowest. This variation is useful for teaching, but in practice more elaborate implementations are used for better performance.
 
 <p>A common improvement is “median-of-three” pivot selection, where the median of the first, middle and last elements is used as the pivot. This tends to choose a pivot closer to the true median, resulting in similarly-sized left and right parts and shallower recursion. Another optimization is switching from quicksort to <a href="http://en.wikipedia.org/wiki/Insertion_sort">insertion sort</a> for small parts of the array, which can be faster due to the overhead of function calls.
@@ -2011,8 +1993,6 @@ function quicksort(array) {
 <aside style="margin-top:-5050px;">At the start of each partition, the pivot is moved to the end (the right) of the active subarray.<p>Partitioning then proceeds from left to right. At each step, a new element is added either of the set of <i>lesser</i> values (in which case a swap occurs) or to the set of <i>greater</i> values (in which case no swap occurs).<p>When a swap occurs, the left-most value greater than the pivot is moved to the right, so as to make room on the left for the new lesser value. Thus, notice that in all swap operations, only values <i>darker</i> than the pivot move right, and only values <i>lighter</i> than the pivot move left.</aside>
 
 <aside style="margin-top:-4100px;">When the partition operation has visited all elements in the array, the pivot is placed in its final position between the two parts. Then, the algorithm recurses into the left part, followed by the right part (far below).</aside>
-
-<!-- <aside style="margin-top:-3500px;">The partition operation is in-place: it requires only a fixed amount of extra space to swap the location of two elements at a time.</aside> -->
 
 <aside style="margin-top:-1200px;">This visualization doesn’t show the state of the stack, so it can appear to jump around arbitrarily due to the nature of recursion. Still, you can typically see when a partition operation finishes due to the characteristic movement of the pivot to the end of the active subarray.</aside>
 

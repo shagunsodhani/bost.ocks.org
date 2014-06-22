@@ -2895,7 +2895,7 @@ function click() {
     if (id !== active) return true;
     if (!(n0 = frontier.length)) return p.classed("animation--playing", false);
 
-    context.fillStyle = floodColor(distance++);
+    context.fillStyle = floodColor(distance++ * 2);
 
     if (distance & 1) {
       for (var i = 0; i < n0; ++i) {

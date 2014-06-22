@@ -244,7 +244,11 @@ function minHeap(compare) {
 (function() {
   var color = d3.scale.cubehelix()
       .domain([0, 180, 360])
-      .range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8), d3.hsl(-90, .75, .35)]);
+      .range([
+        d3.hsl(-100, 0.75, 0.35),
+        d3.hsl(  80, 1.50, 0.80),
+        d3.hsl( 260, 0.75, 0.35)
+      ]);
 
   floodColor = function(distance) {
     return color(distance % 360);
@@ -2894,12 +2898,12 @@ function click() {
         n0 = frontier.length,
         i1;
 
-    context.fillStyle = floodColor(distance += 1.5);
+    context.fillStyle = floodColor(distance += 2);
     for (var i = 0; i < n0; ++i) {
       fillCell(frontier[i]);
     }
 
-    context.fillStyle = floodColor(distance += 1.5);
+    context.fillStyle = floodColor(distance += 2);
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i];
       if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, fillEast(i0), frontier1.push(i1);
@@ -2932,9 +2936,9 @@ function fillSouth(index) {
 
 <aside><a href="http://bl.ocks.org/mbostock/11167589">Random traversal</a></aside>
 
-<p>Hue encodes depth — the length of the path back to the root in the bottom-left corner. This is a rainbow color scale, which is nominally <a href="http://eagereyes.org/basics/rainbow-color-map">considered harmful</a>; but all we are trying to do here is show local structure, so concerns of perceptual nonlinearity and arbitrary grouping hopefully do not apply. It’s probably okay, just this once… and anyway, it’s pretty. (Don’t try this at home!)
+<p>Color encodes tree depth — the length of the path back to the root in the bottom-left corner. The color scale cycles as you get deeper into the tree; this is occasionally misleading when a deep path circles back adjacent to a shallow one, but the higher contrast allows better differentiation of local structure. (This is not a convential rainbow color scale, which is nominally <a href="http://eagereyes.org/basics/rainbow-color-map">considered harmful</a>, but a <a href="http://bl.ocks.org/mbostock/310c99e53880faec2434">cubehelix rainbow</a> with improved perceptual properties.)
 
-<p>We can further emphasize the structure of the maze by subtracting the walls, which only contribute visual noise. Below, each pixel represents a cell in the maze and is colored according to its path distance from the root. As above, the animation of color proceeds by depth, descending deeper into the maze over time.
+<p>We can further emphasize the structure of the maze by subtracting the walls, reducing visual noise. Below, each pixel represents a path through the maze. As above, paths are colored by depth and color floods deeper into the maze over time.
 
 <p id="random-traversal-color-flood" class="animation"><script>(function() {
 
@@ -3021,7 +3025,7 @@ function click() {
 
 <aside><a href="http://bl.ocks.org/mbostock/11337835">Random traversal</a></aside>
 
-<p>Concentric circles of color, like a tie-dye shirt, reveal that random traversal produces many branching paths. Yet the shape of each path is not particularly interesting, as it tends to go approximately straight back to the root. Because random traversal extends the maze by picking randomly from the frontier, paths are never given much freedom to meander — they end up colliding with the growing frontier and terminate due to the restriction on loops.
+<p>Concentric circles of color, like a tie-dye shirt, reveal that random traversal produces many branching paths. Yet the shape of each path is not particularly interesting, as it tends to go in a straight line back to the root. Because random traversal extends the maze by picking randomly from the frontier, paths are never given much freedom to meander — they end up colliding with the growing frontier and terminate due to the restriction on loops.
 
 <p>Randomized depth-first traversal, on the other hand, is <i>all</i> about the meander:
 

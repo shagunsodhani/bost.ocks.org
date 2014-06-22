@@ -2893,27 +2893,30 @@ function click() {
 
   d3.timer(function() {
     if (id !== active) return true;
-    var frontier1 = [],
-        i0,
-        n0 = frontier.length,
-        i1;
+    if (!(n0 = frontier.length)) return p.classed("animation--playing", false);
 
-    context.fillStyle = floodColor(distance += 2);
-    for (var i = 0; i < n0; ++i) {
-      fillCell(frontier[i]);
+    context.fillStyle = floodColor(distance++);
+
+    if (distance & 1) {
+      for (var i = 0; i < n0; ++i) {
+        fillCell(frontier[i]);
+      }
+    } else {
+      var frontier1 = [],
+          i0,
+          i1,
+          n0;
+
+      for (var i = 0; i < n0; ++i) {
+        i0 = frontier[i];
+        if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, fillEast(i0), frontier1.push(i1);
+        if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, fillEast(i1), frontier1.push(i1);
+        if (cells[i0] & S && !visited[i1 = i0 + cellWidth]) visited[i1] = true, fillSouth(i0), frontier1.push(i1);
+        if (cells[i0] & N && !visited[i1 = i0 - cellWidth]) visited[i1] = true, fillSouth(i1), frontier1.push(i1);
+      }
+
+      frontier = frontier1;
     }
-
-    context.fillStyle = floodColor(distance += 2);
-    for (var i = 0; i < n0; ++i) {
-      i0 = frontier[i];
-      if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, fillEast(i0), frontier1.push(i1);
-      if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, fillEast(i1), frontier1.push(i1);
-      if (cells[i0] & S && !visited[i1 = i0 + cellWidth]) visited[i1] = true, fillSouth(i0), frontier1.push(i1);
-      if (cells[i0] & N && !visited[i1 = i0 - cellWidth]) visited[i1] = true, fillSouth(i1), frontier1.push(i1);
-    }
-
-    frontier = frontier1;
-    return !frontier1.length && p.classed("animation--playing", false);
   });
 }
 

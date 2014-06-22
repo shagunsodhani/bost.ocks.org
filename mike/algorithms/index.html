@@ -242,6 +242,16 @@ function minHeap(compare) {
 !function(){function t(t){return function(e,i){e=d3.hsl(e),i=d3.hsl(i);var r=(e.h+120)*a,h=(i.h+120)*a-r,s=e.s,l=i.s-s,o=e.l,u=i.l-o;return isNaN(l)&&(l=0,s=isNaN(s)?i.s:s),isNaN(h)&&(h=0,r=isNaN(r)?i.h:r),function(a){var e=r+h*a,i=Math.pow(o+u*a,t),c=(s+l*a)*i*(1-i);return"#"+n(i+c*(-.14861*Math.cos(e)+1.78277*Math.sin(e)))+n(i+c*(-.29227*Math.cos(e)-.90649*Math.sin(e)))+n(i+c*1.97294*Math.cos(e))}}}function n(t){var n=(t=0>=t?0:t>=1?255:0|255*t).toString(16);return 16>t?"0"+n:n}var a=Math.PI/180;d3.scale.cubehelix=function(){return d3.scale.linear().range([d3.hsl(300,.5,0),d3.hsl(-240,.5,1)]).interpolate(d3.interpolateCubehelix)},d3.interpolateCubehelix=t(1),d3.interpolateCubehelix.gamma=t}();
 
 (function() {
+  var color = d3.scale.cubehelix()
+      .domain([0, 180, 360])
+      .range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8), d3.hsl(-90, .75, .35)]);
+
+  floodColor = function(distance) {
+    return color(distance % 360);
+  };
+})();
+
+(function() {
   var count = 0,
       overshoot = 300;
 
@@ -2884,12 +2894,12 @@ function click() {
         n0 = frontier.length,
         i1;
 
-    context.fillStyle = d3.hsl(distance++ % 360, 1, .5) + "";
+    context.fillStyle = floodColor(distance += 1.5);
     for (var i = 0; i < n0; ++i) {
       fillCell(frontier[i]);
     }
 
-    context.fillStyle = d3.hsl(distance++ % 360, 1, .5) + "";
+    context.fillStyle = floodColor(distance += 1.5);
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i];
       if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, fillEast(i0), frontier1.push(i1);
@@ -2977,7 +2987,7 @@ function click() {
         i0,
         n0 = frontier.length,
         i1,
-        color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+        color = d3.rgb(floodColor(distance++));
 
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i] << 2;
@@ -3066,7 +3076,7 @@ function click() {
         i0,
         n0 = frontier.length,
         i1,
-        color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+        color = d3.rgb(floodColor(distance++));
 
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i] << 2;
@@ -3155,7 +3165,7 @@ function click() {
         i0,
         n0 = frontier.length,
         i1,
-        color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+        color = d3.rgb(floodColor(distance++));
 
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i] << 2;
@@ -3244,7 +3254,7 @@ function click() {
         i0,
         n0 = frontier.length,
         i1,
-        color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+        color = d3.rgb(floodColor(distance++));
 
     for (var i = 0; i < n0; ++i) {
       i0 = frontier[i] << 2;

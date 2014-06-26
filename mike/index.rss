@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>15 Jun 2014 21:00 GMT</pubDate>
-    <lastBuildDate>15 Jun 2014 21:00 GMT</lastBuildDate>
+    <pubDate>26 Jun 2014 12:00 GMT</pubDate>
+    <lastBuildDate>26 Jun 2014 12:00 GMT</lastBuildDate>
+    <item>
+      <title>Visualizing Algorithms</title>
+      <link>http://bost.ocks.org/mike/algorithms/</link>
+      <description><![CDATA[<a href="http://bost.ocks.org/mike/algorithms/"><img src="http://bost.ocks.org/mike/algorithms.png"></a>]]></description>
+      <pubDate>26 Jun 2014 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Three Little Circles</title>
       <link>http://bost.ocks.org/mike/circles/</link>

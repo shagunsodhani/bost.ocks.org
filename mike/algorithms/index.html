@@ -2512,7 +2512,7 @@ function shuffle(array, i0, i1) {
 
 <aside><a href="http://bl.ocks.org/mbostock/1ef3b1fb9eb35ca8ffff">Randomized depth-first traversal</a></aside>
 
-<p>Rather than picking a new random passage each time, this algorithm always extends the deepest passage — the one with the longest path back to the root — in a random direct. Thus, randomized depth-first traversal only branches when the current path dead-ends into an earlier part of the maze. To continue, it backtracks until it can start a new branch. This snake-like exploration leads to mazes with significantly fewer branches and much longer, winding passages.
+<p>Rather than picking a new random passage each time, this algorithm always extends the deepest passage — the one with the longest path back to the root — in a random direction. Thus, randomized depth-first traversal only branches when the current path dead-ends into an earlier part of the maze. To continue, it backtracks until it can start a new branch. This snake-like exploration leads to mazes with significantly fewer branches and much longer, winding passages.
 
 <p>Prim’s algorithm constructs a <a href="http://en.wikipedia.org/wiki/Minimum_spanning_tree">minimum spanning tree</a>, a spanning tree of a graph with weighted edges with the lowest total weight. This algorithm can be used to construct a random spanning tree by initializing edge weights randomly:
 

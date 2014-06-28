@@ -1740,7 +1740,7 @@ function partition(array, left, right, pivot) {
 
 <p>The sort and shuffle animations above have the nice property that time is mapped to time: we can simply watch how the algorithm proceeds. But while intuitive, animation can be frustrating to watch, especially if we want to focus on an occasional weirdness in the algorithm’s behavior. Animations also rely heavily on our memory to observe patterns in behavior. While animations are improved by controls to pause and scrub time, static displays that show everything at once can be even more effective. The eye scans faster than the hand.
 
-<p>A simple way of turning an animation into a static display is to pick key frames from the animation and display those sequentially, like a comic strip. If we then remove redundant information across key frames, we use space more efficiently. A more denser display may require more study to understand, but is faster to scan since the eye travels less.
+<p>A simple way of turning an animation into a static display is to pick key frames from the animation and display those sequentially, like a comic strip. If we then remove redundant information across key frames, we use space more efficiently. A denser display may require more study to understand, but is faster to scan since the eye travels less.
 
 <p>Below, each row shows the state of the array prior to recursion. The first row is the initial state of the array, the second row is the array after the first partition operation, the third row is after the first partition’s left and right parts are again partitioned, <i>etc.</i> In effect, this is breadth-first quicksort, where the partition operation on both left and right proceeds in parallel.
 

@@ -15,17 +15,17 @@
 
 <h1>Better Streams for Node.js</h1>
 
-<p>Streams are an essential paradigm for efficient asynchronous systems. Streams break a large, slow operation into many small, fast, incremental computations. For example, instead of reading a massive file all in one go, you can read a few kilobytes at a time. Why is this so important?
+<p>Streams are an essential paradigm for efficient asynchronous systems. Streams break a large, slow operation into many small, fast, incremental computations. For example, instead of reading a massive file all in one go, you read a few kilobytes at a time. Why are streams so important?
 
-<p><i>Streams save memory</i>: you avoid putting the entire file in memory simultaneously. For example, you can count the number of lines in a file with only a few bytes of memory overhead, rather than proportional to the file size. This is particularly useful when computing aggregate statistics, where the data derived from the input (such as a histogram) is much smaller than the input size.
+<p><i>Streams save memory</i>: you avoid putting the entire file in memory simultaneously. For example, you can count the number of lines in a file with only a small fixed amount of memory, rather than memory proportional to the file size. This is particularly useful when computing aggregate statistics, where the data derived from the input (such as a histogram) is much smaller than the input size.
 
 <p><i>Streams lower latency</i>: you can start processing data immediately, rather than waiting for the file’s end. For example, you can pipe a file from disk to an HTTP response and send the initial chunk of data as soon as it is available, improving response time. Or you can report approximate statistics with initial data and then refine them as more data is read.
 
 <p><i>Streams facilitate short-circuiting</i>: you can abort a long operation before it completes. For example, if a file is malformed, you may be able to detect this without reading the entire file. Some operations, like reading Exif data, may not need the entire file to complete. Avoid unnecessary work!
 
-<p>Naturally, <a href="http://nodejs.org">Node.js</a> has a powerful streams API; however, today’s <a href="http://nodejs.org/api/stream.html">streams2</a> API is harder to use than it needs to be. I will now attempt to articulate the shortcomings of streams2, and then argue for a simpler new streams API, <a href="https://github.com/mbostock/rw">rw</a>.
+<p>Naturally, <a href="http://nodejs.org">Node.js</a> has a powerful streams API; however, today’s <a href="http://nodejs.org/api/stream.html">streams2</a> API is harder to use than it needs to be. First let’s look at why streams2 is so complicated, and then consider a new, simpler streams API: <a href="https://github.com/mbostock/rw"><b>rw</b></a>.
 
-<h2><a href="#current" name="current">#</a>streams2</h2>
+<h2><a href="#background" name="background">#</a>background: classic + streams2</h2>
 
 <p>[problems with current api]
 
@@ -41,7 +41,7 @@
 
 <p>but really, complexity stems from a fundamental design flaw: the streams2 API abstracts control flow, hiding it in provided implementations (stream.Readable, stream.Writable, stream.Transform, etc.). readers automatically refill as fast as possible in “flowing” mode, or when read returns null in “non-flowing mode”; writers automatically drain as fast as possible.
 
-<p>so rather than simplifying the streams control flow that made “classic” streams so hard to implement correctly, streams2 hid the control flow behind shared implementations (albeit well-tested and well-optimized ones). but unfortunately it didn’t address the complexity, and it fails to truly hide the underlying complexity through abstraction.
+<p>so rather than simplifying the streams control flow that made “classic” streams so hard to implement correctly, streams2 hid the control flow behind shared implementations (albeit well-tested and well-optimized ones). this works great for use cases explicitly supported by the provided implementations, but lacks flexibility. it didn’t address the underlying complexity, which ends up leaking through the abstraction.
 
 <p>since you don’t directly specify control flow, the design must provide explicit options to choose between different supported modes. likewise the base classes must provide explicit hooks within the control flow to perform operations with affecting control flow (such as transforming data).
 
@@ -55,7 +55,9 @@
 
 <p>The streams2 API relies heavily on base classes and inheritance, with a few limited hooks to override functionality. It abstracts the control flow, making common cases work magically, but limiting visibility into streams’ underlying behavior and impeding explicit control.
 
-<h2><a href="#proposed" name="proposed">#</a>rw</h2>
+<h2><a href="#design" name="design">#</a>design: rw</h2>
+
+<p>enough criticism; how can we actually improve things
 
 <p>make stream control flow visible and explicit
 - use simple callbacks rather than named events
@@ -76,35 +78,33 @@
   - don’t need to return a copy of the reader’s internal buffer
   - instead, lifecycle of data is explicitly defined: valid until next fill
 
-<h2>design philosohy</h2>
-
-- the purpose of a stream is to break a long operation into small incremental operations
+<p>- the purpose of a stream is to break a long operation into small incremental operations
 - a long operation (write 1M yesses) is decomposed into small ones (write 1 yes)
 - small operations are synchronous and in-memory
 - small operations are grouped into medium-sized batches
 - batches are then processed asynchronously (e.g., write to disk)
 
-- to avoid Zalgo, combination of asynchronous and synchronous APIs
+<p>- to avoid Zalgo, combination of asynchronous and synchronous APIs
   - batch operations are asynchronous
   - small operations are synchronous
 
-- small operations are grouped into batches
+<p>- small operations are grouped into batches
   - readers return null when the internal buffer is empty: recommend fill
   - writers return false when the internal buffer is full: recommend drain
   - reader is mandatory: no more data is available until you fill
   - writer is advisory: can continue to buffer, at cost to memory
 
-<h2>comparison with streams2</h2>
+<h2><a href="#discussion" name="discussion">#</a>discussion: comparison with streams2</h2>
 
-- some similarities
+<p>- some similarities. under the hood they behave similarly. it’s just that rw favors explicit control flow and standard use patterns rather than rigid implementations.
 
-- readers are similar to the read stream’s “readable” event and read method
+<p>- readers are similar to the read stream’s “readable” event and read method
   - however, readers do not automatically refill buffer when read returns null
   - instead, you explicitly tell a reader to refill by calling reader.fill
   - this means the reader doesn’t need to create a copy of the internal buffer
   - and you can determine whether and when you want to refill
 
-- writers are similar to the write stream’s write method and “drain” event
+<p>- writers are similar to the write stream’s write method and “drain” event
   - however, writers do not automatically drain buffer as soon as possible
   - instead, you explicitly tell a writer to drain by calling writer.drain
   - this means the writer can coalesce many small writes
@@ -112,9 +112,11 @@
 - so you don’t have to worry about ownership of data passed to write
 - time to write 10M “yes”: fs in 7.2s, rw in 1.3s
 
-- instead of a separate “error” event, a traditional callback is used
+<p>- instead of a separate “error” event, a traditional callback is used
 - instead of a separate “end” event, reader.ended is true after reader.fill
 - no extra hooks (prefinish, finish, close, pause, resume, pipe, unpipe) are needed
+
+<p>rw is very much a work in progress and it doesn’t support all of the features it needs to (such as seeking to an arbitrary position in a file). but i do not believe that any of these missing features will require substantial changes to the overall design or introduce significant additional complexity. whereas streams2 continues to grow more complicated as the base implementation needs to be extended whenever new control flow is needed (e.g., cork).
 
 <footer>
   <aside>June 12, 2014</aside>

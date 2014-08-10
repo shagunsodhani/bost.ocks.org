@@ -104,7 +104,7 @@ path:hover {
 
 <p>One additional wrench: how big should the SVG element be? Unfortunately, it can’t simply be 960×500 because the user can zoom and pan; the size depends on the displayed geographic features and the current zoom level!
 
-<p>It can be difficult to compute a bounding box with arbitrary projections, but fortunately D3 provides a convient mechanism for computing the <a href="https://github.com/mbostock/d3/wiki/Geo-Paths#wiki-path_bounds">projected bounding box</a> of our features using our custom transform to convert the longitude and latitude to pixels:
+<p>It can be difficult to compute a bounding box with arbitrary projections, but fortunately D3 provides a convenient mechanism for computing the <a href="https://github.com/mbostock/d3/wiki/Geo-Paths#wiki-path_bounds">projected bounding box</a> of our features using our custom transform to convert the longitude and latitude to pixels:
 
 <pre><code>var bounds = path.bounds(collection),
     topLeft = bounds[0],

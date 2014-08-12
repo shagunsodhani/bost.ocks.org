@@ -5,8 +5,14 @@
     <link>http://bost.ocks.org/mike/</link>
     <atom:link href="http://bost.ocks.org/mike/index.rss" rel="self" type="application/rss+xml" />
     <description>Mike Bostock</description>
-    <pubDate>26 Jun 2014 12:00 GMT</pubDate>
-    <lastBuildDate>26 Jun 2014 12:00 GMT</lastBuildDate>
+    <pubDate>26 Jul 2014 12:00 GMT</pubDate>
+    <lastBuildDate>26 Jul 2014 12:00 GMT</lastBuildDate>
+    <item>
+      <title>Mapping the Spread of Drought Across the U.S.</title>
+      <link>http://www.nytimes.com/interactive/2014/upshot/mapping-the-spread-of-drought-across-the-us.html</link>
+      <description><![CDATA[<a href="http://www.nytimes.com/interactive/2014/upshot/mapping-the-spread-of-drought-across-the-us.html"><img src="http://bost.ocks.org/mike/drought-updater.png"></a>]]></description>
+      <pubDate>26 Jul 2014 12:00 GMT</pubDate>
+    </item>
     <item>
       <title>Visualizing Algorithms</title>
       <link>http://bost.ocks.org/mike/algorithms/</link>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>On Scrolling</title>
+<style>
+
+@import url(../style.css?aea6f0a);
+
+</style>
+
+<header>
+  <aside>August 29, 2014</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>On Scrolling</h1>
+
+<p>When I’m feeling especially cynical, I joke that my job title is Senior Scrolling Engineer. The joke is that we use scrolling <i>so much</i>, it feels like all we do. Not data visualization. Not multimedia storytelling. Not groundbreaking journalism. Just scroll-based gimmicks, like an animatronic ghoul that pops out of a closet on a haunted house ride.
+
+<p>But cynicism aside, there are many compelling reasons to employ scrolling. For linear narratives — most content — it is the optimal primary mode of interaction. We are right to use scrolling and to adapt it to different forms of content.
+
+<p>Yet scrolling is also nuanced and easy to break. As a reader, you have doubtless experienced poor scrolling, ranging from mild annoyance to tab-closing frustration. As a reader and as someone occasionally responsible for perpetuating my own travesties of interaction, I often think about what makes scrolling work (or fail). This is my attempt to articulate those thoughts with the hope of encouraging more effective interaction.
+
+<h2><a href="#strengths" name="strengths">#</a>Modal Strengths</h2>
+
+<p>Scrolling is the most common mode of interaction on the web: we do it constantly. This is a static web page, but unless you’re on a very tall monitor, you have most likely already “interacted” with this page by scrolling down to read more. Through ubiquity, it has become natural and effortless. Most likely you do not make a conscious effort to scroll, but subconsciously coordinate your hand and your eye to scroll and scan simultaneously.
+
+<p>It's (primarily) linear, which is good if you are telling a story. most narratives proceed linearly
+
+<p>But, it allows random access: good if your reader is getting bored and wants to peek ahead, or to jump to a particular section. visual scanning is arguably more effective than a table of contents.
+
+<p>It's variable speed: the reader can progress as fast or slow as they like. no need for explicit pause, or lengthy animations between pages (remember those horrible page-flip catalog viewers?). reader stays engaged by continually advancing
+
+<p>It supports many different modes of input: mousewheel (touch pad), arrow keys (right & down, left & up), page up/down, command up/down, home/end, space, shift-space. even clicking the scroll bar or dragging the scroll thumb.
+
+<p>It gives instantaneous visual feedback: easy to tell how input corresponds to effect, and control how fast you are scrolling or what direction
+
+<h2><a href="#challenges" name="challenges">#</a>Modal Challenges</h2>
+
+<p>It is continuous
+
+<p>Not an inherent disadvantage, but a challenge to present larger visual content. fine in many situations (like text or small images), but awkward if there are larger discrete chunks you want to scroll through, like large images, presentation slides, graphics or video.
+
+<p>In these cases you might want to have a method to “snap” the content to the window, so that the content is not awkwardly cropped by the viewport
+
+<h2><a href="#dont-break" name="dont-break">#</a>Don’t Break Scrolling</h2>
+
+<p>How to display discrete pages of content, given that scrolling is continuous?
+
+<p>Determine the display based on the current viewport, rather than trying to interpret mousewheel events directly. this way, it’s easier to not break scrolling. (keyboard commands, including the command-left or delete to go back; scrollbar, which provides visual feedback and allows direct manipulation of the viewport)
+
+<p>Apple’s mac pro mousewheel-to-next-page gesture is a prime example of breaking scrolling: you have to wait for the animation to finish before it accepts another gesture, so you can't quickly interrupt the animation to go back a page, or skip ahead a page.
+
+<p>Retain visual feedback while scrolling: e.g., text overlaid on video in Game of Shark & Minnow. if you find the free-floating text too loose, you could use a more minimal scroll indicator as in my stack presentation library. complement viewport indicator with discrete page indicator (ligety dots).
+
+<p>Don’t interfere with default keyboard commands: command-{left,right} or delete.
+
+<p>These previous versions had a flaw where you could still end up "between slides" — in the middle of a crossfade. to fix this, the latest version of the stack library uses a threshold to determine which page is visible, and then does a time-based (rather than viewport-based) transition.
+
+<p>Don’t forget about mobile. given the ubiquity of screens and swipes in native apps, it’s ironic how difficult it is to implement screen swiping on the web. mobile safari doesn’t let javascript run during scroll.
+
+<p>Visual indication of more content below. scroll > indicator, or some content partially visible. otherwise you risk the reader only seeing the cover. should only be necessary on the top page.
+
+<p>Scroll-based triggers should not interrupt reading (e.g., autoplay video)
+
+<p>Be careful about hiding content and preventing visual scanning (motorcycle helmets); it’s a trade-off between focus and breadth, like a pair of blinders
+
+<h2><a href="#paternalism" name="paternalism">#</a>Avoid Paternalism</h2>
+
+<p>Like autocorrupt
+
+<p>“We know what you meant.” except, you don’t. and while automatic corrections are often helpful, they should always be accompanied by manual overrides for the cases where they are harmful.
+
+<p>More generally, favoring the designer’s goals (such as beautiful images) over the user’s control. must be done carefully, with an eye not just to the desired goals, but with the incidental cost by removing control and frustrating the user.
+
+<footer>
+  <aside>August 29, 2014</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</footer>
+
+<script>
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-3", "ocks.org");
+ga("send", "pageview");
+
+</script>
+<script async src="../highlight.min.js"></script>
+<script async src="//www.google-analytics.com/analytics.js"></script>
